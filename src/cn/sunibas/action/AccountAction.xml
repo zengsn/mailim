@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<package name="AccountAction" extends="basePackage">
+		
+		<!-- 管理员Action -->
+		<action name="admin_*" class="accountAction" method="{1}">
+		
+			<!-- 登陆失败(继续登陆) -->
+			<result name="login_fail">/WEB-INF/account/login.jsp</result>
+			
+			<!-- 登陆成功(暂时跳转到主页) -->
+			<result name="login_success" type="redirect">/home.jsp</result>
+
+			<!-- 注册失败(继续注册) -->
+			<result name="register_fail">/WEB-INF/account/register.jsp</result>
+
+			<!-- 注册成功(提示登陆，或者已经登陆，或者提示验证) -->
+			<result name="register_success" type="redirect">/home.jsp</result>
+		
+		</action>
+	</package>
+
+</struts>

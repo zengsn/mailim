@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.sunibas.entity">
+
+	<class name="TSkid" table="t_TSkid">
+		<id name="id" column="id" type="java.lang.String" length="32">
+		</id>
+		<property name="name" column="TSname" type="java.lang.String" length="20"></property>
+		<property name="pwd" column="pwd" type="java.lang.String" length="32"></property>
+		<property name="createTime" column="createTime" type="java.util.Date"></property>
+		<property name="checked" column="checked" type="java.lang.Integer"></property>
+	</class>
+
+</hibernate-mapping>
+
+
+
