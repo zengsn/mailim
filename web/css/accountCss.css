@@ -1,0 +1,13 @@
+.ibasInput {
+    border : none;
+    border-bottom: 1px solid gray;
+    outline : none;
+    width : 98%;
+}
+.ibasInput:focus {
+    border-bottom : 2px #2196f3 solid;
+}
+
+.ibasPanelSize {
+    width : 400px;
+}

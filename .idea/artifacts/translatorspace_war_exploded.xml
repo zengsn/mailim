@@ -1,0 +1,23 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="translatorspace:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/translatorspace_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="translatorspace/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="translatorspace" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="application" name="spring-jdbc" />
+          <element id="library" level="application" name="spring-aop" />
+          <element id="library" level="application" name="spring-core" />
+          <element id="library" level="application" name="struct-2.3.4" />
+          <element id="library" level="application" name="spring-web" />
+          <element id="library" level="application" name="junit4" />
+          <element id="library" level="application" name="hibernate" />
+          <element id="library" level="application" name="spring-orm" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

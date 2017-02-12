@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.sunibas.entity">
+
+	<class name="TStext" table="t_TStext">
+		<id name="uuid" column="uuid" type="java.lang.String" length="32"></id>
+		<property name="title" column="title" type="java.lang.String" length="50"></property>
+		<property name="label" column="label" type="java.lang.String" length="20"></property>
+		<property name="createTime" column="createTime" type="java.util.Date"></property>
+		<property name="status" column="TSstatus" type="java.lang.Integer"></property>
+		<property name="TSkidid" column="TSkidid" type="java.lang.String" length="32"></property>
+		<property name="score" column="score" type="java.lang.Integer"></property>
+		<property name="money" column="money" type="java.lang.Float"></property>
+	</class>
+
+</hibernate-mapping>
+
+
+

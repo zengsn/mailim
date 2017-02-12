@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<package name="basePackage" extends="struts-default">
+	
+		<!-- 拦截器配置 -->
+		<interceptors>
+			<!--<interceptor name="xxx-Interceptor" class="...."></interceptor>-->
+			<interceptor-stack name="myStack">
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<!--<interceptor-ref name="xxx-Interceptor"></interceptor-ref>-->
+			</interceptor-stack>
+		</interceptors>
+		<!-- 执行指定的拦截器 -->
+		<default-interceptor-ref name="myStack"></default-interceptor-ref>
+
+		<!--在项目完成后再开启
+
+
+		-->
+		<!--&lt;!&ndash; 全局视图 &ndash;&gt;-->
+		<!--<global-results>-->
+			<!--&lt;!&ndash; 错误视图配置 &ndash;&gt;-->
+			<!--<result name="null">/error/null.jsp</result>-->
+			<!--<result name="error">/error/error.jsp</result>-->
+		<!--</global-results>-->
+		<!---->
+		<!--&lt;!&ndash; 全局异常 &ndash;&gt;-->
+		<!--<global-exception-mappings>-->
+			<!--&lt;!&ndash; result 会取找全局视图的名称 &ndash;&gt;-->
+			<!--<exception-mapping result="null" exception="java.lang.NullPointerException"></exception-mapping>-->
+			<!--<exception-mapping result="error" exception="java.lang.Exception"></exception-mapping>-->
+		<!--</global-exception-mappings>-->
+
+	</package>
+
+	<include file="cn/sunibas/action/AccountAction.xml"></include>
+
+</struts>
