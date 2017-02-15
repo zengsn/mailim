@@ -27,6 +27,10 @@
 	<bean id="tStextService" class="cn.sunibas.service.impl.TStextService">
 		<property name="tstextDao" ref="tStextDao"></property>
 	</bean>
+
+	<bean id="tsLanguageService" class="cn.sunibas.service.impl.TSLanguageService">
+		<property name="itsLanguageDao" ref="tsLanguageDao"></property>
+	</bean>
 </beans>     
 
 

@@ -12,6 +12,7 @@
 		<property name="pwd" column="pwd" type="java.lang.String" length="32"></property>
 		<property name="createTime" column="createTime" type="java.util.Date"></property>
 		<property name="checked" column="checked" type="java.lang.Integer"></property>
+		<property name="role" column="TSrole" type="java.lang.Integer"></property>
 	</class>
 
 </hibernate-mapping>

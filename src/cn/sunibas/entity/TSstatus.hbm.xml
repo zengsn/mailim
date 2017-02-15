@@ -10,6 +10,8 @@
 		<property name="TSuuid" column="TSuuid" type="java.lang.String" length="32"></property>
 		<property name="createTime" column="createTime" type="java.util.Date"></property>
 		<property name="TSkidid" column="TSkidid" type="java.lang.String" length="32"></property>
+		<property name="TSindex" column="TSindex" type="java.lang.Integer"></property>
+		<property name="mark" column="TSmark" type="java.lang.Integer"></property>
 	</class>
 
 </hibernate-mapping>

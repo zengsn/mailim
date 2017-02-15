@@ -14,6 +14,9 @@
 		<property name="TSkidid" column="TSkidid" type="java.lang.String" length="32"></property>
 		<property name="score" column="score" type="java.lang.Integer"></property>
 		<property name="money" column="money" type="java.lang.Float"></property>
+		<property name="part" column="TSpart" type="java.lang.Integer"></property>
+		<property name="fromLanguage" column="fromLanguage" type="java.lang.Integer"></property>
+		<property name="toLanguage" column="toLanguage" type="java.lang.Integer"></property>
 	</class>
 
 </hibernate-mapping>

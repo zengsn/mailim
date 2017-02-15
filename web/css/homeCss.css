@@ -1,0 +1,24 @@
+.ibasPanelSize {
+    width : 100%;
+    margin: 0px 4px;
+    float: left;
+}
+
+/*@media screen and (max-width:1200px){*/
+    /*.ibasPanelSize {*/
+        /*width : 48%;*/
+    /*}*/
+/*}*/
+
+/*@media screen and (max-width:800px){*/
+    /*.ibasPanelSize {*/
+        /*width : 100%;*/
+    /*}*/
+/*}*/
+
+.paraStyle {
+    word-break: break-all;
+    text-align: initial;
+    text-indent: 2em;
+    word-break: break-word;
+}

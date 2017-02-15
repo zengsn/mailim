@@ -1,5 +1,7 @@
 package cn.sunibas.entity;
 
+import cn.sunibas.util.ForDebug;
+
 import java.util.Date;
 
 /**
@@ -11,6 +13,7 @@ public class TSkid {
     private String pwd;
     private Date createTime;
     public int Checked = 0;
+    public int role = 0;
 
     public String getId() {
         return id;
@@ -52,13 +55,22 @@ public class TSkid {
         Checked = checked;
     }
 
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+
     @Override
     public String toString(){
-        return "id = " + getId() + "\t" +
-                "name = " + getName() + "\t" +
-                "pwd = " + getPwd() + "\t" +
-                "createTime = " + getCreateTime() + "\t" +
-                "checked = " + getChecked();
-
+//        return "id = " + getId() + "\t" +
+//                "name = " + getName() + "\t" +
+//                "pwd = " + getPwd() + "\t" +
+//                "role = " + getRole() + "\t" +
+//                "createTime = " + getCreateTime() + "\t" +
+//                "checked = " + getChecked();
+        return ForDebug.Object2String(this);
     }
 }

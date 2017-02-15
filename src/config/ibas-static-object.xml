@@ -14,24 +14,10 @@
          http://www.springframework.org/schema/tx
      	 http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-	<!-- Dao 注入 SessionFactory -->
-	
-	<bean id="tSkidDao" class="cn.sunibas.dao.impl.TSkidDao">
-		<property name="sessionFactory" ref="sessionFactory"></property>
-	</bean>
-	
-	<bean id="tSstatusDao" class="cn.sunibas.dao.impl.TSstatusDao">
-		<property name="sessionFactory" ref="sessionFactory"></property>
-	</bean>
-	
-	<bean id="tStextDao" class="cn.sunibas.dao.impl.TStextDao">
-		<property name="sessionFactory" ref="sessionFactory"></property>
+	<bean id="staticObject" class="cn.sunibas.util.StaticObject">
+		<property name="itsLanguageService" ref="tsLanguageService"></property>
 	</bean>
 
-
-	<bean id="tsLanguageDao" class="cn.sunibas.dao.impl.TSLanguageDao">
-		<property name="sessionFactory" ref="sessionFactory"></property>
-	</bean>
 </beans>     
 
 

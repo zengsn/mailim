@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<package name="ManuscriptAction" extends="basePackage">
+		
+		<!-- 文稿管理Action -->
+		<action name="Manuscript_*" class="manuscriptAction" method="{1}">
+		
+			<!--&lt;!&ndash; 登陆失败(继续登陆) &ndash;&gt;-->
+			<!--<result name="login_fail">/WEB-INF/account/login.jsp</result>-->
+			<!---->
+			<!--&lt;!&ndash; 登陆成功(暂时跳转到主页) &ndash;&gt;-->
+			<!--<result name="login_success" type="redirect">/home.jsp</result>-->
+
+		</action>
+	</package>
+
+</struts>
