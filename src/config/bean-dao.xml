@@ -27,6 +27,18 @@
 	<bean id="tStextDao" class="cn.sunibas.dao.impl.TStextDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+
+	<bean id="tsLanguageDao" class="cn.sunibas.dao.impl.TSLanguageDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="tsNewTextDao" class="cn.sunibas.dao.impl.TSNewTextDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="textPartDao" class="cn.sunibas.dao.impl.TSTextPartDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
 </beans>     
 
 

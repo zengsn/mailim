@@ -39,5 +39,6 @@
 	</package>
 
 	<include file="cn/sunibas/action/AccountAction.xml"></include>
+	<include file="cn/sunibas/action/ManuscriptAction.xml"></include>
 
 </struts>

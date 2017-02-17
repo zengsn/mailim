@@ -14,31 +14,23 @@
          http://www.springframework.org/schema/tx
      	 http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-	<!-- Service 需要注入 Dao -->
-	
-	<bean id="tSkidService" class="cn.sunibas.service.impl.TSkidService">
-		<property name="tskidDao" ref="tSkidDao"></property>
-	</bean>
-	
-	<bean id="tSstatusService" class="cn.sunibas.service.impl.TSstatusService">
-		 <property name="tsStatusDao" ref="tSstatusDao"></property>
-	</bean>
-	
-	<bean id="tStextService" class="cn.sunibas.service.impl.TStextService">
-		<property name="tstextDao" ref="tStextDao"></property>
+	<bean id="staticObject" class="cn.sunibas.util.StaticObject">
+		<property name="itsLanguageService" ref="tsLanguageService"></property>
 	</bean>
 
-	<bean id="tsLanguageService" class="cn.sunibas.service.impl.TSLanguageService">
-		<property name="itsLanguageDao" ref="tsLanguageDao"></property>
+	<bean id="packageCharsetDetector" class="cn.sunibas.util.PackageCharsetDetector">
 	</bean>
 
-	<bean id="tsNewTextService" class="cn.sunibas.service.impl.TSNewTextService">
-		<property name="itsNewTextDao" ref="tsNewTextDao"></property>
+	<bean id="dearWithOneFile" class="cn.sunibas.util.DearWithOneFile">
+		<property name="tsTextPartService" ref="textPartService"></property>
+		<property name="packageCharsetDetector" ref="packageCharsetDetector"></property>
 	</bean>
 
-	<bean id="textPartService" class="cn.sunibas.service.impl.TSTextPartService">
-		<property name="itsTextPartDao" ref="textPartDao"></property>
+	<bean id="dearWithFileBackground" class="cn.sunibas.util.DearWithFileBackground">
+		<property name="itsNewTextService" ref="tsNewTextService"></property>
+		<property name="dearWithOneFile" ref="dearWithOneFile"></property>
 	</bean>
+
 </beans>     
 
 

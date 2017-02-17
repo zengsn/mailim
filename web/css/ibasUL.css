@@ -1,0 +1,52 @@
+.ibas-file-input {
+	width : 0px;
+	height : 0px;
+	display : inherit;
+}
+
+.ibas-file-div {
+	display : block;
+	width : 98%;
+	border : 1px solid rgb(234, 227, 224);
+	background : rgb(248, 248, 248);
+	min-height : 100px;
+	box-sizing: border-box;
+	margin: 2px 1%;
+	padding : 3px;
+	border-radius : 10px;
+	cursor: pointer;
+}
+
+.ibas-file-item {
+	display: list-item;
+	margin: 3px;
+	list-style: none;
+	height: 30px;
+	padding: 1px;
+	font-size: 24px;
+	overflow : hidden;
+}
+
+.ibas-file-tip {
+	display: list-item;
+	margin: 3px;
+	list-style: none;
+	height: 40px;
+	padding: 1px;
+	font-size: 36px;
+}
+
+.ibas-file-span {
+	background : rgb(248, 248, 248);
+	border-radius: 6px;
+	padding: 3px;
+}
+
+.ibas-file-span:hover {
+	background : rgb(226, 226, 226);
+}
+
+.ibas-file-count{
+	font-size : 50px;
+	text-align : center;
+}

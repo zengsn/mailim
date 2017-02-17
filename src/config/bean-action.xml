@@ -20,6 +20,12 @@
 	<bean id="accountAction" class="cn.sunibas.action.AccountAction" scope="prototype">
 		<property name="itSkidService" ref="tSkidService"></property>
 	</bean>
+	<!-- 文稿管理 -->
+	<bean id="manuscriptAction" class="cn.sunibas.action.ManuscriptAction" scope="prototype">
+		<property name="itStextService" ref="tStextService"></property>
+		<property name="staticObject" ref="staticObject"></property>
+		<property name="dearWithFileBackground" ref="dearWithFileBackground"></property>
+	</bean>
 	<!---->
 	<!--&lt;!&ndash; 2. 管理员模块 &ndash;&gt;-->
 	<!--<bean id="adminAction" class="cn.itcast.action.AdminAction" scope="prototype">-->

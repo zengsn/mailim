@@ -1,5 +1,6 @@
 package cn.sunibas.util;
 
+import cn.sunibas.entity.TSkid;
 import com.opensymphony.xwork2.ActionContext;
 
 /**
@@ -12,5 +13,9 @@ public class CheckLoginStatus {
         } else {
             return false;
         }
+    }
+
+    public static TSkid getKid(ActionContext actionContext){
+        return (TSkid)actionContext.getSession().get("kidInfo");
     }
 }
