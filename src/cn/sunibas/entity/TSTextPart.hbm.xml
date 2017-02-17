@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.sunibas.entity">
+
+	<class name="TSTextPart" table="t_text_part">
+		<composite-id>
+			<key-property name="TSuuid" column="TSuuid" type="java.lang.String" length="32"></key-property>
+			<key-property name="TSindex" column="TSindex" type="java.lang.Integer"></key-property>
+		</composite-id>
+		<property name="score" column="TSscore" type="java.lang.Integer"></property>
+		<property name="money" column="TSmoney" type="java.lang.Integer"></property>
+		<property name="overTimes" column="overTimes" type="java.lang.Integer"></property>
+		<property name="fromLanguage" column="fromLanguage" type="java.lang.Integer"></property>
+		<property name="toLanguage" column="toLanguage" type="java.lang.Integer"></property>
+	</class>
+
+</hibernate-mapping>
+
+
+

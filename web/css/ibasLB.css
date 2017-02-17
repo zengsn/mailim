@@ -17,11 +17,12 @@
 .ibas-label-label {
 	background: #e4f1ec;
     border: #e4f1ec 1px;
-    padding: 2px;
+    padding: 4px;
     margin: 2px 0px 2px 2px;
     float: left;
     box-sizing: border-box;
-    height: 22px;
+    height: 30px;
+	font-size: 18px;
 }
 
 .ibas-label-btn-close {
@@ -30,12 +31,13 @@
     float: left;
     margin: 2px 2px 2px 0px;
     background: rgb(222, 222, 222);
-    height: 22px;
-    width: 12px;
+    height: 30px;
+    width: 30px;
     box-sizing: border-box;
     /*display: inline-table;*/
 	text-align: center;
 	cursor : pointer;
+	font-size: 20px;
 }
 
 .ibas-label-btn-close:hover {

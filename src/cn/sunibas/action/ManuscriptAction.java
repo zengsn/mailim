@@ -20,9 +20,14 @@ import java.util.Date;
 public class ManuscriptAction extends ActionSupport {
 
     private StaticObject staticObject;
+    private DearWithFileBackground dearWithFileBackground;
 
     public void setStaticObject(StaticObject staticObject) {
         this.staticObject = staticObject;
+    }
+
+    public void setDearWithFileBackground(DearWithFileBackground dearWithFileBackground) {
+        this.dearWithFileBackground = dearWithFileBackground;
     }
 
     private File[] manuscript;
@@ -149,13 +154,14 @@ public class ManuscriptAction extends ActionSupport {
                             itStextService.createText(tstext);
                         }
                         for (int i = 0;i < manuscript.length;i++) {
-                            File file = new File(ManuscrripitFolderLocation.folderLocation + uuid, i + "");
+                            File file = new File(ManuscrripitDefaultSetting.folderLocation + uuid, i + "");
                             FileUtil.copyFile(manuscript[i],file);
                             /* debug */
                             //System.out.println(i + "" + tStext);
                         }
                         manuscriptActionReturnObject.setStatus(200);
                         manuscriptActionReturnObject.setRetStr("成功");
+                        dearWithFileBackground.start();
                     } else {
                         manuscriptActionReturnObject.setStatus(300);
                         manuscriptActionReturnObject.setRetStr("上传失败");

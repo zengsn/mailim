@@ -18,6 +18,19 @@
 		<property name="itsLanguageService" ref="tsLanguageService"></property>
 	</bean>
 
+	<bean id="packageCharsetDetector" class="cn.sunibas.util.PackageCharsetDetector">
+	</bean>
+
+	<bean id="dearWithOneFile" class="cn.sunibas.util.DearWithOneFile">
+		<property name="tsTextPartService" ref="textPartService"></property>
+		<property name="packageCharsetDetector" ref="packageCharsetDetector"></property>
+	</bean>
+
+	<bean id="dearWithFileBackground" class="cn.sunibas.util.DearWithFileBackground">
+		<property name="itsNewTextService" ref="tsNewTextService"></property>
+		<property name="dearWithOneFile" ref="dearWithOneFile"></property>
+	</bean>
+
 </beans>     
 
 

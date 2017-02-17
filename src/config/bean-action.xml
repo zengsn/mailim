@@ -24,6 +24,7 @@
 	<bean id="manuscriptAction" class="cn.sunibas.action.ManuscriptAction" scope="prototype">
 		<property name="itStextService" ref="tStextService"></property>
 		<property name="staticObject" ref="staticObject"></property>
+		<property name="dearWithFileBackground" ref="dearWithFileBackground"></property>
 	</bean>
 	<!---->
 	<!--&lt;!&ndash; 2. 管理员模块 &ndash;&gt;-->

@@ -1,9 +1,11 @@
 package cn.sunibas.entity;
 
+import java.io.Serializable;
+
 /**
- * Created by Administrator on 2017/2/15.
+ * Created by IBAS on 2017/2/15.
  */
-public class TSLanguage {
+public class TSLanguage implements Serializable {
     private int id;
     private String name;
 

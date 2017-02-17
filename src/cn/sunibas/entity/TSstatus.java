@@ -2,12 +2,13 @@ package cn.sunibas.entity;
 
 import cn.sunibas.util.ForDebug;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by Administrator on 2017/2/6.
+ * Created by IBAS on 2017/2/6.
  */
-public class TSstatus {
+public class TSstatus implements Serializable {
     private String uuid;
     private String TSuuid;
     private Date createTime;

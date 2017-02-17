@@ -2,15 +2,16 @@ package cn.sunibas.entity;
 
 import cn.sunibas.util.ForDebug;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/2/6.
+ * Created by IBAS on 2017/2/6.
  */
 
-public class TStext {
+public class TStext implements Serializable {
     private String uuid;
     private String title;
     private String label;
