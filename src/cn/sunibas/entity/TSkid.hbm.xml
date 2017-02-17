@@ -5,13 +5,13 @@
 
 <hibernate-mapping package="cn.sunibas.entity">
 
-	<class name="TSkid" table="t_TSkid">
-		<id name="id" column="id" type="java.lang.String" length="32">
+	<class name="TSkid" table="T_TSKID">
+		<id name="id" column="Id" type="java.lang.String" length="32">
 		</id>
 		<property name="name" column="TSname" type="java.lang.String" length="20"></property>
-		<property name="pwd" column="pwd" type="java.lang.String" length="32"></property>
-		<property name="createTime" column="createTime" type="java.util.Date"></property>
-		<property name="checked" column="checked" type="java.lang.Integer"></property>
+		<property name="pwd" column="Pwd" type="java.lang.String" length="32"></property>
+		<property name="createTime" column="CreateTime" type="java.util.Date"></property>
+		<property name="checked" column="Checked" type="java.lang.Integer"></property>
 		<property name="role" column="TSrole" type="java.lang.Integer"></property>
 	</class>
 

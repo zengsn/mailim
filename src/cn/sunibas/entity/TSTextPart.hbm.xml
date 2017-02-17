@@ -5,16 +5,17 @@
 
 <hibernate-mapping package="cn.sunibas.entity">
 
-	<class name="TSTextPart" table="t_text_part">
+	<class name="TSTextPart" table="T_TEXT_PART">
 		<composite-id>
-			<key-property name="TSuuid" column="TSuuid" type="java.lang.String" length="32"></key-property>
-			<key-property name="TSindex" column="TSindex" type="java.lang.Integer"></key-property>
+			<key-property name="TSuuid" column="TSUuid" type="java.lang.String" length="32"></key-property>
+			<key-property name="TSindex" column="TSIndex" type="java.lang.Integer"></key-property>
 		</composite-id>
-		<property name="score" column="TSscore" type="java.lang.Integer"></property>
-		<property name="money" column="TSmoney" type="java.lang.Integer"></property>
-		<property name="overTimes" column="overTimes" type="java.lang.Integer"></property>
-		<property name="fromLanguage" column="fromLanguage" type="java.lang.Integer"></property>
-		<property name="toLanguage" column="toLanguage" type="java.lang.Integer"></property>
+		<property name="score" column="TSScore" type="java.lang.Integer"></property>
+		<property name="money" column="TSMoney" type="java.lang.Integer"></property>
+		<property name="overTimes" column="OverTimes" type="java.lang.Integer"></property>
+		<property name="fromLanguage" column="FromLanguage" type="java.lang.Integer"></property>
+		<property name="toLanguage" column="ToLanguage" type="java.lang.Integer"></property>
+		<property name="partText" column="PartText" type="java.lang.String"></property>
 	</class>
 
 </hibernate-mapping>

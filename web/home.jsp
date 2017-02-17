@@ -48,20 +48,69 @@
       <h1>主页</h1>
       <!--新建若干个随机-->
       <script>
-        var content = ['This is content. '];
-        window.onload = function() {
-          var count_ = parseInt(Math.random() * 20);
-          var tar = document.getElementsByClassName('container')[1]
-          addAPushNotification.setParent(tar);
-          for (var i = 0;i < count_;i++) {
-            addAPushNotification.addNewEleByObj({
-              title : 'title ' + i,
-              content : content.copyTimes(parseInt(Math.random() * 20) + 1).join(''),
-              score : 20,
-              enterUrl : '#'
-            });
+        var tarUrl = "/translatorspace/home_getChip?";
+        var from = 0;
+        var count = 2;
+        window.onload = function(){
+          addAPushNotification.setParent(document.getElementsByClassName('container')[1]);
+          requireMore();
+          window.onscroll = function(){
+            if (document.body.clientHeight+document.body.scrollTop == document.body.scrollHeight) {
+              requireMore();
+            }
+          };
+        };
+        function invoke(){
+          if (document.body.scrollHeight <= window.screen.height) {
+            requireMore();
           }
         }
+        function requireMore() {
+          $.ajax({
+            url : tarUrl + "from=" + from + "&count=" + count,
+            complete : completeFn
+          });
+        };
+        function completeFn(msg) {
+          if (msg.status == 200 && msg.readyState == 4) {
+            dearRet(msg.responseText);
+            from += count;
+            invoke();
+          }
+        };
+        function dearRet(ret){
+          if (ret == '[]') {
+            window.onscroll = "";
+            return ;
+          }
+          (JSON.parse("{\"data\":" + ret + "}").data)
+                  .forEach(function(i){
+                    addAPushNotification.addNewEleByObj({
+                      title : 'title : overTime : ' + i.overTimes,
+                      content : i.partText,/*'uuid : ' + i.TSuuid + "\r\n" +
+                                'TSindex : ' + i.TSindex + "\r\n" +
+                                'fromLanguage : ' + i.fromLanguage + "\r\n" +
+                                'toLanguage : ' + i.toLanguage + "\r\n" +
+                                'money : ' + i.money,*/
+                      score : i.score,
+                      enterUrl : '#'
+                    });
+                  });
+        };
+//        var content = ['This is content. '];
+//        window.onload = function() {
+//          var count_ = parseInt(Math.random() * 20);
+//          var tar = document.getElementsByClassName('container')[1]
+//          addAPushNotification.setParent(tar);
+//          for (var i = 0;i < count_;i++) {
+//            addAPushNotification.addNewEleByObj({
+//              title : 'title ' + i,
+//              content : content.copyTimes(parseInt(Math.random() * 20) + 1).join(''),
+//              score : 20,
+//              enterUrl : '#'
+//            });
+//          }
+//        }
       </script>
     </div>
 

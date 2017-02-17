@@ -26,6 +26,9 @@
 		<property name="staticObject" ref="staticObject"></property>
 		<property name="dearWithFileBackground" ref="dearWithFileBackground"></property>
 	</bean>
+	<bean id="homeAction" class="cn.sunibas.action.HomeAction" scope="prototype">
+		<property name="itsTextPartService" ref="textPartService"></property>
+	</bean>
 	<!---->
 	<!--&lt;!&ndash; 2. 管理员模块 &ndash;&gt;-->
 	<!--<bean id="adminAction" class="cn.itcast.action.AdminAction" scope="prototype">-->

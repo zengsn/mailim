@@ -5,10 +5,10 @@
 
 <hibernate-mapping package="cn.sunibas.entity">
 
-	<class name="TSLanguage" table="t_language">
-		<id name="id" column="id" type="java.lang.Integer" length="32">
+	<class name="TSLanguage" table="T_LANGUAGE">
+		<id name="id" column="Id" type="java.lang.Integer" length="32">
 		</id>
-		<property name="name" column="Lname" type="java.lang.String" length="15"></property>
+		<property name="name" column="LName" type="java.lang.String" length="15"></property>
 	</class>
 
 </hibernate-mapping>

@@ -32,8 +32,8 @@ public class DearWithOneFile {
             BufferedReader reader =
                     new BufferedReader(
                             new InputStreamReader(
-                                    new FileInputStream(parentPath + "\\" + filePath),
-                                    packageCharsetDetector.GetFileCharset(parentPath + "\\" + filePath)
+                                    new FileInputStream(parentPath + "/" + filePath),
+                                    packageCharsetDetector.GetFileCharset(parentPath + "/" + filePath)
                             )
                     );
             BufferedWriter writer;/* =
@@ -55,8 +55,8 @@ public class DearWithOneFile {
                         new OutputStreamWriter(
                                 new FileOutputStream(
                                         parentPath +
-                                        ManuscrripitDefaultSetting.childFolderRelativeLocation + "\\" +
-                                        index + ".txt"
+                                        ManuscrripitDefaultSetting.childFolderRelativeLocation + "/" +
+                                        index
                                 ),
                                 ManuscrripitDefaultSetting.defaultEncoding
                         )
@@ -74,6 +74,7 @@ public class DearWithOneFile {
                 tsTextPart.setOverTimes(0);
                 tsTextPart.setToLanguage(tsNewText.getToLanguage());
                 tsTextPart.setFromLanguage(tsNewText.getFromLanguage());
+                tsTextPart.setPartText(MyStringExt.SbuString(line,96));
                 tsTextPartService.save(tsTextPart);
 
                 index++;

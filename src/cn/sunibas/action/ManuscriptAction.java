@@ -127,7 +127,7 @@ public class ManuscriptAction extends ActionSupport {
         //检查语言是否设置
         if (staticObject.getLanguage().containsKey(tstext.getFromLanguage()) && staticObject.getLanguage().containsKey(tstext.getToLanguage())) {
             if (CheckLoginStatus.isLogin(ActionContext.getContext())) {
-                if (manuscript != null) {
+                if (manuscript != null && ManuscrripitDefaultSetting.maxFileCount > ManuscrripitDefaultSetting.curFileCount) {
                     //有文件上传，这里暂行接受，但随即进行文件处理
                     //检查文件名是否和文件数量一致
                     if (manuscript.length == manuscriptFileName.length) {
@@ -156,6 +156,7 @@ public class ManuscriptAction extends ActionSupport {
                         for (int i = 0;i < manuscript.length;i++) {
                             File file = new File(ManuscrripitDefaultSetting.folderLocation + uuid, i + "");
                             FileUtil.copyFile(manuscript[i],file);
+                            ManuscrripitDefaultSetting.curFileCount++;
                             /* debug */
                             //System.out.println(i + "" + tStext);
                         }
@@ -168,7 +169,7 @@ public class ManuscriptAction extends ActionSupport {
                     }
                 } else {
                     manuscriptActionReturnObject.setStatus(400);
-                    manuscriptActionReturnObject.setRetStr("没有文件");
+                    manuscriptActionReturnObject.setRetStr("没有文件或服务器拒绝");
                 }
             } else {
                 manuscriptActionReturnObject.setStatus(500);
@@ -178,7 +179,7 @@ public class ManuscriptAction extends ActionSupport {
             manuscriptActionReturnObject.setStatus(600);
             manuscriptActionReturnObject.setRetStr("没有设置语言");
         }
-        Object2JSON.JSONString(ServletActionContext.getResponse(),manuscriptActionReturnObject);
+        Object2JSON.JSONString(ServletActionContext.getResponse(),manuscriptActionReturnObject,ObjectType.Object);
     }
 
 

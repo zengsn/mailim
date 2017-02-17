@@ -5,6 +5,10 @@ package cn.sunibas.util;
  */
 public class ManuscrripitDefaultSetting {
     public static String folderLocation = "E:\\java\\";
+    //public static String folderLocation = "/tmp/zsnFile";
     public static String childFolderRelativeLocation = "\\chi\\";
     public static String defaultEncoding = "UTF-8";
+    //for debug
+    public static int maxFileCount = 30;
+    public static int curFileCount = 0;
 }

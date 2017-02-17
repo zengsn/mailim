@@ -5,13 +5,13 @@
 
 <hibernate-mapping package="cn.sunibas.entity">
 
-	<class name="TSstatus" table="t_TSstatus">
-		<id name="uuid" column="uuid" type="java.lang.String" length="32"></id>
+	<class name="TSstatus" table="T_TSSTATUS">
+		<id name="uuid" column="Uuid" type="java.lang.String" length="32"></id>
 		<property name="TSuuid" column="TSuuid" type="java.lang.String" length="32"></property>
-		<property name="createTime" column="createTime" type="java.util.Date"></property>
-		<property name="TSkidid" column="TSkidid" type="java.lang.String" length="32"></property>
-		<property name="TSindex" column="TSindex" type="java.lang.Integer"></property>
-		<property name="mark" column="TSmark" type="java.lang.Integer"></property>
+		<property name="createTime" column="CreateTime" type="java.util.Date"></property>
+		<property name="TSkidid" column="TSKidid" type="java.lang.String" length="32"></property>
+		<property name="TSindex" column="TSIndex" type="java.lang.Integer"></property>
+		<property name="mark" column="TSMark" type="java.lang.Integer"></property>
 	</class>
 
 </hibernate-mapping>

@@ -5,18 +5,18 @@
 
 <hibernate-mapping package="cn.sunibas.entity">
 
-	<class name="TStext" table="t_TStext">
-		<id name="uuid" column="uuid" type="java.lang.String" length="32"></id>
-		<property name="title" column="title" type="java.lang.String" length="50"></property>
-		<property name="label" column="label" type="java.lang.String" length="20"></property>
-		<property name="createTime" column="createTime" type="java.util.Date"></property>
-		<property name="status" column="TSstatus" type="java.lang.Integer"></property>
-		<property name="TSkidid" column="TSkidid" type="java.lang.String" length="32"></property>
-		<property name="score" column="score" type="java.lang.Integer"></property>
-		<property name="money" column="money" type="java.lang.Float"></property>
-		<property name="part" column="TSpart" type="java.lang.Integer"></property>
-		<property name="fromLanguage" column="fromLanguage" type="java.lang.Integer"></property>
-		<property name="toLanguage" column="toLanguage" type="java.lang.Integer"></property>
+	<class name="TStext" table="T_TSTEXT">
+		<id name="uuid" column="Uuid" type="java.lang.String" length="32"></id>
+		<property name="title" column="Title" type="java.lang.String" length="50"></property>
+		<property name="label" column="Label" type="java.lang.String" length="20"></property>
+		<property name="createTime" column="CreateTime" type="java.util.Date"></property>
+		<property name="status" column="TSStatus" type="java.lang.Integer"></property>
+		<property name="TSkidid" column="TSKidid" type="java.lang.String" length="32"></property>
+		<property name="score" column="Score" type="java.lang.Integer"></property>
+		<property name="money" column="Money" type="java.lang.Float"></property>
+		<property name="part" column="TSPart" type="java.lang.Integer"></property>
+		<property name="fromLanguage" column="FromLanguage" type="java.lang.Integer"></property>
+		<property name="toLanguage" column="ToLanguage" type="java.lang.Integer"></property>
 	</class>
 
 </hibernate-mapping>
