@@ -1,5 +1,6 @@
 package cn.sunibas.test;
 
+import cn.sunibas.util.MyStringExt;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -18,5 +19,11 @@ public class TestString {
             list.add(s[i]);
         }
         System.out.println(list);
+    }
+
+    @Test
+    public void testSubStr(){
+        String str = "ibasbing";
+        System.out.println(MyStringExt.SbuString(str,8));
     }
 }

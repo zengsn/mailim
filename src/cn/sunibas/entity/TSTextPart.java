@@ -13,6 +13,7 @@ public class TSTextPart implements Serializable{
     private int overTimes;
     private int fromLanguage;
     private int toLanguage;
+    private String partText;
 
     public String getTSuuid() {
         return TSuuid;
@@ -68,5 +69,13 @@ public class TSTextPart implements Serializable{
 
     public void setToLanguage(int toLanguage) {
         this.toLanguage = toLanguage;
+    }
+
+    public String getPartText() {
+        return partText;
+    }
+
+    public void setPartText(String partText) {
+        this.partText = partText;
     }
 }

@@ -5,15 +5,15 @@
 
 <hibernate-mapping package="cn.sunibas.entity">
 
-	<class name="TSNewText" table="t_newInsert">
-		<id name="uuid" column="uuid" type="java.lang.String" length="32">
+	<class name="TSNewText" table="T_NEWINSERT">
+		<id name="uuid" column="Uuid" type="java.lang.String" length="32">
 		</id>
-		<property name="status" column="TSstatus" type="java.lang.Integer"></property>
-		<property name="part" column="TSpart" type="java.lang.Integer"></property>
-		<property name="score" column="TSscore" type="java.lang.Integer"></property>
-		<property name="money" column="TSmoney" type="java.lang.Integer"></property>
-		<property name="toLanguage" column="toLanguage" type="java.lang.Integer"></property>
-		<property name="fromLanguage" column="fromLanguage" type="java.lang.Integer"></property>
+		<property name="status" column="TSStatus" type="java.lang.Integer"></property>
+		<property name="part" column="TSPart" type="java.lang.Integer"></property>
+		<property name="score" column="TSScore" type="java.lang.Integer"></property>
+		<property name="money" column="TSMoney" type="java.lang.Integer"></property>
+		<property name="toLanguage" column="ToLanguage" type="java.lang.Integer"></property>
+		<property name="fromLanguage" column="FromLanguage" type="java.lang.Integer"></property>
 	</class>
 
 </hibernate-mapping>
