@@ -28,7 +28,17 @@ public class TSTextPartService implements ITSTextPartService {
     }
 
     @Override
+    public TSTextPart getByUuidAndPart(String uuid, int partIndex) {
+        return itsTextPartDao.getByUuidAndPart(uuid,partIndex);
+    }
+
+    @Override
     public List<TSTextPart> getByUuidList(List<String> list) {
+        return itsTextPartDao.getByUuidList(list);
+    }
+
+    @Override
+    public List<TSTextPart> getByUuidList(String list) {
         return itsTextPartDao.getByUuidList(list);
     }
 

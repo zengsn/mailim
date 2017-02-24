@@ -26,11 +26,12 @@ var domUtil = (function(){
             if (tar.length > 0) {
                 return getTar(tar[0]);
             }
-        } else if ((typeof '').toLowerCase() === 'string') {
-            if (tar[0] == '.') {
+        } else if ((typeof tar).toLowerCase() === 'string') {
+            var ch = tar.getIndex(0);
+            if (ch == '.') {
                 //class
                 return document.getElementsByClassName(tar.substr(1))[0];
-            } else if (tar[0] == '#') {
+            } else if (ch == '#') {
                 //id
                 return document.getElementById(tar.substr(1));
             } else {
@@ -41,21 +42,6 @@ var domUtil = (function(){
         throw new Error('未能找到元素');
         return null;
     };
-    //将tar元素放置到ele (this)元素后面
-    if (Element.prototype.insertAfter) {
-        Element.prototype.insertAfter = function(tar) {
-            var ele = this;
-            if (ele.parentElement) {
-                if (ele.nextSibling) {
-                    ele.parentElement.insertBefore(ele.nextSibling);
-                } else {
-                    ele.parentElement.appendChild(tar);
-                }
-            } else {
-                throw new Error(ele + " have not parrent element.");
-            }
-        }
-    }
     return {
         newEle : newEle,
         newEleWithConten : newEleWithConten,

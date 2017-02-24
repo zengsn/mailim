@@ -39,6 +39,10 @@
 	<bean id="textPartDao" class="cn.sunibas.dao.impl.TSTextPartDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+
+	<bean id="tsLabelDao" class="cn.sunibas.dao.impl.TSLabelDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
 </beans>     
 
 

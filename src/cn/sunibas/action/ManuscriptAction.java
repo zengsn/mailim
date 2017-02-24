@@ -1,8 +1,10 @@
 package cn.sunibas.action;
 
 import cn.sunibas.action.retObject.ManuscriptActionReturnObject;
+import cn.sunibas.entity.TSLabel;
 import cn.sunibas.entity.TSkid;
 import cn.sunibas.entity.TStext;
+import cn.sunibas.service.ITSLabelService;
 import cn.sunibas.service.ITStextService;
 import cn.sunibas.util.*;
 import com.opensymphony.xwork2.ActionContext;
@@ -13,6 +15,7 @@ import org.aspectj.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/2/11.
@@ -33,6 +36,7 @@ public class ManuscriptAction extends ActionSupport {
     private File[] manuscript;
     private String[] manuscriptFileName; //文件名称
     private TStext tstext;
+    private String label = "null";
 
     public File[] getManuscript() {
         return manuscript;
@@ -57,66 +61,25 @@ public class ManuscriptAction extends ActionSupport {
     public void setTstext(TStext tstext) {
         this.tstext = tstext;
     }
-//    private String title;
-//    private String label = "null";
-//    private int score = 0;
-//    private float money = 0;
-//    private int fromLanguage = 0;
-//    private int toLanguage = 0;
-//
-//    public String getLabel() {
-//        return label;
-//    }
-//
-//    public void setLabel(String label) {
-//        this.label = label;
-//    }
-//
-//    public int getScore() {
-//        return score;
-//    }
-//
-//    public void setScore(int score) {
-//        this.score = score;
-//    }
-//
-//    public float getMoney() {
-//        return money;
-//    }
-//
-//    public void setMoney(float money) {
-//        this.money = money;
-//    }
-//
-//    public int getFromLanguage() {
-//        return fromLanguage;
-//    }
-//
-//    public void setFromLanguage(int fromLanguage) {
-//        this.fromLanguage = fromLanguage;
-//    }
-//
-//    public int getToLanguage() {
-//        return toLanguage;
-//    }
-//
-//    public void setToLanguage(int toLanguage) {
-//        this.toLanguage = toLanguage;
-//    }
-//
-//    public String getTitle() {
-//        return title;
-//    }
-//
-//    public void setTitle(String title) {
-//        this.title = title;
-//    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
     //ioc
     private ITStextService itStextService;
+    private ITSLabelService itsLabelService;
 
     public void setItStextService(ITStextService itStextService) {
         this.itStextService = itStextService;
+    }
+
+    public void setItsLabelService(ITSLabelService itsLabelService) {
+        this.itsLabelService = itsLabelService;
     }
 
     /**
@@ -152,6 +115,20 @@ public class ManuscriptAction extends ActionSupport {
                             //tstext.setFromLanguage(fromLanguage);
                             //tstext.setToLanguage(toLanguage);
                             itStextService.createText(tstext);
+                            List<String> list = MyStringExt.split(label,",");
+                            if (list.isEmpty()) {
+                                TSLabel tsLabel = new TSLabel();
+                                tsLabel.setTsUuid(tstext.getUuid());
+                                tsLabel.setTsLabel("null");
+                                itsLabelService.save(tsLabel);
+                            } else {
+                                for (String str : list) {
+                                    TSLabel tsLabel = new TSLabel();
+                                    tsLabel.setTsUuid(tstext.getUuid());
+                                    tsLabel.setTsLabel(str);
+                                    itsLabelService.save(tsLabel);
+                                }
+                            }
                         }
                         for (int i = 0;i < manuscript.length;i++) {
                             File file = new File(ManuscrripitDefaultSetting.folderLocation + uuid, i + "");

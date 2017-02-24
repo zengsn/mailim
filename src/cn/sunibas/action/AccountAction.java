@@ -1,7 +1,7 @@
 package cn.sunibas.action;
 
 /**
- * Created by Administrator on 2017/2/7.
+ * Created by IBAS on 2017/2/7.
  */
 
 import cn.sunibas.entity.TSkid;
@@ -15,6 +15,7 @@ import java.util.Date;
 
 /**
  * 主要负责账号管理，例如登录，注册，忘记密码等操作
+ * 这里应该全部改为异步的处理方式，使用json
  * */
 public class AccountAction extends ActionSupport {
 

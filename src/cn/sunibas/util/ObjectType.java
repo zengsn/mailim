@@ -5,5 +5,7 @@ package cn.sunibas.util;
  */
 public enum ObjectType {
     Object,
-    Array
+    Array,
+    NullArray,
+    NullObject
 }

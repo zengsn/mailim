@@ -39,6 +39,10 @@
 	<bean id="textPartService" class="cn.sunibas.service.impl.TSTextPartService">
 		<property name="itsTextPartDao" ref="textPartDao"></property>
 	</bean>
+
+	<bean id="tsLabelService" class="cn.sunibas.service.impl.TSLabelService">
+		<property name="itsLabelDao" ref="tsLabelDao"></property>
+	</bean>
 </beans>     
 
 

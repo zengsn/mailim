@@ -1,6 +1,9 @@
 package cn.sunibas.entity;
 
+import cn.sunibas.util.ForDebug;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by IBAS on 2017/2/16.
@@ -14,6 +17,7 @@ public class TSTextPart implements Serializable{
     private int fromLanguage;
     private int toLanguage;
     private String partText;
+    private List<String> label;
 
     public String getTSuuid() {
         return TSuuid;
@@ -77,5 +81,19 @@ public class TSTextPart implements Serializable{
 
     public void setPartText(String partText) {
         this.partText = partText;
+    }
+
+    public List<String> getLabel()
+    {
+        return label;
+    }
+
+    public void setLabel(List<String> label) {
+        this.label = label;
+    }
+
+    @Override
+    public String toString(){
+        return ForDebug.Object2String(this);
     }
 }

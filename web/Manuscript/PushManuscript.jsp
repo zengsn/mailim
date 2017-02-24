@@ -40,6 +40,7 @@
   <link href="/translatorspace/css/ibasLB.css" rel="stylesheet">
   <script src="/translatorspace/js/ibasLB.js"></script>
   <!--我的一些扩展依赖-->
+  <script src = "/translatorspace/js/StringExt.js"></script>
   <script src = "/translatorspace/js/HtmlExtern.js"></script>
   <script src = "/translatorspace/js/ArrExt.js"></script>
 </head>
@@ -63,7 +64,7 @@
                   placeholder = 'Tag ...'
                   class = 'ibas-label-input'
                   id = 'ibasLabel'
-                  name="tstext.label"/>
+                  name="label"/>
         </div>
         <div>
           <label>score</label><input type="number" value="0" name="tstext.score"/><br/>
@@ -82,10 +83,17 @@
       </div>
   </div>
 
+
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="/translatorspace/js/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="/translatorspace/js/vendor/jquery.min.js"><\/script>')</script>
+  <script src="/translatorspace/js/bootstrap.min.js"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="/translatorspace/js/ie10-viewport-bug-workaround.js"></script>
   <script>
-    ibasHtmlExt.afterInsert();
-    ibasHtmlExt.beforeInsert();
-    ibasHtmlExt.insertMid();
+    StringExt.getIndex();
     ArrExt.pushExt();
     ArrExt.joinExt();
 
@@ -105,15 +113,6 @@
     ibasLabel0.setLabelLength(10);
     ibasLabel0.init();
   </script>
-
-  <!-- Bootstrap core JavaScript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script src="/translatorspace/js/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="/translatorspace/js/vendor/jquery.min.js"><\/script>')</script>
-  <script src="/translatorspace/js/bootstrap.min.js"></script>
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <script src="/translatorspace/js/ie10-viewport-bug-workaround.js"></script>
 
 </body>
 </html>

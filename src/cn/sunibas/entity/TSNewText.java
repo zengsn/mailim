@@ -1,5 +1,7 @@
 package cn.sunibas.entity;
 
+import cn.sunibas.util.ForDebug;
+
 import java.io.Serializable;
 
 /**
@@ -68,5 +70,10 @@ public class TSNewText implements Serializable {
 
     public void setToLanguage(int toLanguage) {
         this.toLanguage = toLanguage;
+    }
+
+    @Override
+    public String toString(){
+        return ForDebug.Object2String(this);
     }
 }

@@ -32,8 +32,27 @@ var StringExt = (function(){
             };
         }
     };
+    /**
+     * 为了兼容IE5中的字符串无法通过索引值来取数
+     */
+    var getIndex = function() {
+        if (!String.prototype.getIndex) {
+            String.prototype.getIndex = function(index){
+                if (this.length > index) {
+                    if (this[index] == undefined) {
+                        return this.split('')[index];
+                    } else {
+                        return this[index];
+                    }
+                } else {
+                    return undefined;
+                }
+            };
+        }
+    };
     return {
+        splitOption : splitOption,
         splitExt : splitExt,
-        splitOption : splitOption
+        getIndex : getIndex
     };
 })();

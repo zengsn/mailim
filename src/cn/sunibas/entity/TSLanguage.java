@@ -1,5 +1,7 @@
 package cn.sunibas.entity;
 
+import cn.sunibas.util.ForDebug;
+
 import java.io.Serializable;
 
 /**
@@ -23,5 +25,10 @@ public class TSLanguage implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString(){
+        return ForDebug.Object2String(this);
     }
 }

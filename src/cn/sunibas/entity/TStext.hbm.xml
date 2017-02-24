@@ -8,7 +8,6 @@
 	<class name="TStext" table="T_TSTEXT">
 		<id name="uuid" column="Uuid" type="java.lang.String" length="32"></id>
 		<property name="title" column="Title" type="java.lang.String" length="50"></property>
-		<property name="label" column="Label" type="java.lang.String" length="20"></property>
 		<property name="createTime" column="CreateTime" type="java.util.Date"></property>
 		<property name="status" column="TSStatus" type="java.lang.Integer"></property>
 		<property name="TSkidid" column="TSKidid" type="java.lang.String" length="32"></property>

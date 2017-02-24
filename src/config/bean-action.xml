@@ -25,15 +25,21 @@
 		<property name="itStextService" ref="tStextService"></property>
 		<property name="staticObject" ref="staticObject"></property>
 		<property name="dearWithFileBackground" ref="dearWithFileBackground"></property>
+		<property name="itsLabelService" ref="tsLabelService"></property>
 	</bean>
+
 	<bean id="homeAction" class="cn.sunibas.action.HomeAction" scope="prototype">
 		<property name="itsTextPartService" ref="textPartService"></property>
 	</bean>
-	<!---->
-	<!--&lt;!&ndash; 2. 管理员模块 &ndash;&gt;-->
-	<!--<bean id="adminAction" class="cn.itcast.action.AdminAction" scope="prototype">-->
-		<!--<property name="adminService" ref="adminService"></property>-->
-	<!--</bean>-->
+
+	<bean id="manuscriptTranslate" class="cn.sunibas.action.ManuscriptTranslate" scope="prototype">
+		<property name="itsTextPartService" ref="textPartService"></property>
+	</bean>
+
+	<bean id="searchAction" class="cn.sunibas.action.SearchAction" scope="prototype">
+		<property name="itsLabelService" ref="tsLabelService"></property>
+		<property name="itsTextPartService" ref="textPartService"></property>
+	</bean>
 </beans>     
 
 

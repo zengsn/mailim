@@ -1,5 +1,8 @@
 package cn.sunibas.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by IBAS on 2017/2/17.
  */
@@ -16,5 +19,16 @@ public class MyStringExt {
         } else {
             return str.substring(0,to) + "...";
         }
+    }
+
+    public static List<String> split(String str,String regx){
+        String[] ret = str.split(regx);
+        List<String> list = new ArrayList<String>();
+        for (int i = 0;i < ret.length;i++) {
+            if (!ret[i].equals("")) {
+                list.add(ret[i]);
+            }
+        }
+        return list;
     }
 }
