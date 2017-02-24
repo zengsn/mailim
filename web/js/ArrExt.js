@@ -85,6 +85,51 @@ var ArrExt = (function (){
             };
         }
     };
+    var add = function() {
+        if (!Array.prototype.add) {
+            Array.prototype.add = function() {
+                var ret = this;
+                for (var i = 0;i < arguments.length;i++) {
+                    ret = ret.addOne(arguments[i]);
+                }
+                return ret;
+            };
+            Array.prototype.addOne = function(str){
+                return this.pushExt(str,pushOption.Distinct);
+            };
+        }
+    }();
+    var remove = function() {
+        if (!Array.prototype.remove) {
+            Array.prototype.remove = function() {
+                var ret = this;
+                for (var i = 0;i < arguments.length;i++) {
+                    ret = ret.removeOne(arguments[i]);
+                }
+                return ret;
+            };
+            Array.prototype.removeOne = function(str) {
+                var ret = [];
+                for (var i = 0;i < this.length;i++) {
+                    if (this[i] == str) {} else {
+                        ret.push(this[i]);
+                    }
+                }
+                return ret;
+            }
+        }
+    }();
+    //兼容低版本IE
+    var forEach = function(){
+        if (Array.prototype.forEach == undefined) {
+            //fn的格式和高版本中forEach中fn格式一致
+            Array.prototype.forEach = function(fn) {
+                for (var i = 0;i < this.length;i++) {
+                    fn(this[i],i);
+                }
+            }
+        }
+    }();
     return {
         copyTime : copyTime,
         distinct : distinct,

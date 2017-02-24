@@ -19,7 +19,7 @@
 		<property name="jdbcUrl" value="jdbc:mysql://localhost/zsnProject"></property>
 		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
 		<property name="user" value="root"></property>
-		<property name="password" value="include bing"></property>
+		<property name="password" value="ibas0742"></property>
 		<property name="initialPoolSize" value="3"></property>
 		<property name="maxPoolSize" value="6"></property>
 	</bean>

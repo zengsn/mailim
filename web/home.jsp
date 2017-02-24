@@ -34,6 +34,8 @@
     <![endif]-->
     <link href="/translatorspace/css/homeCss.css" rel="stylesheet">
     <script src="js/domUtil.js"></script>
+    <script src="js/ibasConstructorForAutoObject.js"></script>
+    <script src="js/sessionStorageOP.js"></script>
     <script src="js/addAPushNotification.js"></script>
     <script src="js/ArrExt.js"></script>
     <script>
@@ -44,73 +46,45 @@
 
     <jsp:include page="part/head.jsp"></jsp:include>
 
-    <div class="container">
+    <div class="container" id = 'ibas-center'>
       <h1>主页</h1>
       <!--新建若干个随机-->
       <script>
-        var tarUrl = "/translatorspace/home_getChip?";
-        var from = 0;
-        var count = 2;
-        window.onload = function(){
-          addAPushNotification.setParent(document.getElementsByClassName('container')[1]);
-          requireMore();
+        getTextPart.setOption(
+                {
+                  //异步元素
+                  tarEleId : 'ibas-center',
+                  //请求位置
+                  tarUrl : "/translatorspace/home_getChip",
+                  //请求数据
+                  data : {
+                    from : 0,
+                    count : 2
+                  },
+                  //请求成功后回调处理数据
+                  dearRet : function(dearOneObj,msgResponseText){
+                    if (msgResponseText == '[]') {
+                      window.onscroll = "";
+                      stop = true;
+                      return ;
+                    }
+                    (JSON.parse("{\"data\":" + msgResponseText + "}").data)
+                            .forEach(function(i){
+                              dearOneObj(i);
+                            }
+                    );
+                    this.data.from += this.data.count;
+                  }
+                }
+        );
+        window.onload = function() {
+          getTextPart.init();
           window.onscroll = function(){
-            if (document.body.clientHeight+document.body.scrollTop == document.body.scrollHeight) {
-              requireMore();
+            if (document.body.clientHeight+document.body.scrollTop + 100 >= document.body.scrollHeight) {
+              getTextPart.requireMore();
             }
           };
         };
-        function invoke(){
-          if (document.body.scrollHeight <= window.screen.height) {
-            requireMore();
-          }
-        }
-        function requireMore() {
-          $.ajax({
-            url : tarUrl + "from=" + from + "&count=" + count,
-            complete : completeFn
-          });
-        };
-        function completeFn(msg) {
-          if (msg.status == 200 && msg.readyState == 4) {
-            dearRet(msg.responseText);
-            from += count;
-            invoke();
-          }
-        };
-        function dearRet(ret){
-          if (ret == '[]') {
-            window.onscroll = "";
-            return ;
-          }
-          (JSON.parse("{\"data\":" + ret + "}").data)
-                  .forEach(function(i){
-                    addAPushNotification.addNewEleByObj({
-                      title : 'title : overTime : ' + i.overTimes,
-                      content : i.partText,/*'uuid : ' + i.TSuuid + "\r\n" +
-                                'TSindex : ' + i.TSindex + "\r\n" +
-                                'fromLanguage : ' + i.fromLanguage + "\r\n" +
-                                'toLanguage : ' + i.toLanguage + "\r\n" +
-                                'money : ' + i.money,*/
-                      score : i.score,
-                      enterUrl : '#'
-                    });
-                  });
-        };
-//        var content = ['This is content. '];
-//        window.onload = function() {
-//          var count_ = parseInt(Math.random() * 20);
-//          var tar = document.getElementsByClassName('container')[1]
-//          addAPushNotification.setParent(tar);
-//          for (var i = 0;i < count_;i++) {
-//            addAPushNotification.addNewEleByObj({
-//              title : 'title ' + i,
-//              content : content.copyTimes(parseInt(Math.random() * 20) + 1).join(''),
-//              score : 20,
-//              enterUrl : '#'
-//            });
-//          }
-//        }
       </script>
     </div>
 

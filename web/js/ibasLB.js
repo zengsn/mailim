@@ -51,10 +51,13 @@ var ibasLabel = (function(tar){
 					vinput.style.visibility = 'hidden';
 					vinput.style.display = 'none';
 					targetEle.name = '';
-					topDiv.classList.add('ibas-label-div');
-					targetEle.beforeInsert(vinput);
-					targetEle.insertMid(topDiv);
-					targetEle.onkeypress = inputInput;
+					//topDiv.classList.add('ibas-label-div');
+					$(topDiv).addClass('ibas-label-div');
+					//targetEle.beforeInsert(vinput);
+					ibasHtmlExt.beforeInsert_h(targetEle,vinput);
+					//targetEle.insertMid(topDiv);
+					ibasHtmlExt.insertMid_h(targetEle,topDiv);
+					$(targetEle).keypress(inputInput);
 				};
 				var inputInput = function(e){
 					if (e.keyCode == 13) {
@@ -80,11 +83,12 @@ var ibasLabel = (function(tar){
 					var ret = arr.pushExt(text_,3);
 					if (ret != -1) {
 						//ret为重复的标记
-						divarr[ret].classList.add('ibas-IL-warn');
+						//divarr[ret].classList.add('ibas-IL-warn');
+						$(divarr[ret]).addClass('ibas-IL-warn');
+						divarr[ret].style.background = 'rgb(74, 91, 128)';
 						setTimeout(function(){
-							divarr[ret]
-								.classList
-								.remove('ibas-IL-warn');
+							$(divarr[ret]).removeClass('ibas-IL-warn');
+							divarr[ret].style.background = '';
 						},1000);
 						return;
 					}
@@ -94,11 +98,20 @@ var ibasLabel = (function(tar){
 					labelDiv.index = cot;
 					cot++;
 					labelCot++;
-					labelDiv.classList.add('ibas-label-cdiv');
-					labelSpan.classList.add('ibas-label-label');
-					closeSpan.classList.add('ibas-label-btn-close');
+					//labelDiv.classList.add('ibas-label-cdiv');
+					//labelSpan.classList.add('ibas-label-label');
+					//closeSpan.classList.add('ibas-label-btn-close');
+					
+					//labelDiv.classListAdd('ibas-label-cdiv');
+					$(labelDiv).addClass('ibas-label-cdiv');
+					//labelSpan.classListAdd('ibas-label-label');
+					$(labelSpan).addClass('ibas-label-label');
+					//closeSpan.classListAdd('ibas-label-btn-close');
+					$(closeSpan).addClass('ibas-label-btn-close');
 					//topDiv.appendChild(labelDiv);
-					targetEle.beforeInsert(labelDiv);
+					
+					//targetEle.beforeInsert(labelDiv);
+					ibasHtmlExt.beforeInsert_h(targetEle,labelDiv);
 					labelDiv.appendChild(labelSpan);
 					labelDiv.appendChild(closeSpan);
 					divarr.push(labelDiv);
@@ -122,7 +135,8 @@ var ibasLabel = (function(tar){
 					showValue : showValue,
 					setLabelLength : setLabelLength,
 					setLanguage : setLanguage,
-					setDefaultMaxLabel : setDefaultMaxLabel
+					setDefaultMaxLabel : setDefaultMaxLabel,
+					topDiv : topDiv
 				};
 			})();
 		} else {

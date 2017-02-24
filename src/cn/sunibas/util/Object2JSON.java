@@ -28,6 +28,10 @@ public class Object2JSON {
             out.print(Object2Json(o));
         } else if (objectType == ObjectType.Array) {
             out.print(Array2Json(o));
+        } else if (objectType == ObjectType.NullArray) {
+            out.print("[]");
+        }else if (objectType == ObjectType.NullObject) {
+            out.print("{}");
         }
         out.flush();
     }

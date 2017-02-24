@@ -25,15 +25,24 @@ public class TSTextPartDao implements ITSTextPartDao{
     @Override
     public TSTextPart getByUuid(String uuid) {
         return (TSTextPart)sessionFactory.getCurrentSession()
-                .createQuery("from TSTextPart where uuid=?")
+                .createQuery("from TSTextPart where TSuuid=?")
                 .setString(0,uuid)
+                .uniqueResult();
+    }
+
+    @Override
+    public TSTextPart getByUuidAndPart(String uuid, int partIndex) {
+        return (TSTextPart)sessionFactory.getCurrentSession()
+                .createQuery("from TSTextPart where TSuuid=? and TSindex=?")
+                .setString(0,uuid)
+                .setInteger(1,partIndex)
                 .uniqueResult();
     }
 
     @Override
     public List<TSTextPart> getTop(int first, int count) {
         return sessionFactory.getCurrentSession()
-                .createQuery("from TSTextPart")
+                .createQuery("from TSTextPart") // order by attr
                 .setFirstResult(first)
                 .setMaxResults(count)
                 .list();
@@ -46,6 +55,17 @@ public class TSTextPartDao implements ITSTextPartDao{
             tsTextPartList.add(getByUuid(str));
         }
         return tsTextPartList;
+    }
+
+    @Override
+    public List<TSTextPart> getByUuidList(String list) {
+        return sessionFactory.getCurrentSession()
+                .createSQLQuery(
+                        "select * from T_TEXT_PART where TSuuid in (" +
+                                list + ")"
+                )
+                .addEntity(cn.sunibas.entity.TSTextPart.class)
+                .list();
     }
 
     @Override

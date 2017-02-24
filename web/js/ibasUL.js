@@ -59,8 +59,10 @@ var ibasFile = (function(tar){
 						ele[i].style.display = 'none';
 					}
 					totalDiv.style.display = 'block';
-					this.classList.remove('glyphicon-chevron-down');
-					this.classList.add('glyphicon-chevron-down');
+					$(this).removeClass('glyphicon-chevron-down');
+					//this.classList.remove('glyphicon-chevron-down');
+					$(this).addClass('glyphicon-chevron-down');
+					//this.classList.add('glyphicon-chevron-down');
 					this.innerText = defaultLanguage.toMax;
 					this.onclick = max_list;
 				}
@@ -70,8 +72,10 @@ var ibasFile = (function(tar){
 						ele[i].style.display = 'block';
 					}
 					totalDiv.style.display = 'none';
-					this.classList.add('glyphicon-chevron-down');
-					this.classList.remove('glyphicon-chevron-down');
+					$(this).addClass('glyphicon-chevron-down');
+					//this.classList.add('glyphicon-chevron-down');
+					$(this).removeClass('glyphicon-chevron-down');
+					//this.classList.remove('glyphicon-chevron-down');
 					this.innerText = defaultLanguage.toMin;
 					this.onclick = min_list;
 				}
@@ -89,9 +93,11 @@ var ibasFile = (function(tar){
 						chiDiv[1].style.display = 'block';
 						//在1中新建元素
 						var re_span = domUtil.newEleWithConten('span',defaultLanguage.reSelect);
-						re_span.classList.add('glyphicon','glyphicon-share-alt','ibas-file-span');
+						$(re_span).addClass('glyphicon glyphicon-share-alt ibas-file-span');
+						//re_span.classList.add('glyphicon','glyphicon-share-alt','ibas-file-span');
 						var min_span = domUtil.newEleWithConten('span',defaultLanguage.toMin);
-						min_span.classList.add('glyphicon','glyphicon-chevron-up','ibas-file-span');
+						$(min_span).addClass('glyphicon glyphicon-chevron-up ibas-file-span');
+						//min_span.classList.add('glyphicon','glyphicon-chevron-up','ibas-file-span');
 						min_span.onclick = min_list;
 						min_span.style.float = 'right';
 						var t = this;
@@ -102,13 +108,15 @@ var ibasFile = (function(tar){
 						chiDiv[1].appendChild(min_span);
 						for (var i = 0;i < files.length;i++) {
 							var tspan = domUtil.newEleWithConten('span',targetEle.files[i].name);
-							tspan.classList.add('glyphicon','glyphicon-file','ibas-file-item','ibas-file-span');
+							$(tspan).addClass('glyphicon glyphicon-file ibas-file-item ibas-file-span');
+							//tspan.classList.add('glyphicon glyphicon-file ibas-file-item ibas-file-span');
 							chiDiv[1].appendChild(tspan);
 						}
 						totalDiv = domUtil.newEleWithConten('div',total + '' + defaultLanguage.files);
 						chiDiv[1].appendChild(totalDiv);
 						totalDiv.style.display = 'none';
-						totalDiv.classList.add('ibas-file-count','glyphicon','glyphicon-file');
+						$(totalDiv).addClass('ibas-file-count glyphicon glyphicon-file');
+						//totalDiv.classList.add('ibas-file-count glyphicon glyphicon-file');
 					} else {
 						chiDiv[1].style.display = 'none';
 						chiDiv[0].style.display = 'block';
@@ -117,7 +125,8 @@ var ibasFile = (function(tar){
 				function init() {
 					//新建元素
 					topDiv = domUtil.newEle('div');
-					topDiv.classList.add('ibas-file-div');
+					$(topDiv).addClass('ibas-file-div');
+					//topDiv.classList.add('ibas-file-div');
 					topDiv.onclick = function(event) {
 						targetEle.click();
 						event.stopPropagation();
@@ -132,9 +141,11 @@ var ibasFile = (function(tar){
 					chiDiv[1].style.display = 'none';
 					//为第一个元素添加子元素
 					var chiDivIcon = domUtil.newEle('div');
-					chiDivIcon.classList.add('glyphicon','glyphicon-folder-open','ibas-file-tip','text-center');
+					$(chiDivIcon).addClass('glyphicon glyphicon-folder-open ibas-file-tip text-center');
+					//chiDivIcon.classList.add('glyphicon','glyphicon-folder-open','ibas-file-tip','text-center');
 					var chiDivText = domUtil.newEleWithConten('div',defaultLanguage.clickToSelectFile);
-					chiDivText.classList.add('text-center');
+					$(chiDivText).addClass('text-center');
+					//chiDivText.classList.add('text-center');
 					//将元素添加到dom中
 					if (targetEle.nextSibling) {
 						targetEle.parentElement.insertBefore(topDiv,targetEle.nextSibling);

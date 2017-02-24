@@ -59,7 +59,9 @@ public class DearWithFileBackground {
                                 e.printStackTrace();
                             }
                             */
-                            File file = new File(ManuscrripitDefaultSetting.folderLocation + tsNewText.getUuid());
+                            File file = new File(
+                                    ManuscrripitDefaultSetting.folderLocation +
+                                            tsNewText.getUuid());
                             int index = 0;
                             if (file.isDirectory()) {
                                 String[] fileName = file.list();

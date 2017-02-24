@@ -30,12 +30,8 @@ public class DearWithOneFile {
     public int dearWithOneFile(String parentPath,String filePath,TSNewText tsNewText,int index) {
         try {
             BufferedReader reader =
-                    new BufferedReader(
-                            new InputStreamReader(
-                                    new FileInputStream(parentPath + "/" + filePath),
-                                    packageCharsetDetector.GetFileCharset(parentPath + "/" + filePath)
-                            )
-                    );
+                    ReadOneFile
+                            .readByBufferReader(parentPath + "/" + filePath,packageCharsetDetector.GetFileCharset(parentPath + "/" + filePath));
             BufferedWriter writer;/* =
                     new BufferedWriter(
                             new OutputStreamWriter(
@@ -45,7 +41,10 @@ public class DearWithOneFile {
                     );*/
             //这里仅仅模拟，假设一个文件一一行分割
             Iterator<String> lines = reader.lines().iterator();
-            (new File(parentPath + ManuscrripitDefaultSetting.childFolderRelativeLocation)).mkdir();
+            (new File(parentPath +
+                    ManuscrripitDefaultSetting
+                            .childFolderRelativeLocation
+            )).mkdir();
             while (lines.hasNext()) {
                 String line = lines.next();
                 if (line.equals("")) {
@@ -55,10 +54,13 @@ public class DearWithOneFile {
                         new OutputStreamWriter(
                                 new FileOutputStream(
                                         parentPath +
-                                        ManuscrripitDefaultSetting.childFolderRelativeLocation + "/" +
+                                        ManuscrripitDefaultSetting
+                                                .childFolderRelativeLocation +
+                                        "/" +
                                         index
                                 ),
-                                ManuscrripitDefaultSetting.defaultEncoding
+                                ManuscrripitDefaultSetting
+                                        .defaultEncoding
                         )
                 );
                 writer.write(line);

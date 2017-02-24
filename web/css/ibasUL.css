@@ -18,28 +18,28 @@
 }
 
 .ibas-file-item {
-	display: list-item;
-	margin: 3px;
-	list-style: none;
-	height: 30px;
-	padding: 1px;
-	font-size: 24px;
+    display: list-item;
+    margin: 3px;
+    list-style: none;
+    height: 30px;
+    padding: 1px;
+    font-size: 24px;
 	overflow : hidden;
 }
 
 .ibas-file-tip {
-	display: list-item;
-	margin: 3px;
-	list-style: none;
-	height: 40px;
-	padding: 1px;
-	font-size: 36px;
+    display: list-item;
+    margin: 3px;
+    list-style: none;
+    height: 40px;
+    padding: 1px;
+    font-size: 36px;
 }
 
 .ibas-file-span {
 	background : rgb(248, 248, 248);
 	border-radius: 6px;
-	padding: 3px;
+    padding: 3px;
 }
 
 .ibas-file-span:hover {

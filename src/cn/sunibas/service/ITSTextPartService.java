@@ -16,7 +16,9 @@ import java.util.List;
 public interface ITSTextPartService {
     void save(TSTextPart tsTextPart);
     TSTextPart getByUuid(String uuid);
+    TSTextPart getByUuidAndPart(String uuid,int partIndex);
     List<TSTextPart> getByUuidList(List<String> list);
+    List<TSTextPart> getByUuidList(String list);
     List<TSTextPart> getList(int index,int count);
     void update(TSTextPart tsTextPart);
 }
