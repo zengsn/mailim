@@ -2,6 +2,7 @@ package cn.sunibas.service.impl;
 
 import cn.sunibas.dao.ITSTextPartDao;
 import cn.sunibas.entity.TSTextPart;
+import cn.sunibas.redis.RedisCacheUtil;
 import cn.sunibas.service.ITSTextPartService;
 
 import java.util.List;
@@ -24,7 +25,8 @@ public class TSTextPartService implements ITSTextPartService {
 
     @Override
     public TSTextPart getByUuid(String uuid) {
-        return itsTextPartDao.getByUuid(uuid);
+        TSTextPart tsTextPart = itsTextPartDao.getByUuid(uuid);
+        return tsTextPart;
     }
 
     @Override
@@ -49,6 +51,5 @@ public class TSTextPartService implements ITSTextPartService {
 
     @Override
     public void update(TSTextPart tsTextPart) {
-
     }
 }

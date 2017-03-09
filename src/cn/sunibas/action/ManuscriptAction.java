@@ -4,6 +4,7 @@ import cn.sunibas.action.retObject.ManuscriptActionReturnObject;
 import cn.sunibas.entity.TSLabel;
 import cn.sunibas.entity.TSkid;
 import cn.sunibas.entity.TStext;
+import cn.sunibas.redis.RedisFroTSmark;
 import cn.sunibas.service.ITSLabelService;
 import cn.sunibas.service.ITStextService;
 import cn.sunibas.util.*;
@@ -137,24 +138,19 @@ public class ManuscriptAction extends ActionSupport {
                             /* debug */
                             //System.out.println(i + "" + tStext);
                         }
-                        manuscriptActionReturnObject.setStatus(200);
-                        manuscriptActionReturnObject.setRetStr("成功");
+                        manuscriptActionReturnObject.setStatusOnly(200);
                         dearWithFileBackground.start();
                     } else {
-                        manuscriptActionReturnObject.setStatus(300);
-                        manuscriptActionReturnObject.setRetStr("上传失败");
+                        manuscriptActionReturnObject.setStatusOnly(300);
                     }
                 } else {
-                    manuscriptActionReturnObject.setStatus(400);
-                    manuscriptActionReturnObject.setRetStr("没有文件或服务器拒绝");
+                    manuscriptActionReturnObject.setStatusOnly(400);
                 }
             } else {
-                manuscriptActionReturnObject.setStatus(500);
-                manuscriptActionReturnObject.setRetStr("没有登陆");
+                manuscriptActionReturnObject.setStatusOnly(500);
             }
         } else {
-            manuscriptActionReturnObject.setStatus(600);
-            manuscriptActionReturnObject.setRetStr("没有设置语言");
+            manuscriptActionReturnObject.setStatusOnly(600);
         }
         Object2JSON.JSONString(ServletActionContext.getResponse(),manuscriptActionReturnObject,ObjectType.Object);
     }
