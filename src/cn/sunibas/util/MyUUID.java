@@ -29,6 +29,8 @@ public class MyUUID {
                         tarMod = 0;
     //顺序uuid中的不规则部分的长度
     private  static int tarLen = 0;
+    //用于长整型转字符串时位数不足的补零
+    private static String zeroStr = "000000000000000000";
     //顺序uuid的长度
     private static int nextUUIDLen = 0;
 
@@ -92,7 +94,7 @@ public class MyUUID {
         if (len < 18) {
             recordA++;
             recordA %= tarMod;
-            sb.append(NumberExt.Long2String(recordA, tarLen));
+            sb.append(Long2String(recordA,tarLen));
         } else if (len < 360) {
             recordA++;
             if (recordA > longLen) {
@@ -102,8 +104,8 @@ public class MyUUID {
                     recordB %= tarMod;
                 }
             }
-            sb.append(NumberExt.Long2String(recordB, tarLen));
-            sb.append(NumberExt.Long2String(recordA, 18));
+            sb.append(Long2String(recordB,tarLen));
+            sb.append(Long2String(recordA, 18));
         } else {
             recordA++;
             if (recordA > longLen) {
@@ -117,9 +119,26 @@ public class MyUUID {
                     }
                 }
             }
-            sb.append(NumberExt.Long2String(recordC, tarLen));
-            sb.append(NumberExt.Long2String(recordB, 18));
-            sb.append(NumberExt.Long2String(recordA, 18));
+            sb.append(Long2String(recordC,tarLen));
+            sb.append(Long2String(recordB,18));
+            sb.append(Long2String(recordA, 18));
+        }
+    }
+
+    //将长整型转换为指定长度的字符串，不够位数将补零(供其他位置调用)
+    public static String Long2String(long L,int bit) {
+        if (bit > 19) {
+            try {
+                throw new Exception("bit 大于 Long 型的最大长度。");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String Lstr = Long.toString(L);
+        if (Lstr.length() < bit) {
+            return zeroStr.substring(0,bit - Lstr.length()) + Lstr;
+        } else {
+            return Lstr;
         }
     }
 

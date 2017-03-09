@@ -2,7 +2,6 @@ package cn.sunibas.util;
 
 import cn.sunibas.entity.TSNewText;
 import cn.sunibas.entity.TSTextPart;
-import cn.sunibas.redis.RedisFroTSmark;
 import cn.sunibas.service.ITSTextPartService;
 
 import java.io.*;
@@ -30,14 +29,9 @@ public class DearWithOneFile {
      * */
     public int dearWithOneFile(String parentPath,String filePath,TSNewText tsNewText,int index) {
         try {
-            String readerEncoding = packageCharsetDetector
-                    .GetFileCharset(
-                            parentPath + '/' + filePath);
             BufferedReader reader =
                     ReadOneFile
-                            .readByBufferReader(
-                                    parentPath + '/' + filePath,
-                                    readerEncoding);
+                            .readByBufferReader(parentPath + "/" + filePath,packageCharsetDetector.GetFileCharset(parentPath + "/" + filePath));
             BufferedWriter writer;/* =
                     new BufferedWriter(
                             new OutputStreamWriter(
@@ -62,7 +56,7 @@ public class DearWithOneFile {
                                         parentPath +
                                         ManuscrripitDefaultSetting
                                                 .childFolderRelativeLocation +
-                                        '/' +
+                                        "/" +
                                         index
                                 ),
                                 ManuscrripitDefaultSetting

@@ -20,7 +20,6 @@
 	<import resource="config/bean-service.xml"/>
 	<!-- 引入我的自定义的配置文件 -->
 	<import resource="config/ibas-static-object.xml"/>
-    <import resource="config/bean-redis.xml"/>
 
 	<import resource="config/bean-action.xml"/>
 </beans>

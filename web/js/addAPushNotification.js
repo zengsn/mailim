@@ -218,7 +218,7 @@ var getTextPart = (function() {
              'toLanguage : ' + obj.toLanguage + "\r\n" +
              'money : ' + obj.money,*/
             score : obj.score,
-            enterUrl : '/translatorspace/Chip_tagChip?tag=' + obj.urlTag
+            enterUrl : '/translatorspace/Translate_translate?tag=' + obj.urlTag
         });
     };
     function openOneTextPart() {

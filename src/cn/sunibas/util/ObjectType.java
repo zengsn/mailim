@@ -6,8 +6,6 @@ package cn.sunibas.util;
 public enum ObjectType {
     Object,
     Array,
-    String,
     NullArray,
-    NullObject,
-    NullString
+    NullObject
 }

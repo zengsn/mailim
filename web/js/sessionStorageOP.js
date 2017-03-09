@@ -11,8 +11,7 @@
 //确实是没有用处的，但是这里这样写的目的是使ide能智能提示
 var uselessObj = {
     textPart : 'textPart',
-    translateHic : 'translateHic',
-    kidid : 'kidid'
+    translateHic : 'translateHic'
 };
 var sessionStorageOP = (function(){
     ress = ibasConstructorForAutoObject({

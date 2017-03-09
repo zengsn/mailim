@@ -15,12 +15,6 @@ public class TSstatus implements Serializable {
     private String TSkidid;
     private int TSindex;
     private int mark;
-    //false表示应该写回数据库
-    private boolean isBak;
-
-    public TSstatus(){
-        this.mark = 50;
-    }
 
     public String getUuid() {
         return uuid;
@@ -68,14 +62,6 @@ public class TSstatus implements Serializable {
 
     public void setMark(int mark) {
         this.mark = mark;
-    }
-
-    public boolean isBak() {
-        return isBak;
-    }
-
-    public void setBak(boolean isBak) {
-        this.isBak = isBak;
     }
 
     @Override
