@@ -43,6 +43,10 @@
 	<bean id="tsLabelDao" class="cn.sunibas.dao.impl.TSLabelDao">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+
+    <bean id="tsMarkDao" class="cn.sunibas.dao.impl.TSMarkDao">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
 </beans>     
 
 
