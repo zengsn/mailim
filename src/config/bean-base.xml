@@ -16,7 +16,7 @@
 
 	<!-- 1. 连接池实例 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="jdbcUrl" value="jdbc:mysql://localhost/zsnProject"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost/zsnProject?useUnicode=true&amp;characterEncoding=UTF-8"></property>
 		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
 		<property name="user" value="root"></property>
 		<property name="password" value="ibas0742"></property>

@@ -1,6 +1,7 @@
 package cn.sunibas.util;
 
 import cn.sunibas.entity.TSNewText;
+import cn.sunibas.redis.RedisFroTSmark;
 import cn.sunibas.service.ITSNewTextService;
 
 import java.io.File;

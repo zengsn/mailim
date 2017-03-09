@@ -51,7 +51,7 @@ public class SearchAction {
             return ;
         }
         LabelInfo labelInfo;
-        SearchActionGetTextPartReturnObject searchActionReturnObject = new SearchActionGetTextPartReturnObject();
+        SearchActionGetTextPartReturnObject searchActionGetTextPartReturnObject = new SearchActionGetTextPartReturnObject();
         //判断session中是有记录
         //用于判断是第一次还是第n次开始搜索
         if (session.get("tagLabel") != null) {
@@ -72,12 +72,10 @@ public class SearchAction {
         }
         //开始找文稿并返回
         if (labelInfo.getStatus()) {
-            searchActionReturnObject.setStatus(400);
-            searchActionReturnObject.setRetStr("没有查找到内容");
+            searchActionGetTextPartReturnObject.setStatusOnly(400);
         } else {
-            searchActionReturnObject.setStatus(200);
-            searchActionReturnObject.setRetStr("查找成功");
-            searchActionReturnObject.addData(
+            searchActionGetTextPartReturnObject.setStatusOnly(200);
+            searchActionGetTextPartReturnObject.addData(
                     itsTextPartService
                             .getByUuidList(labelInfo.getTarget())
             );
@@ -86,7 +84,7 @@ public class SearchAction {
         Object2JSON
                 .JSONString(
                         ServletActionContext.getResponse(),
-                        searchActionReturnObject,
+                        searchActionGetTextPartReturnObject,
                         ObjectType.Object
                 );
     }
