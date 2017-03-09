@@ -1,5 +1,9 @@
 package cn.sunibas.util;
 
+import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 

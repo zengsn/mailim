@@ -80,6 +80,6 @@ public class PackageTSTextPart {
         this.score = tsTextPart.getScore();
         this.toLanguage = tsTextPart.getToLanguage();
         this.fromLanguage = tsTextPart.getFromLanguage();
-        this.urlTag = OPTSTextPart.encipher(tsTextPart.getTSuuid(), tsTextPart.getTSindex());
+        this.urlTag = OPTSTextPart.encipher(tsTextPart);
     }
 }

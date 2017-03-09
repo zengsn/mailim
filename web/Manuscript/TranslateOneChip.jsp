@@ -32,6 +32,8 @@
   <script src="/translatorspace/js/html5shiv.3.7.3.min.jss"></script>
   <script src="/translatorspace/js/respond.1.4.2.min.js"></script>
   <![endif]-->
+    <script src="/translatorspace/js/domUtil.js"></script>
+    <link href="/translatorspace/css/TranslateChip.css" rel="stylesheet">
 </head>
 <body>
 
@@ -52,22 +54,76 @@
 </script>
 <div class="container">
   <div class="textPart"></div>
+    <div>
+        <%--<form action="/translatorspace/translate_translate" method="post" id = 'form' enctype="multipart/form-data">--%>
+            <%--<input id="textTag" hidden="hidden" type="text" value="" name="tagUrl"/>--%>
+            <%--<input type="file" name="translateContent"/>--%>
+            <%--<input type="submit"/>--%>
+        <%--</form>--%>
+    </div>
+    <!--这里假设session中有一个当前用户的kidid-->
+    <div id="overTranslate" class="">
+
+    </div>
 </div>
 
 <script>
-  window.onload = function() {
-    if (sessionStorageOP[uselessObj.textPart].get().length) {
-      var o = JSON.parse(sessionStorageOP[uselessObj.textPart].get());
-      var str = '';
-      for (var i in o) {
-        str += i + '\t' + o[i] + '<br/>';
-      }
-      $('.textPart').html(str);
-    } else {
-      layer.open(labelInfo);
-      $('.layui-layer-shade').css({background:'rgb(245, 239, 255)'});
-    }
-  };
+    //先判断是否已经拿到了对象并放入到了session中
+    var tagUrl;
+    var sttcp;
+    //////这里假设session中有一个当前用户的kidid////////////////////
+    //var kidid = "06267518688416qm4663hvdef344okak";
+    ///////////////////////////////
+    window.onload = function() {
+        //sessionStorageOP[uselessObj.kidid].set(kidid);
+        if (sessionStorageOP[uselessObj.textPart].get().length) {
+            var o = JSON.parse(sessionStorageOP[uselessObj.textPart].get());
+            var str = '';
+            for (var i in o) {
+                str += i + '\t' + o[i] + '<br/>';
+            }
+            var textTag = $('#overTranslate');
+            $('.textPart').html(str);
+            textTag.val(o['urlTag']);
+            tagUrl = o['urlTag'];
+            sttcp = ShowTranslateTChip(textTag[0],tagUrl,$,sessionStorageOP);
+            getTChip();
+        } else {
+            layer.open(labelInfo);
+            $('.layui-layer-shade').css({background:'rgb(245, 239, 255)'});
+        }
+    };
+  //在前面判断通过后，想后端获取翻译结果
+  function getTChip() {
+      $.ajax({
+          url : "/translatorspace/mark_getChipsStatus",
+          data : {
+              tagUrl :tagUrl
+          },
+          complete : function(m) {
+              if (m.status == 200 && m.readyState == 4) {
+                  console.log(m);
+                  var json = JSON.parse(m.responseText);
+                  //var kidid = sessionStorageOP[uselessObj.kidid].get();
+                  var overT = $("#overTranslate");
+                  var domUtils = domUtil;
+                  if (json.status == 200) {
+                      var tagtsuuid = json.retStr,
+                          map = json.map;
+                      if (tagtsuuid in map) {
+                          sttcp.initOneTC(tagtsuuid,map[tagtsuuid],true);
+                          delete map[tagtsuuid];
+                      } else {
+                          sttcp.initOneTC(tagtsuuid,map[tagtsuuid],false);
+                      }
+                      for (var i in map) {
+                          sttcp.initOneTC(i,map[i]);
+                      }
+                  }
+              }
+          }
+      });
+  }
 </script>
 
 
@@ -82,5 +138,6 @@
 <script src="/translatorspace/layer/layer.js"></script>
 <script src="/translatorspace/js/ibasConstructorForAutoObject.js"></script>
 <script src="/translatorspace/js/sessionStorageOP.js"></script>
+<script src="/translatorspace/js/ShowTranslateTChip.js"></script>
 </body>
 </html>

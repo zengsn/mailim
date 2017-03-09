@@ -21,7 +21,8 @@
 	</bean>
 	
 	<bean id="tSstatusService" class="cn.sunibas.service.impl.TSstatusService">
-		 <property name="tsStatusDao" ref="tSstatusDao"></property>
+		<property name="tsStatusDao" ref="tSstatusDao"></property>
+        <property name="redisCacheUtil" ref="cacheUtil"></property>
 	</bean>
 	
 	<bean id="tStextService" class="cn.sunibas.service.impl.TStextService">
@@ -43,6 +44,11 @@
 	<bean id="tsLabelService" class="cn.sunibas.service.impl.TSLabelService">
 		<property name="itsLabelDao" ref="tsLabelDao"></property>
 	</bean>
+
+    <bean id="tsMarkService" class="cn.sunibas.service.impl.TSMarkService">
+        <property name="itsMarkDao" ref="tsMarkDao"></property>
+    </bean>
+
 </beans>     
 
 
