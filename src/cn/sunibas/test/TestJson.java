@@ -17,11 +17,4 @@ public class TestJson {
         list.add(1);
         System.out.println(JSONObject.fromObject(list));
     }
-
-    @Test
-    public void testTwo() {
-        List<Integer> list = new ArrayList<Integer>();
-        list.add(1);
-        String str = JSONObject.fromObject(list).toString();
-    }
 }

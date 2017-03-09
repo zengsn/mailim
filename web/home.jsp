@@ -65,7 +65,7 @@
                   dearRet : function(dearOneObj,msgResponseText){
                     if (msgResponseText == '[]') {
                       window.onscroll = "";
-                      this.stop = true;
+                      stop = true;
                       return ;
                     }
                     (JSON.parse("{\"data\":" + msgResponseText + "}").data)
@@ -78,15 +78,12 @@
                 }
         );
         window.onload = function() {
-            getTextPart.init();
-            window.onscroll = function(){
-                if (document.body.clientHeight+document.body.scrollTop + 100 >= document.body.scrollHeight) {
-                    getTextPart.requireMore();
-                }
-            };
-            var script = domUtil.newEle("script");
-            script.src = "/translatorspace/js/bak.js";
-            $("body").append(script);
+          getTextPart.init();
+          window.onscroll = function(){
+            if (document.body.clientHeight+document.body.scrollTop + 100 >= document.body.scrollHeight) {
+              getTextPart.requireMore();
+            }
+          };
         };
       </script>
     </div>
@@ -99,6 +96,5 @@
     <script src="/translatorspace/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="/translatorspace/js/ie10-viewport-bug-workaround.js"></script>
-    <script src="/translatorspace/js/bak.js"></script>
   </body>
 </html>

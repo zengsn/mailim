@@ -31,18 +31,6 @@
 		<property name="dearWithOneFile" ref="dearWithOneFile"></property>
 	</bean>
 
-    <bean id="redisFroTSmark" class="cn.sunibas.redis.RedisFroTSmark">
-        <property name="redisCacheUtil" ref="cacheUtil"></property>
-        <property name="tsMarkService" ref="tsMarkService"></property>
-        <property name="itSstatusService" ref="tSstatusService"></property>
-    </bean>
-
-    <bean id="redisBackUp" class="cn.sunibas.redis.RedisBackUp">
-        <property name="itsMarkService" ref="tsMarkService"></property>
-        <property name="itSstatusService" ref="tSstatusService"></property>
-        <property name="redisCacheUtil" ref="cacheUtil"></property>
-    </bean>
-
 </beans>     
 
 

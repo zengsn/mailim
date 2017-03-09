@@ -32,10 +32,6 @@ public class Object2JSON {
             out.print("[]");
         }else if (objectType == ObjectType.NullObject) {
             out.print("{}");
-        } else if (objectType == ObjectType.String) {
-            out.print(o);
-        } else if (objectType == ObjectType.NullString) {
-            out.print("");
         }
         out.flush();
     }
@@ -45,13 +41,5 @@ public class Object2JSON {
     }
     public static String Array2Json(Object o){
         return JSONArray.fromObject(o).toString();
-    }
-
-    public static void RetNullObject(HttpServletResponse httpServletResponsesr) {
-        JSONString(httpServletResponsesr,null,ObjectType.NullObject);
-    }
-
-    public static void RetNullArray(HttpServletResponse httpServletResponsesr) {
-        JSONString(httpServletResponsesr,null,ObjectType.NullArray);
     }
 }
