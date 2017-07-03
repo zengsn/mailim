@@ -32,7 +32,7 @@
 		<property name="itsTextPartService" ref="textPartService"></property>
 	</bean>
 
-	<bean id="manuscriptTranslate" class="cn.sunibas.action.ManuscriptTranslate" scope="prototype">
+	<bean id="getManuscriptChip" class="cn.sunibas.action.GetManuscriptChip" scope="prototype">
 		<property name="itsTextPartService" ref="textPartService"></property>
 	</bean>
 
@@ -40,6 +40,23 @@
 		<property name="itsLabelService" ref="tsLabelService"></property>
 		<property name="itsTextPartService" ref="textPartService"></property>
 	</bean>
+
+    <bean id="translateChipAction" class="cn.sunibas.action.TranslateChipAction" scope="prototype">
+        <property name="itSstatusService" ref="tSstatusService"></property>
+        <property name="redisFroTSmark" ref="redisFroTSmark"></property>
+    </bean>
+
+    <bean id="testRedis" class="cn.sunibas.action.testRedis.TestRedis" scope="prototype">
+        <property name="redisCacheUtil" ref="cacheUtil"></property>
+    </bean>
+
+    <bean id="opChipMarkAction" class="cn.sunibas.action.OPChipMarkAction" scope="prototype">
+        <property name="redisFroTSmark" ref="redisFroTSmark"></property>
+    </bean>
+
+    <bean id="startBakThread" class="cn.sunibas.action.StartBakThread">
+        <property name="redisBackUp" ref="redisBackUp"></property>
+    </bean>
 </beans>     
 
 
