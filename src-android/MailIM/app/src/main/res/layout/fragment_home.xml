@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fragment_bg">
+
+    <LinearLayout
+        android:id="@+id/home_personal_information"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/button_bg"
+        android:layout_margin="5dp">
+        <ImageView
+            android:id="@+id/hmoe_personal_image"
+            android:layout_width="160px"
+            android:layout_height="160px"
+            android:background="@mipmap/ic_launcher"/>
+    </LinearLayout>
+
+</RelativeLayout>
