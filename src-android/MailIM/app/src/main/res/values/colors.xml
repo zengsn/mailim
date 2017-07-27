@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="text_gray">#336644</color>
+    <color name="text_blue">#222299</color>
+    <color name="text_white">#000000</color>
+    <color name="fragment_bg">#dddddd</color>
+    <color name="fragment_lv_bg">#eeeeee</color>
+    <color name="button_bg">#eeeeee</color>
+    <color name="tab_menu_bg">#dddddd</color>
+    <color name="tab_menu_bg_selected">#FFC4C4C4</color>
+    <color name="tab_menu_bg_unselected">#eeeeee</color>
+</resources>
