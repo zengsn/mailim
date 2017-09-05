@@ -22,6 +22,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import mailim.mailim.entity.Email;
 import mailim.mailim.fragment.EmailFragment;
 
 /**
@@ -68,12 +69,12 @@ public class Account extends AsyncTask<Void,String,Boolean> {
             int mailCounts = messages.length;
             for(int i = 0; i < mailCounts; i++) {
                 Email email = new Email();
-                email.subject = messages[i].getSubject();
-                email.from_address = messages[i].getFrom()[0].toString();
-                email.sendDate = messages[i].getSentDate();
-                email.recevieDate = messages[i].getReceivedDate();
+                email.setSubject( messages[i].getSubject() );
+//                email.from_address = messages[i].getFrom()[0].toString();
+//                email.sendDate = messages[i].getSentDate();
+//                email.recevieDate = messages[i].getReceivedDate();
 //                email.content = messages[i].getContent().toString();
-                email.setEmpty(true);
+//                email.setEmpty(true);
                 receive_emails.add(email);
             }
             folder.close(false);
@@ -182,18 +183,18 @@ public class Account extends AsyncTask<Void,String,Boolean> {
             //store.connect();
             store.connect(pop3Server, user, pwd);
 
-            Email email1 = new Email();
-            email1.subject = "bb";
-            email1.from_address = "bb";
-            email1.setEmpty(true);
-            receive_emails.add(email1);
-            if(store != null){
-                Email email = new Email();
-                email.subject = "bb";
-                email.from_address = "bb";
-                email.setEmpty(true);
-                receive_emails.add(email);
-            }
+//            Email email1 = new Email();
+//            email1.subject = "bb";
+//            email1.from_address = "bb";
+//            email1.setEmpty(true);
+//            receive_emails.add(email1);
+//            if(store != null){
+//                Email email = new Email();
+//                email.subject = "bb";
+//                email.from_address = "bb";
+//                email.setEmpty(true);
+//                receive_emails.add(email);
+//            }
 
 
 //            // 获得邮箱内的邮件夹Folder对象，以"只读"打开
@@ -255,11 +256,11 @@ public class Account extends AsyncTask<Void,String,Boolean> {
                 MimeMessage pmm = new MimeMessage((MimeMessage)messages[i]);
                 //pmm.getSubject().contains("[作业]") ||pmm.getSubject().contains("[布置作业]"
                 Email email = new Email();
-                email.subject = messages[i].getSubject();
-                email.from_address = (messages[i].getFrom()[0]).toString();
-                email.sendDate = messages[i].getSentDate();
-                email.recevieDate = messages[i].getReceivedDate();
-                email.content = messages[i].getContent().toString();
+//                email.subject = messages[i].getSubject();
+//                email.from_address = (messages[i].getFrom()[0]).toString();
+//                email.sendDate = messages[i].getSentDate();
+//                email.recevieDate = messages[i].getReceivedDate();
+//                email.content = messages[i].getContent().toString();
                 email.setEmpty(true);
                 mailList.add(email);
             }
@@ -270,8 +271,8 @@ public class Account extends AsyncTask<Void,String,Boolean> {
     public List<Email> getReceive_emails() {
         //getRecevieEmailByInternet();
         Email email = new Email();
-        email.subject = "aa";
-        email.from_address = "aa";
+//        email.subject = "aa";
+//        email.from_address = "aa";
         email.setEmpty(true);
         receive_emails.add(email);
         return receive_emails;

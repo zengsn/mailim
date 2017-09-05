@@ -1,16 +1,19 @@
 package mailim.mailim.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import mailim.mailim.R;
+import mailim.mailim.activity.ChatActivity;
 
 
 public class MessageFragment extends Fragment {
@@ -29,10 +32,14 @@ public class MessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message,container,false);
         mListView = (ListView) view.findViewById(R.id.lv_message);
+        setView();
+        return view;
+    }
+
+    private void setView(){
         MyBaseAdapter myBaseAdapter = new MyBaseAdapter();
         mListView.setAdapter(myBaseAdapter);
-
-        return view;
+        mListView.setOnItemClickListener(new MyOnItemClickListener());
     }
 
     class MyBaseAdapter extends BaseAdapter {
@@ -60,6 +67,15 @@ public class MessageFragment extends Fragment {
             ImageView imageView = (ImageView) convertView.findViewById(R.id.list_item_message_image);
             imageView.setBackgroundResource(icons[position]);
             return convertView;
+        }
+    }
+
+    private class MyOnItemClickListener implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
+            startActivity(intent);
         }
     }
 }

@@ -1,20 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fragment_bg">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/home_personal_information"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/button_bg"
-        android:layout_margin="5dp">
-        <ImageView
+        android:layout_height="180dp"
+        android:background="@mipmap/headbg">
+        <mailim.mailim.view.CircleImageView
             android:id="@+id/hmoe_personal_image"
-            android:layout_width="160px"
-            android:layout_height="160px"
-            android:background="@mipmap/ic_launcher"/>
+            style="@style/image_head"
+            android:src="@mipmap/ic_launcher"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_below="@+id/hmoe_personal_image"
+            android:paddingTop="5sp"
+            android:textAlignment="center"
+            android:text="用户名"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        style="@style/options">
+
+        <LinearLayout
+            style="@style/option">
+            <ImageView
+                style="@style/option_icon"
+                android:src="@mipmap/ic_launcher"/>
+            <TextView
+                style="@style/option_text"
+                android:text="资料1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/option">
+            <ImageView
+                style="@style/option_icon"
+                android:src="@mipmap/ic_launcher"/>
+            <TextView
+                style="@style/option_text"
+                android:text="资料2"/>
+        </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+    <LinearLayout
+        style="@style/options">
+
+        <LinearLayout
+            android:id="@+id/option_setting"
+            android:onClick="onClick"
+            style="@style/option">
+
+            <ImageView
+                style="@style/option_icon"
+                android:src="@mipmap/ic_launcher"/>
+            <TextView
+                style="@style/option_text"
+                android:drawableRight="@mipmap/arrow"
+                android:text="设置"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
