@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">mailim</string>
     <string name="infomation">infomation</string>
+    <string name="tip_null_username">请输入用户名！</string>
+    <string name="tip_null_password">请输入密码！</string>
+    <string name="tip_wrong_username_or_pwd">用户名或密码错误</string>
+    <string name="tip_login_success">登录成功</string>
+    <string name="tip_login_fail">登录失败</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -13,7 +18,7 @@
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
     <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
+        based on your chat history
     </string>
 
     <string name="pref_title_display_name">Display name</string>
@@ -31,7 +36,7 @@
         <item>-1</item>
     </string-array>
 
-    <!-- Example settings for Data & Sync -->
+    <!-- Example settings for MyApplication & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>

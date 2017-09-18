@@ -224,7 +224,7 @@ public class DESUtil {
         byte digest[] = new byte[ss.length() / 2];
         for (int i = 0; i < digest.length; i++) {
             String byteString = ss.substring(2 * i, 2 * i + 2);
-            int byteValue = Integer.parseInt(byteString, 16);
+            int byteValue = Integer.valueOf(byteString, 16);
             digest[i] = (byte) byteValue;
         }
 

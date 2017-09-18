@@ -2,32 +2,28 @@ package mailim.mailim.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import mailim.mailim.MySocket;
 import mailim.mailim.R;
-import mailim.mailim.entity.Message;
+import mailim.mailim.entity.Chat;
+
 /**
  *聊天界面
  */
 public class ChatActivity extends Activity implements View.OnClickListener{
-    private List<Message> list = new ArrayList<Message>();
+    private List<Chat> list = new ArrayList<Chat>();
     private int myHead = R.mipmap.ic_launcher;
     private int friendHead = R.mipmap.ic_menu_message;
     private ListView myLV;
@@ -57,8 +53,8 @@ public class ChatActivity extends Activity implements View.OnClickListener{
     /**
      *添加消息
      */
-    public void addMessage(Message message){
-        list.add(message);
+    public void addMessage(Chat chat){
+        list.add(chat);
         adapter.notifyDataSetChanged();
         myLV.setSelection(adapter.getCount()-1);
     }
@@ -68,13 +64,12 @@ public class ChatActivity extends Activity implements View.OnClickListener{
         String text = etMeg.getText().toString();
         switch (v.getId()){
             case R.id.btn_left:
-                Message lm = new Message(false,text);
+                Chat lm = new Chat(false,text);
                 addMessage(lm);
                 break;
             case R.id.btn_right:
-                Message rm = new Message(true,text);
+                Chat rm = new Chat(true,text);
                 addMessage(rm);
-                new MySocket(this,text).send();
                 break;
             default:
         }
@@ -116,7 +111,7 @@ public class ChatActivity extends Activity implements View.OnClickListener{
             ImageView imgLeft = (ImageView)convertView.findViewById(R.id.img_chat_left);
             ImageView imgRight = (ImageView)convertView.findViewById(R.id.img_chat_right);
             //获取消息数据
-            Message m = list.get(position);
+            Chat m = list.get(position);
             if(m.isMyself()){
                 //发送的消息（在右边显示）
                 textRight.setText(m.getText());

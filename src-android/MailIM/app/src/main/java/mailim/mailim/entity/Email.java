@@ -1,18 +1,19 @@
 package mailim.mailim.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by zzh on 2017/7/14.
  */
-public class Email {
+public class Email implements Serializable{
     protected String from_address;
     protected String pet_name;
     protected String subject;
     protected String content;
     protected Date sendDate;
-    protected Date recevieDate;
     protected boolean empty;
+    protected boolean isMultipart;
 
     public String getFrom_address() {
         return from_address;
@@ -62,11 +63,11 @@ public class Email {
         this.empty = empty;
     }
 
-    public Date getRecevieDate() {
-        return recevieDate;
+    public boolean isMultipart() {
+        return isMultipart;
     }
 
-    public void setRecevieDate(Date recevieDate) {
-        this.recevieDate = recevieDate;
+    public void setMultipart(boolean multipart) {
+        isMultipart = multipart;
     }
 }

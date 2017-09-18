@@ -10,13 +10,16 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import mailim.mailim.MyApplication;
 import mailim.mailim.R;
+import mailim.mailim.entity.Email;
 import mailim.mailim.fragment.EmailFragment;
 import mailim.mailim.fragment.HomeFragment;
 import mailim.mailim.fragment.MateyFragment;
 import mailim.mailim.fragment.MessageFragment;
+import mailim.mailim.util.ToastUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private TextView tabMessage;
@@ -31,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MateyFragment f2;
     private EmailFragment f3;
     private HomeFragment f4;
-    private FragmentManager fragmentManager;
 
     public static Context mContext;
 
@@ -43,7 +45,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mContext = getApplicationContext();
 
         bindView();
-
+//        if(!app.isLogin()) {
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//        }
     }
 
     //UI组件初始化与事件绑定
@@ -67,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabMessage.setSelected(true);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         if(f1==null){
-            f1 = new MessageFragment("第一个Fragment");
+            f1 = new MessageFragment();
             transaction.add(R.id.fragment_container,f1);
         }else{
             transaction.show(f1);
@@ -108,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 selected();
                 tabMessage.setSelected(true);
                 if(f1==null){
-                    f1 = new MessageFragment("第一个Fragment");
+                    f1 = new MessageFragment();
                     transaction.add(R.id.fragment_container,f1);
                 }else{
                     transaction.show(f1);
@@ -165,5 +170,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         transaction.commit();
+    }
+
+    public void onTest(View view){
+        Intent intent = new Intent(this,LoginActivity.class);
+        startActivity(intent);
+
+//        Email email = new Email();
+//        email.setFrom_address("fafafa");
+//        email.setSubject("dsfsa");
+//
+//        ToastUtil.show(this,JSON.toJSON(email).toString());
     }
 }

@@ -1,48 +1,27 @@
 package mailim.mailim.entity;
 
+import java.io.Serializable;
+
 /**
- * Created by zzh on 2017/8/28.
+ * Created by zzh on 2017/9/16.
  */
-public class Message {
-    private boolean isMyself;
-    private int type;
-    private int index;
-    private String text;
+public class Message implements Serializable {
+    private int raw;
+    private User user;
 
-    public Message(boolean isMyself,String text){
-        setMyself(isMyself);
-        setText(text);
+    public User getUser() {
+        return user;
     }
 
-    public boolean isMyself() {
-        return isMyself;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setMyself(boolean myself) {
-        isMyself = myself;
+    public int getRaw() {
+        return raw;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public void setRaw(int raw) {
+        this.raw = raw;
     }
 }
