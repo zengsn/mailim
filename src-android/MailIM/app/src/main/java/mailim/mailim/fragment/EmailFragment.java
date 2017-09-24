@@ -3,12 +3,13 @@ package mailim.mailim.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,40 +18,31 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import mailim.mailim.Account;
+import mailim.mailim.util.EmaiRecever;
+import mailim.mailim.activity.EmailActivity;
 import mailim.mailim.entity.Email;
-import mailim.mailim.adapter.EmailAdapter;
 import mailim.mailim.R;
-
-import static mailim.mailim.activity.MainActivity.mContext;
 
 
 public class EmailFragment extends Fragment {
     public Context mContext;
     public ListView mListView;
-    private Account account;
+    private EmaiRecever emaiRecever;
     public MyAdapter adapter;
     public List<Email> emails = new ArrayList<Email>();
 
     public EmailFragment(Context mContext){
         this.mContext = mContext;
-        //Toast.makeText(mContext,login.string+":"+String.valueOf(login.count),Toast.LENGTH_SHORT).show();//        account = new Account();
-        Account account = new Account(this);
-        account.execute();
+        //Toast.makeText(mContext,login.string+":"+String.valueOf(login.count),Toast.LENGTH_SHORT).show();//        emaiRecever = new EmaiRecever();
+        emaiRecever = new EmaiRecever(this);
+        emaiRecever.execute();
         //renovate();
-        //Toast.makeText(mContext,account.getString(),Toast.LENGTH_SHORT).show();
-        //account.send("smtp.163.com","zhangzhanhong218@163.com","1234567zzh");
+        //Toast.makeText(mContext,emaiRecever.getString(),Toast.LENGTH_SHORT).show();
+        //emaiRecever.send("smtp.163.com","zhangzhanhong218@163.com","1234567zzh");
     }
 
-    public void show(){
-        if(emails == null){
-            Toast.makeText(mContext,"空",Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(mContext,String.valueOf(emails.size()),Toast.LENGTH_SHORT).show();
-        }
-    }
-    public void renovate(){
+    public void updataEmail(List<Email> emails){
+        this.emails = emails;
         adapter.notifyDataSetChanged();
     }
 
@@ -60,6 +52,7 @@ public class EmailFragment extends Fragment {
         mListView = (ListView) view.findViewById(R.id.lv_email);
         adapter = new MyAdapter();
         mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new MyOnItemClickListener());
 
         return view;
     }
@@ -84,10 +77,25 @@ public class EmailFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = View.inflate(mContext, R.layout.list_item_email,null);
+            TextView ev_fromaddr = (TextView)convertView.findViewById(R.id.tv_list_email_from);
+            ev_fromaddr.setTextColor(Color.BLACK);
+            ev_fromaddr.setText(emails.get(position).getFrom_address());
+
             TextView mTextView = (TextView) convertView.findViewById(R.id.tv_list_email_subject);
             mTextView.setTextColor(Color.BLACK);
             mTextView.setText(emails.get(position).getSubject());
+
             return convertView;
+        }
+    }
+
+    private class MyOnItemClickListener implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(getActivity(), EmailActivity.class);
+            intent.putExtra("email",emails.get(position));
+            startActivity(intent);
         }
     }
 }
