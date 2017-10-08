@@ -1,12 +1,14 @@
 package mailim.mailim.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by zzh on 2017/8/28.
  */
-public class Chat {
+public class Chat implements Serializable {
     private boolean isMyself;
     private int type;
-    private int index;
+    private String time;
     private String text;
 
     public Chat(boolean isMyself, String text){
@@ -30,12 +32,12 @@ public class Chat {
         this.type = type;
     }
 
-    public int getIndex() {
-        return index;
+    public String getTime() {
+        return time;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getText() {

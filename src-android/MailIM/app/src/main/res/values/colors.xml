@@ -7,7 +7,7 @@
     <color name="text_blue">#222299</color>
     <color name="text_white">#000000</color>
     <color name="fragment_bg">#dddddd</color>
-    <color name="fragment_lv_bg">#eeeeee</color>
+    <color name="fragment_lv_bg">#eee</color>
     <color name="button_bg">#eeeeee</color>
     <color name="tab_menu_bg">#dddddd</color>
     <color name="tab_menu_bg_selected">#FFC4C4C4</color>

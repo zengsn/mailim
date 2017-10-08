@@ -71,7 +71,7 @@ public class DESUtil {
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
             IvParameterSpec iv = new IvParameterSpec(theKey);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            byte[] theCph = cipher.doFinal(HexString.getBytes(ENCODED_GB2312));
+            byte[] theCph = cipher.doFinal(HexString.getBytes(ENCODED_UTF8));
             jmstr = toHexString(theCph).toUpperCase();
             jmstr = toHexString(theCph);
         } catch (Exception e) {

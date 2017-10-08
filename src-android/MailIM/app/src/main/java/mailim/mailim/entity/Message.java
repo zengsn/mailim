@@ -6,22 +6,39 @@ import java.io.Serializable;
  * Created by zzh on 2017/9/16.
  */
 public class Message implements Serializable {
-    private int raw;
-    private User user;
+    private boolean raw;
+    private String username;
+    private String last;
 
-    public User getUser() {
-        return user;
+    public String getLast() {
+        return last;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setLast(String last) {
+        this.last = last;
     }
 
-    public int getRaw() {
+    public Message(String name,String last){
+        this.last = last;
+        username = name;
+        raw = true;
+    }
+
+    public Message(){}
+
+    public boolean isRaw() {
         return raw;
     }
 
-    public void setRaw(int raw) {
+    public void setRaw(boolean raw) {
         this.raw = raw;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

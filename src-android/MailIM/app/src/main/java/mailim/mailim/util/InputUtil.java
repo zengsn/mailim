@@ -109,6 +109,7 @@ public class InputUtil<T> {
             List<T> list;
             File sdCardDir = Environment.getExternalStorageDirectory();
             File sdFile = new File(sdCardDir,fileName);
+            if(!sdFile.exists())return null;
             try {
                 FileInputStream fis = new FileInputStream(sdFile);
                 ObjectInputStream ois = new ObjectInputStream(fis);

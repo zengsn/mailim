@@ -14,40 +14,32 @@
             style="@style/image_head"
             android:src="@mipmap/ic_launcher"/>
         <TextView
+            android:id="@+id/home_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_below="@+id/hmoe_personal_image"
-            android:paddingTop="5sp"
+            android:paddingTop="5dp"
             android:textAlignment="center"
+            android:textSize="30dp"
             android:text="用户名"/>
     </RelativeLayout>
-
     <LinearLayout
         style="@style/options">
 
         <LinearLayout
+            android:id="@+id/home_my_info"
+            android:onClick="onClick"
             style="@style/option">
-            <ImageView
-                style="@style/option_icon"
-                android:src="@mipmap/ic_launcher"/>
             <TextView
                 style="@style/option_text"
-                android:text="资料1"/>
-        </LinearLayout>
-
-        <LinearLayout
-            style="@style/option">
-            <ImageView
-                style="@style/option_icon"
-                android:src="@mipmap/ic_launcher"/>
-            <TextView
-                style="@style/option_text"
-                android:text="资料2"/>
+                android:drawableRight="@mipmap/arrow"
+                android:text="个人资料"/>
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
+        android:layout_weight="1"
         style="@style/options">
 
         <LinearLayout
@@ -55,25 +47,24 @@
             android:onClick="onClick"
             style="@style/option">
 
-            <ImageView
-                style="@style/option_icon"
-                android:src="@mipmap/ic_launcher"/>
             <TextView
                 style="@style/option_text"
                 android:drawableRight="@mipmap/arrow"
                 android:text="设置"/>
         </LinearLayout>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp"
-            android:background="#3C8DC4"
-            android:onClick="onTest"
-            android:text="测试"/>
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+        <Button
+            android:id="@+id/home_unlogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#a44"
+            android:textSize="24dp"
+            android:text="退出账号"/>
+    </RelativeLayout>
 </LinearLayout>

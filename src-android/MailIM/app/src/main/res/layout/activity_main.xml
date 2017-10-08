@@ -5,6 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <include
+        android:id="@+id/main_title"
+        layout="@layout/title_main"/>
+
     <LinearLayout
         android:id="@+id/ly_tab_menu"
         android:layout_width="match_parent"
@@ -90,7 +94,7 @@
     <View
         android:id="@+id/div_tab_bar"
         android:layout_width="match_parent"
-        android:layout_height="2px"
+        android:layout_height="2dp"
         android:background="@color/text_gray"
         android:layout_above="@id/ly_tab_menu"/>
 
@@ -98,6 +102,7 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/main_title"
         android:layout_above="@id/ly_tab_menu"
         android:background="#999999">
     </FrameLayout>

@@ -1,5 +1,6 @@
 package mailim.mailim.util;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import java.io.FileOutputStream;
@@ -25,6 +26,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import mailim.mailim.activity.MainActivity;
 import mailim.mailim.entity.Email;
 import mailim.mailim.fragment.EmailFragment;
 
@@ -33,59 +35,78 @@ import mailim.mailim.fragment.EmailFragment;
  */
 public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
     // 连接pop3服务器的主机名、协议、用户名、密码
-    protected String pop3Server = "pop.163.com";
-    protected String protocol = "pop3";
-    protected String user = "zhangzhanhong218";
-    protected String pwd = "1234567zzh";
+    protected String pop3Server;
+    protected String user;
+    protected String pwd;
+
+    ProgressDialog waitingDialog=
+            new ProgressDialog(MainActivity.mContext);
 
     public EmailFragment fragment;
 
-    public EmaiRecever(EmailFragment fragment){
+    public EmaiRecever(EmailFragment fragment){this.fragment = fragment;}
+
+    public EmaiRecever(EmailFragment fragment,String email,String pwd){
         this.fragment = fragment;
+        String str[] = email.split("@");
+        user = str[0];
+        if(str.length>0)pop3Server = "pop."+str[1];
+        this.pwd = pwd;
+        MainActivity.app.getMyUser().setEmail(email);
+        MainActivity.app.getMyUser().setEmailpwd(pwd);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        waitingDialog.setTitle("接收邮件");
+        waitingDialog.setMessage("接收中...");
+        waitingDialog.setIndeterminate(true);
+        waitingDialog.setCancelable(false);
+        waitingDialog.show();
+        super.onPreExecute();
     }
 
     @Override
     protected void onPostExecute(List<Email> emails){
         fragment.updataEmail(emails);
+        waitingDialog.cancel();
     }
     @Override
     protected void onProgressUpdate(String... value) {
-
+        ToastUtil.show(fragment.getActivity(),value[0]);
     }
     @Override
     protected List<Email> doInBackground(Void... params) {
         List<Email> emails = new ArrayList<Email>();
-        Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-        Store store = null;
         Message[] messages;
         try {
-            store = session.getStore("pop3");
-            store.connect(pop3Server, user, pwd);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            messages = folder.getMessages();
-            int mailCounts = messages.length;
-            for(int i = 0; i < mailCounts; i++) {
-                Email email = new Email();
-                email.setSubject( messages[i].getSubject());
-                String str[] = messages[i].getFrom()[0].toString().split(" ");
-                if(str.length == 1){
-                    email.setFrom_address(str[0]);
-                }
-                else {
-                    email.setFrom_address(str[1].substring(1, str[1].length() - 1));
-                }
-                email.setSendDate( messages[i].getSentDate());
-                email.setMultipart(messages[i].isMimeType("multipart/*"));
-                email.setContent( getAllMultipart(messages[i]));
-                email.setEmpty(false);
-                emails.add(email);
+            Store store = EmailUtil.login(pop3Server,user,pwd);
+            if(store == null){
+                publishProgress("连接邮箱服务器失败！");
             }
-            folder.close(false);
-            store.close();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
+            else {
+                Folder folder = store.getFolder("INBOX");
+                folder.open(Folder.READ_ONLY);
+                messages = folder.getMessages();
+                int mailCounts = messages.length;
+                for (int i = 0; i < mailCounts; i++) {
+                    Email email = new Email();
+                    email.setSubject(messages[i].getSubject());
+                    String str[] = messages[i].getFrom()[0].toString().split(" ");
+                    if (str.length == 1) {
+                        email.setFrom_address(str[0]);
+                    } else {
+                        email.setFrom_address(str[1].substring(1, str[1].length() - 1));
+                    }
+                    email.setSendDate(messages[i].getSentDate());
+                    email.setMultipart(messages[i].isMimeType("multipart/*"));
+                    email.setContent(getAllMultipart(messages[i]));
+                    email.setEmpty(false);
+                    emails.add(email);
+                }
+                folder.close(false);
+                store.close();
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
         } catch (Exception e) {

@@ -4,17 +4,34 @@
     android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/list_item_message_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_alignParentLeft="true"
         android:layout_margin="5dp"/>
+    <RelativeLayout
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/list_item_message_image"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
     <TextView
         android:id="@+id/tv_list_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:paddingLeft="15dp"
-        android:layout_marginLeft="20dp"
-        android:textSize="18sp"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="5dp"
+        android:layout_marginLeft="5dp"
+        android:textSize="30sp"
         android:hint="item布局"/>
+    <TextView
+        android:id="@+id/tv_list_message_last"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_list_message"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="5dp"
+        android:layout_marginLeft="5dp"
+        android:textSize="15sp"
+        android:textColor="@color/text_gray"
+        android:hint="内容"/>
+    </RelativeLayout>
 </RelativeLayout>
