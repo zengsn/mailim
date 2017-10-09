@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        setupActionBar();
         intiApp();
         intiView();
         if(getIntent().getBooleanExtra("auto",true))checkAutoLogin();
@@ -62,24 +61,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             MainActivity.app.getMyUser().setUsername(username);
             MainActivity.app.getMyUser().setPassword(password);
             login(username,password,true);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -178,6 +159,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             user.setUsername(res.getString("username"));
                             user.setSex(res.getBoolean("sex"));
                             user.setEmail(res.getString("email"));
+                            user.setEmailpwd(res.getString("emailpwd"));
                             user.setQianming(res.getString("qianming"));
                             if(!auto)save();
                             Intent intent1 = new Intent(getApplication(), MainActivity.class);

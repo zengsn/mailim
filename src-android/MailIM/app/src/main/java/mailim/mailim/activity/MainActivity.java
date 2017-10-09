@@ -60,17 +60,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
         mContext = this;
 
         bindView();
-        intiMyAApplication();
+//        intiMyAApplication();
         app.loadHead(app.getMyUser().getUsername());
     }
 
     private void intiMyAApplication(){
         app = (MyApplication)getApplication();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        app.getMyUser().setUsername(sp.getString("username",""));
-        app.getMyUser().setPassword(sp.getString("password",""));
-        app.getMyUser().setEmail(sp.getString("email",""));
-        app.getMyUser().setEmailpwd(sp.getString("email_pwd",""));
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+//        app.getMyUser().setUsername(sp.getString("username",""));
+//        app.getMyUser().setPassword(sp.getString("password",""));
+//        app.getMyUser().setEmail(sp.getString("email",""));
+//        app.getMyUser().setEmailpwd(sp.getString("email_pwd",""));
     }
 
     //UI组件初始化与事件绑定
@@ -356,20 +356,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     public void savePreferences(){
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString("email",app.getMyUser().getEmail());
-        editor.putString("email_pwd",app.getMyUser().getEmailpwd());
         editor.putString("username",app.getMyUser().getUsername());
         editor.putString("password",app.getMyUser().getPassword());
-        editor.commit();
+        editor.apply();
     }
 
     public void clearPreferences(){
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString("email","");
         editor.putString("email_pwd","");
-        editor.putString("username","");
-        editor.putString("password","");
-        editor.commit();
+        editor.apply();
     }
 
     private Handler handler = new Handler(){

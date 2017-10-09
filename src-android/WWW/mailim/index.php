@@ -39,11 +39,12 @@ switch($type){
 		$newUsername = $data['newUsername'];
 		$newPassword = $data['newPassword'];
 		$sex = $data['sex'];
-		$email = $data['email'];
-		$emailpwd = $data['emailpwd'];
+		$flag = $data['updateemail'];
+		$email = array_key_exists('email',$data)?$data['email']:'';
+		$emailpwd = array_key_exists('emailpwd',$data)?$data['emailpwd']:'';			
 		$qianming = $data['qianming'];
 		if($sql->updateUser($username,$newUsername,$newPassword,
-		1,$email,$emailpwd,$qianming)){
+		$sex,$email,$emailpwd,$qianming,$flag)){
 			echo 'true';
 		}
 		else echo 'false';

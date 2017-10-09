@@ -50,7 +50,7 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
         this.fragment = fragment;
         String str[] = email.split("@");
         user = str[0];
-        if(str.length>0)pop3Server = "pop."+str[1];
+        if(str.length>1)pop3Server = "pop."+str[1];
         this.pwd = pwd;
         MainActivity.app.getMyUser().setEmail(email);
         MainActivity.app.getMyUser().setEmailpwd(pwd);

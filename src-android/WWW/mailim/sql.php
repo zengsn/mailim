@@ -65,18 +65,21 @@ class MailIMSQL{
 	}
 	
 	public function updateUser($username,$newUsername,$password,$sex,$email,
-	$emailpwd,$qianming){
+	$emailpwd,$qianming,$flag = true){
 		$user = $this->getUser($username);
 		if($user)$id = $user['id'];
 		else return false;
 		$sql = "UPDATE user SET"
 			." username = '$newUsername'"
 			.",password = '$password'"
-			.",sex = '$sex'"
-			.",email = '$email'"
-			.",emailpwd = '$emailpwd'"
-			.",qianming = '$qianming'"
+			.",sex = '$sex'";
+		if($flag){
+			$sql .=",email = '$email'"
+			.",emailpwd = '$emailpwd'";
+		}
+		$sql .=",qianming = '$qianming'"
 			." WHERE id = '$id'";
+
 		return mysql_query($sql);
 	}
 
@@ -86,7 +89,7 @@ class MailIMSQL{
 	
 	public function updataOnline($username,$password){
 		if(!$this->checkUser($username,$password))return false;
-		$value = strval(time()+30);
+		$value = strval(time()+10);
 		return mysql_query("UPDATE user SET online = '$value' WHERE username = '$username'");
 	}
 

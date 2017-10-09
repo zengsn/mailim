@@ -154,34 +154,33 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         myself.setUsername(et_username.getText().toString());
         myself.setPassword(et_password.getText().toString());
         myself.setSex(rb_male.isChecked());
+        myself.setQianming(et_qianming.getText().toString());
         if(!cb_no_updataemail.isChecked()) {
             myself.setEmail(et_email.getText().toString());
             myself.setEmailpwd(et_emailpwd.getText().toString());
+            new Thread() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    if (EmailUtil.checkEmail(myself.getEmail(), myself.getEmailpwd())) {
+                        Message msg = new Message();
+                        msg.what = 4;
+                        handler.sendMessage(msg);
+                    } else {
+                        Message msg = new Message();
+                        msg.what = 2;
+                        Bundle bundle = new Bundle();
+                        bundle.putString("title", "错误");
+                        bundle.putString("message", "邮箱或邮箱密码错误！");
+                        msg.setData(bundle);
+                        msg.obj = new String("邮箱或邮箱密码错误！");
+                        handler.sendMessage(msg);
+                    }
+                    super.run();
+                }
+            }.start();
         }
-        myself.setQianming(et_qianming.getText().toString());
-        new Thread() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                if(EmailUtil.checkEmail(myself.getEmail(),myself.getEmailpwd()))
-                {
-                    Message msg = new Message();
-                    msg.what = 4;
-                    handler.sendMessage(msg);
-                }
-                else {
-                    Message msg = new Message();
-                    msg.what = 2;
-                    Bundle bundle = new Bundle();
-                    bundle.putString("title","错误");
-                    bundle.putString("message","邮箱或邮箱密码错误！");
-                    msg.setData(bundle);
-                    msg.obj = new String("邮箱或邮箱密码错误！");
-                    handler.sendMessage(msg);
-                }
-                super.run();
-            }
-        }.start();
+        else updataUser();
     }
 
     private void onHeadActivity(){
@@ -254,6 +253,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         jsonObject.put("email",myself.getEmail());
         jsonObject.put("emailpwd",myself.getEmailpwd());
         jsonObject.put("qianming",myself.getQianming());
+        jsonObject.put("updateemail",!cb_no_updataemail.isChecked());
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {

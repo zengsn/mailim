@@ -66,16 +66,19 @@ public class EmailUtil {
 
 
     public static String getUsername(String email){
+        if(null == email || "".equals(email))return "";
         return email.split("@")[0];
     }
 
     public static String getPopAddr(String email){
+        if(null == email || "".equals(email))return "";
         String str[] = email.split("@");
         if(str.length>1) return "pop."+str[1];
         return null;
     }
 
     public static String getSmtpAddr(String email){
+        if(null == email || "".equals(email))return "";
         String str[] = email.split("@");
         if(str.length>1) return "smtp."+str[1];
         return null;

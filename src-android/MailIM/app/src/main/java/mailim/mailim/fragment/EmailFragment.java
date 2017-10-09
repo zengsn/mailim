@@ -45,7 +45,11 @@ public class EmailFragment extends Fragment {
 //        ToastUtil.show(getActivity(),"接收邮件...");
         String email = MainActivity.app.getMyUser().getEmail();
         String pwd = MainActivity.app.getMyUser().getEmailpwd();
-        if(!EmailUtil.isEmail(email))return false;
+        if(!EmailUtil.isEmail(email)){
+            ToastUtil.show(getActivity(),"邮箱账号不正确");
+            return false;
+        }
+
         emaiRecever = new EmaiRecever(this,email,pwd);
         emaiRecever.execute();
         return true;
@@ -63,11 +67,7 @@ public class EmailFragment extends Fragment {
         adapter = new MyAdapter();
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new MyOnItemClickListener());
-        if(!recevieEmail()){
-            Intent intent = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(intent);
-        }
-
+        recevieEmail();
         return view;
     }
 

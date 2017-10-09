@@ -146,6 +146,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent);
                 Intent intent1 = new Intent(getActivity(),PulseService.class);
                 getActivity().stopService(intent1);
+                MainActivity.mContext.clearPreferences();
                 MainActivity.mContext.finish();
                 break;
         }
