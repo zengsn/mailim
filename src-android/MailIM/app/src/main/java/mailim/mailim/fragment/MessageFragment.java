@@ -104,13 +104,13 @@ public class MessageFragment extends Fragment {
 
     private static void intiData(){
         InputUtil<Message> inputUtil = new InputUtil<Message>();
-        List<Message> list = inputUtil.readListFromSdCard(MainActivity.app.getPath()+"message.zzh");
+        List<Message> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"message.zzh");
         if(list != null)messageList = list;
     }
 
     private static void saveData(){
         OutputUtil<Message> outputUtil = new OutputUtil<Message>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getPath()+"message.zzh",messageList);
+        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"message.zzh",messageList);
     }
 
     private void intiView(){

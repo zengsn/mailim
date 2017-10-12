@@ -7,13 +7,23 @@ import java.io.Serializable;
  */
 public class Chat implements Serializable {
     private boolean isMyself;
-    private int type;
+    private String type;
     private String time;
     private String text;
+    private String mulId;
 
     public Chat(boolean isMyself, String text){
         setMyself(isMyself);
         setText(text);
+        setType("text");
+        setTime(String.valueOf(System.currentTimeMillis()/1000));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Chat c = (Chat)obj;
+        if(time.equals(c.getTime()))return true;
+        return false;
     }
 
     public boolean isMyself() {
@@ -24,12 +34,20 @@ public class Chat implements Serializable {
         isMyself = myself;
     }
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
+    }
+
+    public String getMulId() {
+        return mulId;
+    }
+
+    public void setMulId(String mulId) {
+        this.mulId = mulId;
     }
 
     public String getTime() {

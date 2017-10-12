@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +28,12 @@ import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import mailim.mailim.fragment.MessageFragment;
+import mailim.mailim.util.EmailSender;
 import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.MyApplication;
 import mailim.mailim.R;
@@ -109,13 +113,21 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void intiData(){
         InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-        List<Chat> list = inputUtil.readListFromSdCard(MainActivity.app.getChatPath()+username+".zzh");
-        if(list != null)chatList = list;
+        List<Chat> localChat = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+username+".zzh");
+        List<Chat> mailChat = inputUtil.readListFromSdCard(MainActivity.app.getDownloadPath()+username+".zzh");
+        if(localChat != null && mailChat != null){
+            chatList.clear();
+            chatList.addAll(mailChat);
+            chatList.removeAll(localChat);
+            chatList.addAll(localChat);
+        }
+        else if(localChat != null)chatList = localChat;
+        else if(mailChat != null) chatList = mailChat;
     }
 
     private void saveData(){
         OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getChatPath()+username+".zzh",chatList);
+        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+username+".zzh",chatList);
     }
 
     /**

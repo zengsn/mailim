@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.util.Log;
 
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
@@ -17,6 +18,10 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.Message;
+
+import mailim.mailim.activity.MainActivity;
+import mailim.mailim.entity.Chat;
 import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.User;
 
@@ -29,6 +34,24 @@ public class MyApplication extends Application {
     private List<String> newFriends = new ArrayList<String>();
     private boolean isLogin;
     private Target target;
+    private List<Message> inboxMessages = new ArrayList<>();
+    private List<Message> mailimMessages = new ArrayList<>();
+
+    public List<Message> getInboxMessages() {
+        return inboxMessages;
+    }
+
+    public void setInboxMessages(List<Message> inboxMessages) {
+        this.inboxMessages = inboxMessages;
+    }
+
+    public List<Message> getMailimMessages() {
+        return mailimMessages;
+    }
+
+    public void setMailimMessages(List<Message> mailimMessages) {
+        this.mailimMessages = mailimMessages;
+    }
 
     @Override
     public void onCreate(){
@@ -57,12 +80,26 @@ public class MyApplication extends Application {
         return users;
     }
 
-    public String getPath(){
-        return "mailim/"+myUser.getUsername()+"/";
+    public File getDownlaodFile(String name){
+        File file = new File(Environment.getExternalStorageDirectory()
+                +"/mailim/"+myUser.getUsername()+"/download/",name);
+        if(!file.getParentFile().exists())file.getParentFile().mkdirs();
+        return file;
     }
 
-    public String getChatPath(){
-        return getPath()+"chat/";
+    public File getLocalFile(String name){
+        File file = new File(Environment.getExternalStorageDirectory()
+                +"/mailim/"+myUser.getUsername()+"/local/",name);
+        if(!file.getParentFile().exists())file.getParentFile().mkdirs();
+        return file;
+    }
+
+    public String getLocalPath(){
+        return "mailim/"+myUser.getUsername()+"/local/";
+    }
+
+    public String getDownloadPath(){
+        return "mailim/"+myUser.getUsername()+"/download/";
     }
 
     public File getHeadFile(String fileName){

@@ -2,12 +2,24 @@ package mailim.mailim.util;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Looper;
+import android.os.ParcelUuid;
+import android.support.annotation.NonNull;
+import android.util.ArrayMap;
+import android.util.Log;
+
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.MessageVanishedEvent;
+import com.sun.mail.imap.ResyncData;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +33,8 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.event.MailEvent;
+import javax.mail.event.MessageChangedEvent;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -35,7 +49,8 @@ import mailim.mailim.fragment.EmailFragment;
  */
 public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
     // 连接pop3服务器的主机名、协议、用户名、密码
-    protected String pop3Server;
+    protected String protocol = "pop";
+    protected String server;
     protected String user;
     protected String pwd;
 
@@ -50,7 +65,10 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
         this.fragment = fragment;
         String str[] = email.split("@");
         user = str[0];
-        if(str.length>1)pop3Server = "pop."+str[1];
+        if(str.length>1){
+            if(str[1].equals("qq.com"))protocol = "imap";
+            server = protocol+"."+str[1];
+        }
         this.pwd = pwd;
         MainActivity.app.getMyUser().setEmail(email);
         MainActivity.app.getMyUser().setEmailpwd(pwd);
@@ -79,36 +97,62 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
     protected List<Email> doInBackground(Void... params) {
         List<Email> emails = new ArrayList<Email>();
         Message[] messages;
+        List<Message> inboxMessages = MainActivity.app.getInboxMessages();
+        List<Message> mailimMessages = MainActivity.app.getMailimMessages();
         try {
-            Store store = EmailUtil.login(pop3Server,user,pwd);
+            Store store = EmailUtil.login(server,user,pwd);
             if(store == null){
                 publishProgress("连接邮箱服务器失败！");
             }
             else {
-                Folder folder = store.getFolder("INBOX");
-                folder.open(Folder.READ_ONLY);
-                messages = folder.getMessages();
-                int mailCounts = messages.length;
-                for (int i = 0; i < mailCounts; i++) {
-                    Email email = new Email();
-                    email.setSubject(messages[i].getSubject());
-                    String str[] = messages[i].getFrom()[0].toString().split(" ");
-                    if (str.length == 1) {
-                        email.setFrom_address(str[0]);
-                    } else {
-                        email.setFrom_address(str[1].substring(1, str[1].length() - 1));
-                    }
-                    email.setSendDate(messages[i].getSentDate());
-                    email.setMultipart(messages[i].isMimeType("multipart/*"));
-                    email.setContent(getAllMultipart(messages[i]));
-                    email.setEmpty(false);
-                    emails.add(email);
+                Folder defaultfolder = store.getDefaultFolder();
+                Folder folders[] = defaultfolder.list();
+                for (Folder folder1 : folders) {
+                    publishProgress(String.valueOf(folder1.getName()));
                 }
-                folder.close(false);
+                Folder folder = null;
+                if(server.indexOf("imap")>=0){
+                    folder = folders[0].getFolder("mailim");
+                    if(!folder.exists())folder.create(Folder.HOLDS_MESSAGES);
+                    folder.open(Folder.READ_ONLY);
+                    messages = folder.getMessages();
+                    int count = messages.length;
+                    for (int i = 0;i < count; i++){
+                        mailimMessages.add(0,messages[i]);
+                    }
+                } else{
+                    folder = store.getFolder("mailim");
+                    if(folder.exists())publishProgress("mailim存在"+String.valueOf(folder.getMessageCount()));
+                }
+                folder = store.getFolder("INBOX");
+                if (folder != null) {
+                    publishProgress(String.valueOf(folder.getMessageCount()));
+                    folder.open(Folder.READ_ONLY);
+                    messages = folder.getMessages();
+                    int mailCounts = messages.length;
+                    for (int i = 0; i < mailCounts && i < 20; i++) {
+                        Email email = new Email();
+                        email.setSubject(messages[i].getSubject());
+                        String str[] = messages[i].getFrom()[0].toString().split(" ");
+                        if (str.length == 1) {
+                            email.setFrom_address(str[0]);
+                        } else {
+                            email.setFrom_address(str[1].substring(1, str[1].length() - 1));
+                        }
+                        email.setSendDate(messages[i].getSentDate());
+                        email.setMultipart(messages[i].isMimeType("multipart/*"));
+                        email.setContent(getAllMultipart(messages[i]));
+                        email.setEmpty(false);
+                        emails.add(0,email);
+                        inboxMessages.add(0,messages[i]);
+                    }
+                    folder.close(false);
+                }
                 store.close();
             }
         } catch (MessagingException e) {
             e.printStackTrace();
+            Log.e("open",e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -120,7 +164,7 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
      * @param part
      * @throws Exception
      */
-    private static String getAllMultipart(Part part) throws Exception{
+    private String getAllMultipart(Part part) throws Exception{
         String contentType = part.getContentType();
         int index = contentType.indexOf("name");
         boolean conName = false;
@@ -139,45 +183,43 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
             for (int i = 0; i < counts; i++) {
                 //递归获取数据
                 text = getAllMultipart(multipart.getBodyPart(i));
-//                //附件可能是截图或上传的(图片或其他数据)
-//                if (multipart.getBodyPart(i).getDisposition() != null) {
-//                    //附件为截图
-//                    if (multipart.getBodyPart(i).isMimeType("image/*")) {
-//                        InputStream is = multipart.getBodyPart(i)
-//                                .getInputStream();
-//                        String name = multipart.getBodyPart(i).getFileName();
-//                        String fileName;
-//                        //截图图片
-//                        if(name.startsWith("=?")){
-//                            fileName = name.substring(name.lastIndexOf(".") - 1,name.lastIndexOf("?="));
-//                        }else{
-//                            //上传图片
-//                            fileName = name;
-//                        }
-//
-//                        FileOutputStream fos = new FileOutputStream("D:\\"
-//                                + fileName);
-//                        int len = 0;
-//                        byte[] bys = new byte[1024];
-//                        while ((len = is.read(bys)) != -1) {
-//                            fos.write(bys,0,len);
-//                        }
-//                        fos.close();
-//                    } else {
-//                        //其他附件
-//                        InputStream is = multipart.getBodyPart(i)
-//                                .getInputStream();
-//                        String name = multipart.getBodyPart(i).getFileName();
-//                        FileOutputStream fos = new FileOutputStream("D:\\"
-//                                + name);
-//                        int len = 0;
-//                        byte[] bys = new byte[1024];
-//                        while ((len = is.read(bys)) != -1) {
-//                            fos.write(bys,0,len);
-//                        }
-//                        fos.close();
-//                    }
-//                }
+                //附件可能是截图或上传的(图片或其他数据)
+                if (multipart.getBodyPart(i).getDisposition() != null) {
+                    //附件为截图
+                    if (multipart.getBodyPart(i).isMimeType("image/*")) {
+                        InputStream is = multipart.getBodyPart(i)
+                                .getInputStream();
+                        String name = multipart.getBodyPart(i).getFileName();
+                        String fileName;
+                        //截图图片
+                        if(name.startsWith("=?")){
+                            fileName = name.substring(name.lastIndexOf(".") - 1,name.lastIndexOf("?="));
+                        }else{
+                            //上传图片
+                            fileName = name;
+                        }
+
+                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(fileName));
+                        int len = 0;
+                        byte[] bys = new byte[1024];
+                        while ((len = is.read(bys)) != -1) {
+                            fos.write(bys,0,len);
+                        }
+                        fos.close();
+                    } else {
+                        //其他附件
+                        InputStream is = multipart.getBodyPart(i)
+                                .getInputStream();
+                        String name = multipart.getBodyPart(i).getFileName();
+                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(name));
+                        int len = 0;
+                        byte[] bys = new byte[1024];
+                        while ((len = is.read(bys)) != -1) {
+                            fos.write(bys,0,len);
+                        }
+                        fos.close();
+                    }
+                }
             }
         }else if (part.isMimeType("message/rfc822")) {
             text = getAllMultipart((Part) part.getContent());

@@ -25,6 +25,7 @@ import com.squareup.picasso.Target;
 import org.apache.http.Header;
 
 import mailim.mailim.entity.User;
+import mailim.mailim.util.EmailSender;
 import mailim.mailim.util.MyApplication;
 import mailim.mailim.R;
 import mailim.mailim.fragment.EmailFragment;
@@ -223,7 +224,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 startActivity(intent);
                 break;
             case R.id.title_add:
-                inputUsername();
+                EmailSender.sendMail("zhangzhanhong218@163.com","chat","",MainActivity.app.getLocalFile("zzh.zzh"));
+//                inputUsername();
                 break;
             case R.id.home_my_info:
                 Intent intent2 = new Intent(this,MyInfoActivity.class);

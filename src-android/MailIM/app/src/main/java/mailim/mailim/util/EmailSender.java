@@ -1,5 +1,6 @@
 package mailim.mailim.util;
 
+import java.io.File;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -14,6 +15,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import mailim.mailim.activity.MainActivity;
+
 /**
  * Created by zzh on 2017/9/12.
  */
@@ -23,9 +26,28 @@ public class EmailSender {
 
     }
 
-    public void sendMail(String toMail, String fromMail, String server,
+    public static void sendMail(final String to, final String sub, final String text,
+                                final File file){
+        new Thread(){
+            @Override
+            public void run() {
+                String from = MainActivity.app.getMyUser().getEmail();
+                String server = EmailUtil.getSmtpAddr(from);
+                String username = EmailUtil.getUsername(from);
+                String password = MainActivity.app.getMyUser().getEmailpwd();
+                try {
+                    sendMail(to,from,server,username,password,sub,text,file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                super.run();
+            }
+        }.start();
+    }
+
+    public static void sendMail(String toMail, String fromMail, String server,
                          String username, String password, String title, String body,
-                         String attachment) throws Exception {
+                         File attachment) throws Exception {
 
         Properties props = System.getProperties();// Get system properties
 

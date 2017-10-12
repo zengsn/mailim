@@ -33,7 +33,6 @@ public class SendEmailActivity extends AppCompatActivity {
     private EditText title;
     private EditText body;
     private Button send;
-    private EmailSender emailSender;
 
     private Handler handler = new Handler(){
         @Override
@@ -74,8 +73,6 @@ public class SendEmailActivity extends AppCompatActivity {
     }
 
     private void inti(){
-        emailSender = new EmailSender();
-
         to = (EditText)findViewById(R.id.send_email_to);
         title = (EditText)findViewById(R.id.send_email_title);
         body = (EditText)findViewById(R.id.send_email_body);
@@ -146,29 +143,13 @@ public class SendEmailActivity extends AppCompatActivity {
     private void send(){
         final String to = this.to.getText().toString();
         if(!EmailUtil.isEmail(to)){
-            Toast.makeText(MainActivity.app,"邮箱地址格式有误！",Toast.LENGTH_SHORT).show();
+            ToastUtil.show(MainActivity.app,"邮箱地址格式有误！");
             return;
         }
         final String title = this.title.getText().toString();
         final String body = this.body.getText().toString();
-        final String form = MainActivity.app.getMyUser().getEmail();
-        final String pwd = MainActivity.app.getMyUser().getEmailpwd();
-        final String server = EmailUtil.getSmtpAddr(form);
-        new Thread(){
-            public void run() {
-                Message msg = new Message();
-                msg.what = 1;
-                try {
-                    msg.obj = new String("已发送");
-                    handler.sendMessage(msg);
-                    emailSender.sendMail(to,form,server,EmailUtil.getUsername(form),pwd,title,body,null);
-                    finish();
-                } catch (Exception e) {
-                    msg.obj = e.getMessage();
-                    handler.sendMessage(msg);
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+        EmailSender.sendMail(to,title,body,null);
+        ToastUtil.show(MainActivity.app,"已发送");
+        finish();
     }
 }

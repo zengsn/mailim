@@ -32,7 +32,7 @@ public class EmailUtil {
     }
 
     public static boolean checkEmail(String email,String pwd){
-        String host = getPopAddr(email);
+        String host = getImapAddr(email);
         String user = getUsername(email);
         Store store = login(host,user,pwd);
         if(store == null)return false;
@@ -47,14 +47,23 @@ public class EmailUtil {
         Session session = Session.getInstance(props,myauth);
         try {
             /**  QQ邮箱需要建立ssl连接 */
-            props.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.setProperty("mail.pop3.socketFactory.fallback", "false");
-            props.setProperty("mail.pop3.starttls.enable","true");
-            props.setProperty("mail.pop3.port", "995");
-            props.setProperty("mail.pop3.socketFactory.port", "995");
+            if(host.indexOf("pop")>=0) {
+                props.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                props.setProperty("mail.pop3.socketFactory.fallback", "false");
+                props.setProperty("mail.pop3.starttls.enable","true");
+                props.setProperty("mail.pop3.port", "995");
+                props.setProperty("mail.pop3.socketFactory.port", "995");
+                store = session.getStore("pop3");
+            }else {
+                props.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                props.setProperty("mail.imap.socketFactory.fallback", "false");
+                props.setProperty("mail.imap.starttls.enable", "true");
+                props.setProperty("mail.imap.port", "993");
+                props.setProperty("mail.imap.socketFactory.port", "993");
+                store = session.getStore("imaps");
+            }
             // 创建Session实例对象
             // Session session = Session.getInstance(props);  //pop3/smtp :jwovgwaypwrebecd
-            store = session.getStore("pop3");
             store.connect(host,user,password);
         } catch (MessagingException e) {
             Log.e("mail",e.toString());
@@ -81,6 +90,13 @@ public class EmailUtil {
         if(null == email || "".equals(email))return "";
         String str[] = email.split("@");
         if(str.length>1) return "smtp."+str[1];
+        return null;
+    }
+
+    public static String getImapAddr(String email){
+        if(null == email || "".equals(email))return "";
+        String str[] = email.split("@");
+        if(str.length>1) return "imap."+str[1];
         return null;
     }
 
