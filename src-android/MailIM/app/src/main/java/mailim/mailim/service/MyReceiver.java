@@ -25,6 +25,7 @@ import mailim.mailim.activity.ChatActivity;
 import mailim.mailim.activity.MainActivity;
 import mailim.mailim.activity.SettingsActivity;
 import mailim.mailim.entity.Chat;
+import mailim.mailim.entity.Friend;
 import mailim.mailim.fragment.MessageFragment;
 import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.MyApplication;
@@ -46,11 +47,11 @@ public class MyReceiver extends BroadcastReceiver {
             List<Chat> list = null;
             if(ChatActivity.mContext == null) {
                 InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-                list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath() + username + ".zzh");
+                list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath() + username);
                 if (list == null) list = new ArrayList<Chat>();
                 list.add(chat);
                 OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
-                outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath() + username + ".zzh", list);
+                outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath() + username , list);
                 MessageFragment.addMessage(username,chat.getText(), true);
                 MainActivity.updataNum();
                 notification(context, username, chat.getText());

@@ -6,31 +6,41 @@ import java.io.Serializable;
  * Created by zzh on 2017/9/16.
  */
 public class Message implements Serializable {
-    private boolean raw;
+    private int raw;
     private String username;
+    private String email;
     private String last;
 
-    public String getLast() {
-        return last;
+    public Message(String name,String email,String last){
+        setUsername(name);
+        setEmail(email);
+        setLast(last);
+        setRaw(1);
     }
 
-    public void setLast(String last) {
-        this.last = last;
+    @Override
+    public boolean equals(Object obj) {
+        String string = (String)obj;
+        return username.equals(string);
     }
 
-    public Message(String name,String last){
-        this.last = last;
-        username = name;
-        raw = true;
+    public boolean isRaw(){
+        return raw>0;
     }
 
-    public Message(){}
+    public void addRaw(){
+        raw++;
+    }
 
-    public boolean isRaw() {
+    public void subRaw(){
+        if(raw>0)raw--;
+    }
+
+    public int getRaw() {
         return raw;
     }
 
-    public void setRaw(boolean raw) {
+    public void setRaw(int raw) {
         this.raw = raw;
     }
 
@@ -40,5 +50,21 @@ public class Message implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLast() {
+        return last;
+    }
+
+    public void setLast(String last) {
+        this.last = last;
     }
 }

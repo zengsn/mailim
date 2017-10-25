@@ -66,9 +66,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     public void loadHead(){
-        MainActivity.app.loadHead(MainActivity.app.getMyUser().getUsername());
+        MainActivity.app.loadHead(MainActivity.app.getMyUser().getEmail());
         Picasso.with(MainActivity.app)
-                .load(Constant.HEAD_URL+MainActivity.app.getMyUser().getUsername()+"?time="+ System.currentTimeMillis())
+                .load(Constant.HEAD_URL+MainActivity.app.getMyUser().getEmail()+"?time="+ System.currentTimeMillis())
                 .networkPolicy(NetworkPolicy.NO_CACHE)
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(headView);
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
                 if("true".equals(str)) {
-                    MainActivity.app.loadHead(MainActivity.app.getMyUser().getUsername());
+                    MainActivity.app.loadHead(MainActivity.app.getMyUser().getEmail());
                     loadHead();
                 }
                 else{
@@ -146,8 +146,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent);
                 Intent intent1 = new Intent(getActivity(),PulseService.class);
                 getActivity().stopService(intent1);
-                MainActivity.mContext.clearPreferences();
+//                MainActivity.mContext.clearPreferences();
                 MainActivity.mContext.finish();
+                MainActivity.app.unLogin();
                 break;
         }
     }

@@ -83,7 +83,7 @@ public class OutputUtil<T> {
     public boolean writeListIntoSDcard(String fileName,List<T> list){
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录
-            File sdFile  = new File(sdCardDir, fileName);
+            File sdFile  = new File(sdCardDir, fileName+".txt");
             if(!sdFile.getParentFile().exists())sdFile.getParentFile().mkdirs();
             try {
                 FileOutputStream fos = new FileOutputStream(sdFile);

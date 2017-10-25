@@ -47,7 +47,7 @@ public class EmailUtil {
         Session session = Session.getInstance(props,myauth);
         try {
             /**  QQ邮箱需要建立ssl连接 */
-            if(host.indexOf("pop")>=0) {
+            if(host.contains("pop")) {
                 props.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
                 props.setProperty("mail.pop3.socketFactory.fallback", "false");
                 props.setProperty("mail.pop3.starttls.enable","true");
@@ -88,6 +88,7 @@ public class EmailUtil {
 
     public static String getSmtpAddr(String email){
         if(null == email || "".equals(email))return "";
+        if(email.contains("qq.com"))return "smtp.exmail.qq.com";
         String str[] = email.split("@");
         if(str.length>1) return "smtp."+str[1];
         return null;

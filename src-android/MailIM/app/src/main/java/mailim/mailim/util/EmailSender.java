@@ -28,13 +28,14 @@ public class EmailSender {
 
     public static void sendMail(final String to, final String sub, final String text,
                                 final File file){
+        final String from = MainActivity.app.getMyUser().getEmail();
+        final String server = EmailUtil.getSmtpAddr(from);
+        final String username = EmailUtil.getUsername(from);
+        final String password = MainActivity.app.getMyUser().getEmailpwd();
+//        final String password = "zzh74849264";
         new Thread(){
             @Override
             public void run() {
-                String from = MainActivity.app.getMyUser().getEmail();
-                String server = EmailUtil.getSmtpAddr(from);
-                String username = EmailUtil.getUsername(from);
-                String password = MainActivity.app.getMyUser().getEmailpwd();
                 try {
                     sendMail(to,from,server,username,password,sub,text,file);
                 } catch (Exception e) {
@@ -49,15 +50,24 @@ public class EmailSender {
                          String username, String password, String title, String body,
                          File attachment) throws Exception {
 
-        Properties props = System.getProperties();// Get system properties
+        Properties props = new Properties();// Get system properties
 
         props.put("mail.smtp.host", server);// Setup mail server
 
         props.put("mail.smtp.auth", "true");
 
-        EmailUtil.MyAuthenticator myauth =new EmailUtil.MyAuthenticator(username, password);// Get
+//        props.put("defaultEncoding","UTF-8");
+
+
+        EmailUtil.MyAuthenticator myauth =new EmailUtil.MyAuthenticator(fromMail, password);// Get
 
         Session session = Session.getInstance(props, myauth);
+
+//        props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+//        props.setProperty("mail.smtp.socketFactory.fallback", "true");
+//        props.setProperty("mail.smtp.starttls.enable", "true");
+//        props.setProperty("mail.smtp.port", "465");
+//        props.setProperty("mail.smtp.socketFactory.port", "465");
 
         MimeMessage message = new MimeMessage(session); // Define message
 
@@ -87,5 +97,9 @@ public class EmailSender {
         message.setContent(allMultipart);
         message.saveChanges();
         Transport.send(message);
+        android.os.Message msg = new android.os.Message();
+        msg.what = 1;
+        msg.obj = new String("邮件已发送！");
+        MainActivity.app.handler.sendMessage(msg);
     }
 }

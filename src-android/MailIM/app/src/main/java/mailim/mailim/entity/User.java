@@ -20,6 +20,16 @@ public class User implements Serializable {
         sex = true;
     }
 
+    public void clear(){
+        id = -1;
+        username = "";
+        password = "";
+        nickname = "";
+        email = "";
+        emailpwd = "";
+        qianming = "";
+    }
+
     public int getId() {
         return id;
     }

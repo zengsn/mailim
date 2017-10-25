@@ -23,6 +23,7 @@ import java.util.List;
 import mailim.mailim.R;
 import mailim.mailim.activity.ChatActivity;
 import mailim.mailim.activity.MainActivity;
+import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.Message;
 import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.OutputUtil;
@@ -63,7 +64,7 @@ public class MessageFragment extends Fragment {
     public static void clearRaw(String username){
         for(Message message:messageList){
             if(message.getUsername().equals(username)) {
-                message.setRaw(false);
+                message.setRaw(0);
             }
         }
         MainActivity.updataNum();
@@ -81,14 +82,14 @@ public class MessageFragment extends Fragment {
         return count;
     }
 
-    public static void addMessage(String username,String last,boolean toTop){
+    public static void addMessage(String email,String last,boolean toTop){
         Message message = null;
 //        intiData();
         boolean flag = true;
         Iterator<Message> iterator = messageList.iterator();
         while (iterator.hasNext()){
             message = iterator.next();
-            if(username.equals(message.getUsername())){
+            if(email.equals(message.getEmail())){
                 if(toTop){
                     iterator.remove();
                 }
@@ -96,7 +97,7 @@ public class MessageFragment extends Fragment {
                 flag = false;
             }
         }
-        message = new Message(username,last);
+        message = new Message(MainActivity.app.getFriendUsername(email),email,last);
         if(flag || toTop)messageList.add(0,message);
 //        saveData();
         adapter.notifyDataSetChanged();
@@ -104,13 +105,13 @@ public class MessageFragment extends Fragment {
 
     private static void intiData(){
         InputUtil<Message> inputUtil = new InputUtil<Message>();
-        List<Message> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"message.zzh");
+        List<Message> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"message");
         if(list != null)messageList = list;
     }
 
     private static void saveData(){
         OutputUtil<Message> outputUtil = new OutputUtil<Message>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"message.zzh",messageList);
+        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"message",messageList);
     }
 
     private void intiView(){
@@ -148,7 +149,7 @@ public class MessageFragment extends Fragment {
             ImageView imageView = (ImageView) convertView.findViewById(R.id.list_item_message_image);
             MainActivity.app.loadHead(messageList.get(position).getUsername());
             Picasso.with(getActivity())
-                    .load(MainActivity.app.getHeadFile(messageList.get(position).getUsername()))
+                    .load(MainActivity.app.getHeadFile(messageList.get(position).getEmail()))
                     .networkPolicy(NetworkPolicy.NO_CACHE)
                     .memoryPolicy(MemoryPolicy.NO_CACHE)
                     .into(imageView);
@@ -161,8 +162,8 @@ public class MessageFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent(getActivity(), ChatActivity.class);
-            String username = messageList.get(position).getUsername();
-            intent.putExtra("username",username);
+            String email = messageList.get(position).getEmail();
+            intent.putExtra("email",email);
             startActivity(intent);
         }
     }

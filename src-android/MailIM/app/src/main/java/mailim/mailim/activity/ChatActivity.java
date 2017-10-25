@@ -32,9 +32,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import mailim.mailim.entity.Friend;
 import mailim.mailim.fragment.MessageFragment;
 import mailim.mailim.util.EmailSender;
 import mailim.mailim.util.InputUtil;
+import mailim.mailim.util.MailMessageUtil;
 import mailim.mailim.util.MyApplication;
 import mailim.mailim.R;
 import mailim.mailim.entity.Chat;
@@ -48,7 +50,7 @@ import mailim.mailim.util.ToastUtil;
  *聊天界面
  */
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
-    private String username;
+    private Friend friend;
     private List<Chat> chatList = new ArrayList<Chat>();
     private ListView myLV;
     private MyAdapter adapter;
@@ -93,14 +95,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      *初始化
      */
     private void inti(){
-        username = getIntent().getStringExtra("username");
-        setTitle(username);
-        MessageFragment.clearRaw(username);
-        if("".equals(username))finish();
+        String email = getIntent().getStringExtra("email");
+        friend = MainActivity.app.getFriend(email);
+        setTitle(friend.getUsername());
+        MessageFragment.clearRaw(friend.getUsername());
+        if("".equals(friend.getUsername()))finish();
         Button btnSend = (Button)findViewById(R.id.btn_right);
         btnSend.setOnClickListener(this);
         myLV = (ListView)findViewById(R.id.lv_chat);
-        intiData();
+//        intiData();
+//        chatList = MainActivity.app.getChatOnMail(friend.getEmail());
+        chatList = MailMessageUtil.getChatList(MainActivity.app.getInboxEmail(),email);
         adapter = new MyAdapter(this);
         myLV.setAdapter(adapter);
         myLV.setSelection(adapter.getCount()-1);
@@ -113,8 +118,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void intiData(){
         InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-        List<Chat> localChat = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+username+".zzh");
-        List<Chat> mailChat = inputUtil.readListFromSdCard(MainActivity.app.getDownloadPath()+username+".zzh");
+        List<Chat> localChat = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+friend.getEmail());
+        List<Chat> mailChat = inputUtil.readListFromSdCard(MainActivity.app.getDownloadPath()+friend.getEmail());
         if(localChat != null && mailChat != null){
             chatList.clear();
             chatList.addAll(mailChat);
@@ -127,7 +132,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveData(){
         OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+username+".zzh",chatList);
+        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+friend.getEmail(),chatList);
+        if(newChat){
+            InputUtil<String> inputUtil = new InputUtil<String>();
+            List<String> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"newChatList");
+            if(null !=list){
+                if(!list.contains(friend.getUsername()))list.add(friend.getUsername());
+            }
+            else {
+                list = new ArrayList<String>();
+                list.add(friend.getUsername());
+            }
+            OutputUtil<String> stringOutputUtil = new OutputUtil<String>();
+            stringOutputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"newChatList",list);
+        }
     }
 
     /**
@@ -160,61 +178,56 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void send(final Chat chat){
         final MyApplication app = (MyApplication)getApplication();
-        final String username = app.getMyUser().getUsername();
-        final String password = app.getMyUser().getPassword();
         String type = "online";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("username", username);
-        jsonObject.put("password",password);
-        jsonObject.put("name",this.username);
-        String json = null;
-        try {
-            json = DESUtil.ENCRYPTMethod(jsonObject.toString(), Constant.KEY);
-        } catch (Exception e) {
-            e.printStackTrace();
-            ToastUtil.show(app,e.getMessage());
-        }
-        RequestParams params = new RequestParams();
-        params.put("json",json);
-        MyHttp.post("index.php", params, new AsyncHttpResponseHandler() {
+        jsonObject.put("name",this.friend.getUsername());
+        jsonObject.put("email",this.friend.getEmail());
+        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
+                addChat(chat);
+                EditText etMeg = (EditText)findViewById(R.id.et_meg);
+                etMeg.setText("");
                 if("true".equals(str)) {
+                    chat.setStatus(1);
                     sendChat(chat);
                 }
                 else {
-                    AlertDialog.Builder normalDialog =
-                            new AlertDialog.Builder(ChatActivity.this);
-//                    normalDialog.setIcon(R.drawable);
-                    normalDialog.setTitle("提示").setMessage("对方不在线，您要?");
-                    normalDialog.setPositiveButton("继续发送",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    sendChat(chat);
-                                }
-                            });
-                    normalDialog.setNeutralButton("邮件发送",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent(ChatActivity.this,SendEmailActivity.class);
-                                    intent.putExtra("text",chat.getText());
-                                    intent.putExtra("name",username);
-                                    startActivity(intent);
-                                }
-                            });
-                    normalDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // ...To-do
-                        }
-                    });
-                    // 创建实例并显示
-                    normalDialog.show();
-                    ToastUtil.show(getApplicationContext(),str);
+                    chat.setStatus(2);
+                    saveData();
+                    MainActivity.app.emailChat(friend.getEmail());
+//                    AlertDialog.Builder normalDialog =
+//                            new AlertDialog.Builder(ChatActivity.this);
+////                    normalDialog.setIcon(R.drawable);
+//                    normalDialog.setTitle("提示").setMessage("对方不在线，您要?");
+//                    normalDialog.setPositiveButton("继续发送",
+//                            new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    sendChat(chat);
+//                                }
+//                            });
+//                    normalDialog.setNeutralButton("邮件发送",
+//                            new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    Intent intent = new Intent(ChatActivity.this,SendEmailActivity.class);
+//                                    intent.putExtra("text",chat.getText());
+//                                    intent.putExtra("name",username);
+//                                    startActivity(intent);
+//                                }
+//                            });
+//                    normalDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            // ...To-do
+//                        }
+//                    });
+//                    // 创建实例并显示
+//                    normalDialog.show();
+//                    ToastUtil.show(getApplicationContext(),str);
                 }
             }
 
@@ -227,29 +240,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendChat(Chat chat){
-        addChat(chat);
-        EditText etMeg = (EditText)findViewById(R.id.et_meg);
-        etMeg.setText("");
-        final MyApplication app = (MyApplication)getApplication();
-        final String username = app.getMyUser().getUsername();
-        final String password = app.getMyUser().getPassword();
         String type = "chat";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("username", username);
-        jsonObject.put("password",password);
-        jsonObject.put("to",this.username);
+        jsonObject.put("to",this.friend.getEmail());
         jsonObject.put("text",chat.getText());
-        String json = null;
-        try {
-            json = DESUtil.ENCRYPTMethod(jsonObject.toString(), Constant.KEY);
-        } catch (Exception e) {
-            ToastUtil.show(this,chat.getText());
-            e.printStackTrace();
-        }
-        RequestParams params = new RequestParams();
-        params.put("json",json);
-        MyHttp.post("index.php", params, new AsyncHttpResponseHandler() {
+        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
@@ -282,8 +278,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         mContext = null;
         saveData();
         if(chatList.size()>0) {
-            MessageFragment.addMessage(username, chatList.get(chatList.size() - 1).getText(), newChat);
-            MessageFragment.clearRaw(username);
+            MessageFragment.addMessage(friend.getEmail(), chatList.get(chatList.size() - 1).getText(), newChat);
+            MessageFragment.clearRaw(friend.getUsername());
         }
         super.onPause();
     }
@@ -347,7 +343,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 right.setVisibility(View.GONE);
                 //设置头像
                 Picasso.with(getParent())
-                        .load(MainActivity.app.getHeadFile(username))
+                        .load(MainActivity.app.getHeadFile(friend.getEmail()))
                         .into(imgLeft);
             }
             return convertView;

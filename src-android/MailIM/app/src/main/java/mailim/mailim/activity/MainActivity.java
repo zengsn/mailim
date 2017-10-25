@@ -98,14 +98,26 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         tabMessage.setSelected(true);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        if(f1==null){
-            f1 = new MessageFragment();
-            transaction.add(R.id.fragment_container,f1);
-        }else{
-            transaction.show(f1);
-        }
+        intiFragment();
+        btn_add.setText("备份记录");
+        btn_add.setVisibility(View.VISIBLE);
+        transaction.show(f1);
         transaction.commit();
         updataNum();
+    }
+
+    public void intiFragment(){
+        f1 = new MessageFragment();
+        f2 = new MateyFragment();
+        f3 = new EmailFragment();
+        f4 = new HomeFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment_container,f1);
+        transaction.add(R.id.fragment_container,f2);
+        transaction.add(R.id.fragment_container,f3);
+        transaction.add(R.id.fragment_container,f4);
+        hideAllFragment(transaction);
+        transaction.commit();
     }
 
     //重置所有文本的选中状态
@@ -169,62 +181,51 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 hideAllFragment(transaction);
                 selected();
                 tabMessage.setSelected(true);
-                if(f1==null){
-                    f1 = new MessageFragment();
-                    transaction.add(R.id.fragment_container,f1);
-                }else{
-                    transaction.show(f1);
-                    f1.updata();
-                }
+                btn_add.setText("备份记录");
+                btn_add.setVisibility(View.VISIBLE);
+                transaction.show(f1);
+                f1.updata();
                 break;
 
             case R.id.tab_matey:
                 hideAllFragment(transaction);
                 selected();
                 tabMatey.setSelected(true);
+                btn_add.setText("备份好友");
                 btn_add.setVisibility(View.VISIBLE);
-                if(f2==null){
-                    f2 = new MateyFragment();
-                    transaction.add(R.id.fragment_container,f2);
-                }else{
-                    transaction.show(f2);
-                    f2.getFriend();
-                }
+                transaction.show(f2);
+                f2.updateFriend();
                 break;
 
             case R.id.tab_email:
-                boolean f3Hidden = true;
-                if(f3 != null)f3Hidden = f3.isHidden();
+
+                boolean isHidden = false;
+                if(f3.isHidden())isHidden = true;
                 hideAllFragment(transaction);
                 selected();
                 tabEmail.setSelected(true);
-                if(f3==null){
-                    f3 = new EmailFragment();
-                    transaction.add(R.id.fragment_container,f3);
-                }else{
-                    transaction.show(f3);
-                    if(!f3Hidden)f3.recevieEmail();
-                }
+                transaction.show(f3);
+                if(!isHidden || f3.emails.size() == 0)f3.recevieEmail();
                 break;
 
             case R.id.tab_home:
                 hideAllFragment(transaction);
                 selected();
                 tabHome.setSelected(true);
-                if(f4==null){
-                    f4 = new HomeFragment();
-                    transaction.add(R.id.fragment_container,f4);
-                }else{
-                    transaction.show(f4);
-                    f4.loadHead();
-                }
+                transaction.show(f4);
+                f4.loadHead();
                 break;
             case R.id.option_setting:
                 Intent intent = new Intent(this,SettingsActivity.class);
                 startActivity(intent);
                 break;
             case R.id.title_add:
-                EmailSender.sendMail("zhangzhanhong218@163.com","chat","",MainActivity.app.getLocalFile("zzh.zzh"));
+                if(!f1.isHidden()){
+                    app.updateChatToEmail();
+                }
+                if(!f2.isHidden()){
+                    app.updateFriendToEmail();
+                }
 //                inputUsername();
                 break;
             case R.id.home_my_info:

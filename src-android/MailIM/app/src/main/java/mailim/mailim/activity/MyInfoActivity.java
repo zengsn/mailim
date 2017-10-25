@@ -227,7 +227,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 String str = new String(bytes);
                 if("true".equals(str)) {
                     Picasso.with(MyInfoActivity.this)
-                            .load(Constant.HEAD_URL+MainActivity.app.getMyUser().getUsername()+"?time="+ System.currentTimeMillis())
+                            .load(Constant.HEAD_URL+MainActivity.app.getMyUser().getEmail()+"?time="+ System.currentTimeMillis())
                             .networkPolicy(NetworkPolicy.NO_CACHE)
                             .into(iv_head);
                 }

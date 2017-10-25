@@ -73,7 +73,7 @@ public class EmailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EmailActivity.this,SendEmailActivity.class);
-                intent.putExtra("to",email.getFrom_address());
+                intent.putExtra("to",email.getEmailAddr());
                 startActivity(intent);
                 finish();
             }
@@ -83,7 +83,7 @@ public class EmailActivity extends AppCompatActivity {
     private void setViewContex(){
         if(!email.isEmpty()){
 //            Toast.makeText(app.getApplicationContext(),"not null",Toast.LENGTH_SHORT).show();
-            fromaddr.setText(email.getFrom_address());
+            fromaddr.setText(email.getEmailAddr());
             time.setText(email.getSendDate().toString());
             subject.setText(email.getSubject());
             WebSettings settings = text.getSettings();
@@ -102,7 +102,7 @@ public class EmailActivity extends AppCompatActivity {
                 settings.setSupportZoom(true);
                 settings.setTextZoom(400);
             }
-            text.loadDataWithBaseURL(null,email.getContent(),"text/html","UTF-8",null);
+            text.loadDataWithBaseURL(null,email.getContent().replace("\n","<br>"),"text/html","UTF-8",null);
         }
     }
 }

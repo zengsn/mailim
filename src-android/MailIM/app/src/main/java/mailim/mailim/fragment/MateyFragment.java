@@ -1,6 +1,7 @@
 package mailim.mailim.fragment;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
@@ -26,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import mailim.mailim.activity.ChatActivity;
+import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.MyHttp;
 import mailim.mailim.R;
 import mailim.mailim.activity.MainActivity;
@@ -46,8 +51,9 @@ public class MateyFragment extends Fragment {
         mListView = (ListView) view.findViewById(R.id.lv_matey);
 
         friendList = MainActivity.app.getFriendList();
+        intiData();
         intiView();
-        getFriend();
+        //getFriend();
         return view;
     }
 
@@ -55,6 +61,52 @@ public class MateyFragment extends Fragment {
         myAdapter = new MyBaseAdapter();
         mListView.setAdapter(myAdapter);
         mListView.setOnItemClickListener(new MyOnItemClickListener());
+    }
+
+    private void intiData(){
+        try {
+            friendList = JSONObject.parseArray(JSONObject.toJSONString(MainActivity.app.getFriendList()),Friend.class);
+        }catch (JSONException e){
+            if(MainActivity.app.debugable){
+                ToastUtil.show(getActivity(),e.getMessage());
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public void updateFriend(){
+        intiData();
+        checkOnline();
+        myAdapter.notifyDataSetChanged();
+    }
+    public void checkOnline(){
+        for (Friend obj:friendList){
+            checkOnline(friendList.indexOf(obj));
+        }
+    }
+
+    private void checkOnline(final int index){
+        String type = "online";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type",type);
+        jsonObject.put("email",friendList.get(index).getEmail());
+        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String str = new String(bytes);
+                if("true".equals(str)){
+                    friendList.get(index).setStatus(1);
+                }
+                else {
+                    friendList.get(index).setStatus(0);
+                }
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
+            }
+        });
     }
 
     public void getFriend(){
@@ -146,12 +198,17 @@ public class MateyFragment extends Fragment {
             int status = friendList.get(position).getStatus();
             if(status == 0 || status == 1)mextView.setText(str[status]);
             ImageView imageView = (ImageView) convertView.findViewById(R.id.list_item_matey_image);
-            MainActivity.app.loadHead(friendList.get(position).getUsername());
-            Picasso.with(getActivity())
-                    .load(MainActivity.app.getHeadFile(friendList.get(position).getUsername()))
-                    .networkPolicy(NetworkPolicy.NO_CACHE)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-                    .into(imageView);
+            if(Friend.STAR_USER == friendList.get(position).getStar()){
+                MainActivity.app.loadHead(friendList.get(position).getEmail());
+                Picasso.with(getActivity())
+                        .load(MainActivity.app.getHeadFile(friendList.get(position).getEmail()))
+                        .networkPolicy(NetworkPolicy.NO_CACHE)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE)
+                        .into(imageView);
+            }
+            else {
+                imageView.setImageResource(R.mipmap.ic);
+            }
             if(MainActivity.app.getNewFriends().size()>0){
                 LinearLayout ll = (LinearLayout)MainActivity.mContext.findViewById(R.id.matey_new_friend_lv);
                 ll.setVisibility(View.VISIBLE);
@@ -168,10 +225,14 @@ public class MateyFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String username = friendList.get(position).getUsername();
-            if(null != MainActivity.mContext){
-                MainActivity.mContext.getUser(username);
-            }
+            String email = friendList.get(position).getEmail();
+//            if(null != MainActivity.mContext){
+//                MainActivity.mContext.getUser(username);
+//            }
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
+            intent.putExtra("email",email);
+//            intent.putExtra("friend",friendList.get(position));
+            startActivity(intent);
         }
     }
 }

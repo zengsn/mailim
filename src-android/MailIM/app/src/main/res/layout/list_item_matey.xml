@@ -15,7 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/list_item_matey_image"
         android:layout_toLeftOf="@+id/tv_list_matey_online"
-        android:paddingLeft="15dp"
+        android:paddingLeft="5dp"
         android:layout_marginLeft="20dp"
         android:textSize="28dp"
         android:hint="item布局"/>

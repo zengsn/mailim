@@ -149,6 +149,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     ToastUtil.show(getApplication(),"登录失败！"+str);
                 } else if("login".equals(str)) {
                     ToastUtil.show(getApplication(),"登录失败！"+str);
+                } else if("[]".equals(str)) {
+                    ToastUtil.show(getApplication(),"登录失败！"+str);
                 } else {
                     MainActivity.app.setLogin(true);
 //                    ToastUtil.show(getApplicationContext(), str);
@@ -164,6 +166,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if(!auto)save();
                             Intent intent1 = new Intent(getApplication(), MainActivity.class);
                             startActivity(intent1);
+                            MainActivity.app.login();
                             Intent intent2 = new Intent(getApplication(), PulseService.class);
                             startService(intent2);
                             LoginActivity.this.finish();
