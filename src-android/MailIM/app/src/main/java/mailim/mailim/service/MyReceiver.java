@@ -13,6 +13,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -89,6 +90,7 @@ public class MyReceiver extends BroadcastReceiver {
         if(preferences.getBoolean("notifications_new_message_vibrate",false))
             vibrateTime[1] = 200;
         String ringtone = preferences.getString("notifications_new_message_ringtone",null);
+        if(null == ringtone)ringtone = "content://settings/system/notification_sound";
         Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra("username",username);
         PendingIntent pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

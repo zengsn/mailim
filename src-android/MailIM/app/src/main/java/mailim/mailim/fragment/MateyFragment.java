@@ -76,12 +76,13 @@ public class MateyFragment extends Fragment {
 
     public void updateFriend(){
         intiData();
-        checkOnline();
+        checkFriend();
         myAdapter.notifyDataSetChanged();
     }
-    public void checkOnline(){
+    public void checkFriend(){
         for (Friend obj:friendList){
             checkOnline(friendList.indexOf(obj));
+            checkIsUser(friendList.indexOf(obj));
         }
     }
 
@@ -100,11 +101,32 @@ public class MateyFragment extends Fragment {
                 else {
                     friendList.get(index).setStatus(0);
                 }
+                myAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
 
+            }
+        });
+    }
+
+    private void checkIsUser(final int index){
+        String type = "checkUserByEmail";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type",type);
+        jsonObject.put("email",friendList.get(index).getEmail());
+        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String str = new String(bytes);
+                if ("true".equals(str)) {
+                    friendList.get(index).setStar(Friend.STAR_USER);
+                    myAdapter.notifyDataSetChanged();
+                }
+            }
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
             }
         });
     }

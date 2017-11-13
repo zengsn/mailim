@@ -35,6 +35,7 @@ import mailim.mailim.entity.Chat;
 import mailim.mailim.entity.Email;
 import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.User;
+import mailim.mailim.fragment.MessageFragment;
 
 /**
  * Created by zzh on 2017/8/30.
@@ -158,31 +159,6 @@ public class MyApplication extends Application {
         saveFriendToFile();
     }
 
-    public void updateChatToEmail() {
-        InputUtil<String> inputUtil = new InputUtil<String>();
-        List<String> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"newChatList");
-        if(null != list){
-            for(String obj:list){
-                updateChatToEmail(obj+".txt");
-            }
-            File file = getLocalFile("newChatList.txt");
-            if(!file.delete()){
-                ToastUtil.show(this,"无法删除文件！");
-            }
-        }
-    }
-
-    private void updateChatToEmail(String name){
-        String to = myUser.getEmail();
-        String subject = MailMessageUtil.SUBJECT_MAIL_CHAT;
-        String body = "chat";
-        if(!EmailUtil.isEmail(to)){
-            ToastUtil.show(MainActivity.app,"邮箱地址格式有误！");
-            return;
-        }
-        EmailSender.sendMail(to,subject,body,getLocalFile(name));
-    }
-
     public void updateFriendToEmail(){
         saveFriendToFile();
         String to = myUser.getEmail();
@@ -232,14 +208,14 @@ public class MyApplication extends Application {
                 String str = new String(bytes);
                 if ("true".equals(str)) {
                     friend.setStar(Friend.STAR_USER);
+                    saveFriendToFile();
                 }
             }
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-
+                saveFriendToFile();
             }
         });
-        saveFriendToFile();
     }
 
     public void checkUserByEmail(String email){
@@ -368,45 +344,35 @@ public class MyApplication extends Application {
         return chatList;
     }
 
-    public void emailChat(String email){
+    public void saveChatToEmail(String email){
         Friend friend = getFriend(email);
         InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-        List<Chat> localChat = inputUtil.readListFromSdCard(getLocalPath()+friend.getEmail());
-        List<Chat> mailChat = inputUtil.readListFromSdCard(getDownloadPath()+friend.getEmail());
-        List<Chat> chatList = new ArrayList<Chat>();
-        if(localChat != null && mailChat != null){
-            chatList.clear();
-            chatList.addAll(mailChat);
-            chatList.removeAll(localChat);
-            chatList.addAll(localChat);
-        }
-        else if(localChat != null)chatList = localChat;
-        else if(mailChat != null) chatList = mailChat;
-        Iterator<Chat> iterator = chatList.iterator();
-        while (iterator.hasNext()){
-            Chat chat = iterator.next();
-            try {
-                if (Integer.valueOf(chat.getTime()) < Integer.valueOf(friend.getEmailLastTime())) {
-                    iterator.remove();
-                }
-            }catch (NumberFormatException e){
-                if(debugable)ToastUtil.show(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-//        if(debugable)ToastUtil.show(this,String.valueOf(chatList.size()));
-//        StringBuilder stringBuilder = new StringBuilder();
-////        for (Chat obj:chatList) {
-////            stringBuilder.append(JSONObject.toJSONString(obj));
-////        }
-//        stringBuilder.append(JSONArray.toJSONString(chatList));
-        if(chatList.size()<3)return;
+        List<Chat> chatList = inputUtil.readListFromSdCard(getLocalPath()+friend.getEmail()+"_new");
+//        Iterator<Chat> iterator = chatList.iterator();
+//        while (iterator.hasNext()){
+//            Chat chat = iterator.next();
+//            try {
+//                if (Integer.valueOf(chat.getTime()) < Integer.valueOf(friend.getEmailLastTime())) {
+//                    iterator.remove();
+//                }
+//            }catch (NumberFormatException e){
+//                if(debugable)ToastUtil.show(e.getMessage());
+//                e.printStackTrace();
+//            }
+//        }
+        if(null == chatList || chatList.size()<3)return;
         String body = MailMessageUtil.getChatlistString(chatList,email);
-        friend.setEmailLastTime(String.valueOf(System.currentTimeMillis()/1000));
-        saveFriendToFile();
+//        friend.setEmailLastTime(String.valueOf(System.currentTimeMillis()/1000));
+//        saveFriendToFile();
         if(debugable)ToastUtil.show(this,body);
-//        EmailSender.sendMail(friend.getEmail(), MailMessageUtil.SUBJECT_MAIL_CHAT+friend.getEmail(),body.toString(),null);
-        EmailSender.sendMail(myUser.getEmail(), MailMessageUtil.SUBJECT_MAIL_CHAT+friend.getEmail(),body.toString(),null);
+        if(getLocalFile(friend.getEmail()+"_new.txt").delete()){
+            if(debugable)ToastUtil.show(friend.getEmail()+"_new.txt 已删除");
+            EmailSender.sendMail(myUser.getEmail(), MailMessageUtil.SUBJECT_MAIL_CHAT+friend.getEmail(),body,null);
+            //MainActivity.f3.recevieEmail();
+        }
+        else {
+            if(debugable)ToastUtil.show(friend.getEmail()+"_new.txt 删除失败");
+        }
     }
 
     public File getHeadFile(){
@@ -446,6 +412,43 @@ public class MyApplication extends Application {
         };
         Picasso.with(this)
                 .load(Constant.HEAD_URL+email+"?time="+ System.currentTimeMillis())
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .into(target);
+    }
+
+    public void loadImage(final String id){
+        target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+                File sdFile = null;
+                if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                    File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录
+                    File path = new File(sdCardDir+"/mailim/"+myUser.getUsername()+"/image/");
+                    if(!path.exists())path.mkdirs();
+                    sdFile = new File(path,id);
+                }
+                FileOutputStream ostream = null;
+                try {
+                    ostream = new FileOutputStream(sdFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                    ostream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+        Picasso.with(this)
+                .load(Constant.IMAGE_URL+id+"?time="+ System.currentTimeMillis())
                 .networkPolicy(NetworkPolicy.NO_CACHE)
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(target);

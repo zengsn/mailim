@@ -21,6 +21,8 @@ public class MailMessageUtil {
     public static String SUBJECT_CHAT = "[chat]";
     public static String SUBJECT_MAIL_FRI = "[mailim][friend]";
     public static String SUBJECT_MAIL_CHAT = "[mailim][chat]";
+    public static String SUBJECT_MAIL_IMAGE = "[mailim][image]";
+    public static String SUBJECT_MAIL_TEXT = "[mailim][text]";
     public static String FENGEXIAN = "--------------------------------------\n";
     public static String FENGEFU = ":";
     public static String LINEEND = "\n";
@@ -35,6 +37,12 @@ public class MailMessageUtil {
         }
         Collections.sort(chatList);
         return chatList;
+    }
+
+    private static void addChatByEmail1(List<Chat> list,Email email) {
+        String text = email.getContent();
+        Chat chat = new Chat(false,text);
+        list.add(chat);
     }
 
     private static void addChatByEmail(List<Chat> list,Email email,String friendEmail){
@@ -66,11 +74,12 @@ public class MailMessageUtil {
             }
             chat.setType(type);
 //            list.add(chat);
+            if(list.contains(chat))return;
             if(friendEmail.equals(from) || friendEmail.equals(to))list.add(chat);
         }
     }
 
-    private static String findValue(String chatString,String key){
+    public static String findValue(String chatString,String key){
         String[] hangs = chatString.split(LINEEND);
         for(String obj:hangs){
             if(obj.contains(key)) {
@@ -91,7 +100,7 @@ public class MailMessageUtil {
         return new String(stringBuilder);
     }
 
-    private static StringBuilder getChatStringBuilder(Chat chat,String friendEmail){
+    public static StringBuilder getChatStringBuilder(Chat chat,String friendEmail){
         StringBuilder stringBuilder = new StringBuilder(FENGEXIAN);
         String myEmail = MainActivity.app.getMyUser().getEmail();
         addKey_Value(stringBuilder,"时间",chat.getTime());
@@ -115,6 +124,14 @@ public class MailMessageUtil {
         List<Email> list = new ArrayList<Email>();
         for (Email email : emailList){
             if(email.getSubject().contains(cintainsSubject))list.add(email);
+        }
+        return list;
+    }
+
+    public static List<Email> getEmailByAddr(List<Email> emailList,String addr) {
+        List<Email> list = new ArrayList<Email>();
+        for (Email email : emailList){
+            if(email.getEmailAddr().equals(addr))list.add(email);
         }
         return list;
     }
@@ -148,11 +165,13 @@ public class MailMessageUtil {
 
     private static void addFriendByEmail(List<Friend> list,Email email){
         String body = email.getContent();
-        String[] friendString = body.split(FENGEXIAN);
+        String[] friendString = body.split("\\-{38}");
+//        String[] friendString = body.split(FENGEXIAN);
 //        if(MainActivity.app.debugable)ToastUtil.show("聊天数："+String.valueOf(chatString.length));
         for (String obj:friendString) {
             Friend friend = null;
             String friendEmail = findValue(obj,"邮箱");
+            if(!EmailUtil.isEmail(friendEmail))continue;
             String username = findValue(obj,"备注");
             String lastTime = findValue(obj,"最近");
             String star = findValue(obj,"星级");
@@ -160,12 +179,12 @@ public class MailMessageUtil {
             friend.setUsername(username);
             friend.setEmailLastTime(lastTime);
             try {
-                friend.setStatus(Integer.valueOf(star.trim()));
+                friend.setStar(Integer.valueOf(star.trim()));
             }catch (NumberFormatException e){
                 if(MainActivity.app.debugable)ToastUtil.show(e.getMessage());
                 e.printStackTrace();
             }
-            list.add(friend);
+            if(!list.contains(friend))list.add(friend);
         }
     }
 }

@@ -96,6 +96,7 @@ public class PulseService extends Service {
                             for (JSONObject obj : list) {
                                 chat = new Chat(false,obj.getString("text"));
                                 chat.setTime(obj.getString("time"));
+                                chat.setType(obj.getString("type"));
 //                                ToastUtil.show(MainActivity.app,chat.getTime());
                                 intent = new Intent(Constant.MYACTION);
                                 intent.putExtra("type","chat");

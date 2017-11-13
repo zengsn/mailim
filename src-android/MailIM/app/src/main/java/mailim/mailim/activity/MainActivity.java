@@ -184,7 +184,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 btn_add.setText("备份记录");
                 btn_add.setVisibility(View.VISIBLE);
                 transaction.show(f1);
-                f1.updata();
+                f1.update();
                 break;
 
             case R.id.tab_matey:
@@ -204,6 +204,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 hideAllFragment(transaction);
                 selected();
                 tabEmail.setSelected(true);
+                btn_add.setText("筛选");
+                btn_add.setVisibility(View.VISIBLE);
                 transaction.show(f3);
                 if(!isHidden || f3.emails.size() == 0)f3.recevieEmail();
                 break;
@@ -221,10 +223,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.title_add:
                 if(!f1.isHidden()){
-                    app.updateChatToEmail();
                 }
                 if(!f2.isHidden()){
                     app.updateFriendToEmail();
+                }
+                if(!f3.isHidden()){
+                    f3.filter();
                 }
 //                inputUsername();
                 break;

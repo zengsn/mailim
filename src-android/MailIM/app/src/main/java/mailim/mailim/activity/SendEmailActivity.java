@@ -149,7 +149,7 @@ public class SendEmailActivity extends AppCompatActivity {
         final String title = this.title.getText().toString();
         final String body = this.body.getText().toString();
         EmailSender.sendMail(to,title,body,null);
-        ToastUtil.show(MainActivity.app,"已发送");
+        //ToastUtil.show(MainActivity.app,"已发送");
         finish();
     }
 }

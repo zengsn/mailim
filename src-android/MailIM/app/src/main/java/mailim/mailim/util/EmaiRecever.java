@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Looper;
 import android.os.ParcelUuid;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
 
@@ -13,9 +14,11 @@ import com.sun.mail.imap.MessageVanishedEvent;
 import com.sun.mail.imap.ResyncData;
 import com.sun.mail.util.MimeUtil;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +61,7 @@ public class EmaiRecever{
                 Message[] messages;
                 String server = null;
                 String user = EmailUtil.getUsername(username);
-                if(user.contains("qq.com")){
-                    server = EmailUtil.getImapAddr(username);
-                }
-                else {
-                    server = EmailUtil.getPopAddr(username);
-                }
+                server = EmailUtil.getDefaultAddr(username);
                 try {
                     Store store = EmailUtil.login(server,user,pwd);
                     if(store == null){
@@ -82,7 +80,7 @@ public class EmaiRecever{
                             int max = 10;
                             int i = count > max ? count - max : 0;
                             for (;i < count ; i ++){
-                                getAllMultipart(messages[i],true);
+                                getAllMultipart(0,messages[i],true);
                             }
                         }
                         folder = store.getFolder("INBOX");
@@ -93,7 +91,7 @@ public class EmaiRecever{
                             int max = 10;
                             int i = count > max ? count - max : 0;
                             for (;i < count ; i ++){
-                                getAllMultipart(messages[i],true);
+                                getAllMultipart(0,messages[i],true);
                             }
                             folder.close(false);
                         }
@@ -120,12 +118,7 @@ public class EmaiRecever{
         mailinEmail.clear();
         String server = null;
         String user = EmailUtil.getUsername(username);
-        if(user.contains("qq.com")){
-            server = EmailUtil.getImapAddr(username);
-        }
-        else {
-            server = EmailUtil.getPopAddr(username);
-        }
+        server = EmailUtil.getDefaultAddr(username);
         try {
             Store store = EmailUtil.login(server,user,pwd);
             if(store == null){
@@ -155,7 +148,7 @@ public class EmaiRecever{
                         email.setMultipart(messages[i].isMimeType("multipart/*"));
                         boolean isDownload = false;
 //                        if(email.getSubject().contains("[mailim]"))isDownload = true;
-                        email.setContent(getAllMultipart(messages[i],isDownload));
+                        email.setContent(getAllMultipart(0,messages[i],isDownload));
                         email.setEmpty(false);
                         mailinEmail.add(0,email);
                     }
@@ -178,9 +171,12 @@ public class EmaiRecever{
                         email.setEmailAddr(address.getAddress());
                         email.setSendDate(messages[i].getSentDate());
                         email.setMultipart(messages[i].isMimeType("multipart/*"));
-                        boolean isDownload = false;
+                        boolean isDownload = email.isMultipart();
+                        Log.e("邮件类型：",address.getAddress()+messages[i].getSentDate()+"multipart/*："+String.valueOf(messages[i].isMimeType("multipart/*")));
 //                        if(email.getSubject().contains("[mailim]"))isDownload = true;
-                        email.setContent(getAllMultipart(messages[i],isDownload));
+                        email.setContent(getAllMultipart(0,messages[i],isDownload));
+                        Log.e("邮件内容：",email.getContent());
+                        String text = email.getContent();
                         email.setEmpty(false);
                         indexEmail.add(0,email);
                     }
@@ -200,12 +196,14 @@ public class EmaiRecever{
      * @param part
      * @throws Exception
      */
-    public static String getAllMultipart(Part part,boolean isDownload) throws Exception{
+    public static String getAllMultipart(int j,Part part,boolean isDownload) throws Exception{
         String contentType = part.getContentType();
+        Log.e("消息类型：",part.getContentType());
         int index = contentType.indexOf("name");
         boolean conName = false;
         if(index!=-1){
             conName=true;
+            Log.e("name","true");
         }
         String text = "";
         //判断part类型
@@ -218,7 +216,8 @@ public class EmaiRecever{
             int counts = multipart.getCount();
             for (int i = 0; i < counts; i++) {
                 //递归获取数据
-                text = getAllMultipart(multipart.getBodyPart(i),isDownload);
+                Log.e("消息数:",String.valueOf(i));
+                text += getAllMultipart(j+1,multipart.getBodyPart(i),isDownload);
                 //附件可能是截图或上传的(图片或其他数据)
                 if (isDownload && multipart.getBodyPart(i).getDisposition() != null) {
                     //附件为截图
@@ -234,14 +233,23 @@ public class EmaiRecever{
                             //上传图片
                             fileName = name;
                         }
-
-                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(fileName));
+                        String time = MailMessageUtil.findValue(text,"时间");
+                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(time));
                         int len = 0;
                         byte[] bys = new byte[1024];
                         while ((len = is.read(bys)) != -1) {
                             fos.write(bys,0,len);
                         }
                         fos.close();
+                        if(isCidImgAndReplace(text)){
+                            String cid = getCid(multipart.getBodyPart(i));
+                            if(cid != null)Log.e("cid：",cid);
+                            File file = MainActivity.app.getDownlaodFile(time);
+                            fileName = file.getAbsolutePath();
+                            Log.e("filename:",fileName);
+                            text = replaceLocalPathByImgCid(text,cid,fileName);
+                            Log.e("替换后内容：",text);
+                        }
                     } else {
                         //其他附件
                         InputStream is = multipart.getBodyPart(i)
@@ -258,9 +266,42 @@ public class EmaiRecever{
                 }
             }
         }else if (part.isMimeType("message/rfc822")) {
-            text = getAllMultipart((Part) part.getContent(),isDownload);
+            text = getAllMultipart(j+1,(Part) part.getContent(),isDownload);
+        }else{
+            //text = getAllMultipart((Part) part.getContent(),isDownload);
         }
+//        Log.e("text内容：",text);
         return text;
+    }
+
+    public static String getCid(Part p) throws MessagingException {
+        String content, cid;
+        String[] headers = p.getHeader("Content-Id");
+//        if(headers != null)Log.e("headers:", Arrays.toString(headers)+
+//                p.getContentType());
+        if (headers != null && headers.length > 0) {
+            content = headers[0];
+        } else {
+            return null;
+        }
+        if (content.startsWith("<") && content.endsWith(">")) {
+            cid = "cid:" + content.substring(1, content.length() - 1);
+        } else {
+            cid = "cid:" + content;
+        }
+//        Log.e("cid:",cid);
+        return cid;
+    }
+
+    public static boolean isCidImgAndReplace(String text) {
+        if (TextUtils.isEmpty(text)) {
+            return false;
+        }
+        return text.contains("<img src=\"cid:");
+    }
+
+    public static String replaceLocalPathByImgCid(String content,String fileName,String filePath) {
+        return content.replace("<img src=" + "\"" + fileName + "\"", "<img src=\"file://" + filePath + "\"");
     }
 
     /**

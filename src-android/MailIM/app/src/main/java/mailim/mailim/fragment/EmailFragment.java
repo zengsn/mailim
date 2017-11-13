@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.Folder;
@@ -40,6 +41,7 @@ import mailim.mailim.activity.EmailActivity;
 import mailim.mailim.entity.Email;
 import mailim.mailim.R;
 import mailim.mailim.util.EmailUtil;
+import mailim.mailim.util.MailMessageUtil;
 import mailim.mailim.util.ToastUtil;
 
 
@@ -47,6 +49,7 @@ public class EmailFragment extends Fragment {
     public ListView mListView;
     public MyAdapter adapter;
     public List<Email> emails = new ArrayList<Email>();
+    public List<Email> allEmails = new ArrayList<Email>();
     public ProgressDialog waitingDialog=
             new ProgressDialog(MainActivity.mContext);
 
@@ -99,10 +102,51 @@ public class EmailFragment extends Fragment {
     }
 
     public void updataEmail(){
+        allEmails = new ArrayList<>(MainActivity.app.getInboxEmail());
+        allEmails.addAll(MainActivity.app.getMailimEmail());
         emails.clear();
-        List<Email> list = MainActivity.app.getInboxEmail();
-        emails = JSONObject.parseArray(JSONObject.toJSONString(list),Email.class);
+        emails.addAll(allEmails);
         adapter.notifyDataSetChanged();
+    }
+
+    public void filter(){
+        String[] item = new String[]{"普通邮件","mailim邮件"};
+        final boolean[] isCheck = new boolean[item.length];
+        final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                .setTitle("请选择")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        filter(isCheck);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setMultiChoiceItems(item, isCheck, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        isCheck[which] = isChecked;
+                    }
+                }).create();
+        alertDialog.show();
+    }
+
+    public void filter(boolean isCheck[]){
+        emails.clear();
+        emails.addAll(allEmails);
+        Iterator<Email> iterator = emails.iterator();
+        while (iterator.hasNext()){
+            Email email = iterator.next();
+            if(email.getSubject().contains(MailMessageUtil.SUBJECT_MAILIM)){
+                if(!isCheck[1])iterator.remove();
+            }
+            else {
+                if(!isCheck[0])iterator.remove();
+            }
+        }
     }
 
     @Override
@@ -148,8 +192,12 @@ public class EmailFragment extends Fragment {
             convertView = View.inflate(getActivity(), R.layout.list_item_email,null);
             TextView ev_fromaddr = (TextView)convertView.findViewById(R.id.tv_list_email_from);
             ev_fromaddr.setTextColor(Color.BLACK);
-            ev_fromaddr.setText(emails.get(position).getName()+"<"+
-                    emails.get(position).getEmailAddr()+">");
+            String name = emails.get(position).getName();
+            String email = emails.get(position).getEmailAddr();
+            if(null == name || "".equals(name))name = MainActivity.app.getFriendUsername(email);
+            //ev_fromaddr.setText(name+"<"+ email +">");
+            if("未命名".equals(name))ev_fromaddr.setText(email);
+            else ev_fromaddr.setText(name);
 
             TextView mTextView = (TextView) convertView.findViewById(R.id.tv_list_email_subject);
             mTextView.setText(emails.get(position).getSubject());

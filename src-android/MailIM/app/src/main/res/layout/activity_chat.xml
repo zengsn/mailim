@@ -21,15 +21,14 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
-    `<!--
+    `
         <Button
             android:id="@+id/btn_left"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:text="左边"
+            android:text="@string/image"
             android:textColor="#fff" />
-            -->
 
         <EditText
             android:id="@+id/et_meg"
@@ -42,8 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:background="#1e1"
-            android:text="发送"
+            android:text="@string/send"
             android:textColor="#fff" />
 
     </LinearLayout>

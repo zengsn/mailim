@@ -42,6 +42,13 @@ class MailIMSQL{
 		else return true;
 	}
 	
+	public function checkUserByEmail($email){
+		$result = mysql_query("SELECT * FROM user WHERE email='$email'");
+		$row = mysql_fetch_array($result);
+		if(!$row)return false;
+		else return true;
+	}
+	
 	public function getUser($username){
 		$result = mysql_query("SELECT * FROM user WHERE username='$username'");
 		$row = mysql_fetch_array($result);
@@ -89,12 +96,12 @@ class MailIMSQL{
 	
 	public function updataOnline($username,$password){
 		if(!$this->checkUser($username,$password))return false;
-		$value = strval(time()+10);
+		$value = strval(time()+300);
 		return mysql_query("UPDATE user SET online = '$value' WHERE username = '$username'");
 	}
 
 	public function checkOnline($username){
-		if(!$this->checkUsername($username))return false;
+		if(!$this->checkUserByEmail($username))return false;
 		$row = $this->getUser($username);
 		if(intval($row['online']) > time())return true;
 		else return false;
@@ -135,21 +142,20 @@ class MailIMSQL{
 		return mysql_query("UPDATE friend SET flag='$flag' WHERE username='$username' AND friendname='$friendname'");
 	}
 		
-	public function addMessage($username,$to,$text){
-		if(!$this->checkUsername($username))return false;
-		if(!$this->checkUsername($to))return false;
-		$time = time();
-		return mysql_query("INSERT INTO message(username,friendname,text,time) VALUES('$to','$username','$text','$time')");		
+	public function addMessage($username,$to,$text,$time,$chatType){
+		if(!$this->checkUserByEmail($username))return false;
+		if(!$this->checkUserByEmail($to))return false;
+		return mysql_query("INSERT INTO message(username,friendname,text,time,type) VALUES('$to','$username','$text','$time','$chatType')");		
 	}
 	
 	public function getMessage($username,$friendname){
-		if(!$this->checkUsername($username))return false;
-		if(!$this->checkUsername($friendname))return false;
+		if(!$this->checkUserByEmail($username))return false;
+		if(!$this->checkUserByEmail($friendname))return false;
 		return mysql_query("SELECT * FROM message WHERE username='$username' AND friendname='$friendname'");
 	}
 	
 	public function getNewMessage($username){
-		if(!$this->checkUsername($username))return false;
+		if(!$this->checkUserByEmail($username))return false;
 		return mysql_query("SELECT * FROM message WHERE username='$username' AND flag=1");
 	}
 	

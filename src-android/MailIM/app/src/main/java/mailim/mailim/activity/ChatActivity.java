@@ -2,11 +2,16 @@ package mailim.mailim.activity;
 
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -29,7 +35,10 @@ import com.squareup.picasso.Picasso;
 import org.apache.http.Header;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import mailim.mailim.entity.Friend;
@@ -52,6 +61,7 @@ import mailim.mailim.util.ToastUtil;
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
     private Friend friend;
     private List<Chat> chatList = new ArrayList<Chat>();
+    private List<Chat> newchatList = new ArrayList<Chat>();
     private ListView myLV;
     private MyAdapter adapter;
     private boolean newChat = false;
@@ -98,14 +108,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         String email = getIntent().getStringExtra("email");
         friend = MainActivity.app.getFriend(email);
         setTitle(friend.getUsername());
-        MessageFragment.clearRaw(friend.getUsername());
+        MessageFragment.clearRaw(friend.getEmail());
         if("".equals(friend.getUsername()))finish();
         Button btnSend = (Button)findViewById(R.id.btn_right);
         btnSend.setOnClickListener(this);
+        Button btnimgae = (Button)findViewById(R.id.btn_left);
+        btnimgae.setOnClickListener(this);
         myLV = (ListView)findViewById(R.id.lv_chat);
-//        intiData();
 //        chatList = MainActivity.app.getChatOnMail(friend.getEmail());
         chatList = MailMessageUtil.getChatList(MainActivity.app.getInboxEmail(),email);
+        intiNewChat();
+        intiData();
+        chatList.removeAll(newchatList);
+        chatList.addAll(newchatList);
+        Collections.sort(chatList);
         adapter = new MyAdapter(this);
         myLV.setAdapter(adapter);
         myLV.setSelection(adapter.getCount()-1);
@@ -119,15 +135,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void intiData(){
         InputUtil<Chat> inputUtil = new InputUtil<Chat>();
         List<Chat> localChat = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+friend.getEmail());
-        List<Chat> mailChat = inputUtil.readListFromSdCard(MainActivity.app.getDownloadPath()+friend.getEmail());
-        if(localChat != null && mailChat != null){
-            chatList.clear();
-            chatList.addAll(mailChat);
+        if(localChat != null){
             chatList.removeAll(localChat);
             chatList.addAll(localChat);
         }
-        else if(localChat != null)chatList = localChat;
-        else if(mailChat != null) chatList = mailChat;
     }
 
     private void saveData(){
@@ -148,12 +159,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void intiNewChat(){
+        InputUtil<Chat> inputUtil = new InputUtil<Chat>();
+        List<Chat> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+friend.getEmail()+"_new");
+        if(null != list)newchatList = list;
+    }
+
+    private void saveNewChat(){
+        if(newchatList.size()<1)return;
+        OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
+        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+friend.getEmail()+"_new",newchatList);
+        MainActivity.app.saveChatToEmail(friend.getEmail());
+    }
+
     /**
      *添加消息
      */
     public void addChat(Chat chat){
         newChat = true;
         chatList.add(chat);
+        newchatList.add(chat);
         adapter.notifyDataSetChanged();
         myLV.setSelection(adapter.getCount()-1);
     }
@@ -162,8 +187,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         EditText etMeg = (EditText)findViewById(R.id.et_meg);
         String text = etMeg.getText().toString();
         switch (v.getId()){
-//            case R.id.btn_left:
-//                break;
+            case R.id.btn_left:
+                onImageActivity();
+                break;
             case R.id.btn_right:
                 if("".equals(text)){
                     ToastUtil.show(this,"请输入内容！");
@@ -191,13 +217,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 EditText etMeg = (EditText)findViewById(R.id.et_meg);
                 etMeg.setText("");
                 if("true".equals(str)) {
-                    chat.setStatus(1);
                     sendChat(chat);
                 }
                 else {
-                    chat.setStatus(2);
-                    saveData();
-                    MainActivity.app.emailChat(friend.getEmail());
+                    chat.setStatus(Chat.STATUS_EMAIL);
+                    String body = new String(MailMessageUtil.getChatStringBuilder(chat,friend.getEmail()));
+                    EmailSender.sendMail(friend.getEmail(),MailMessageUtil.SUBJECT_MAIL_CHAT,body,null);
+
+                    //saveData();
+//                    MainActivity.app.emailChat(friend.getEmail());
 //                    AlertDialog.Builder normalDialog =
 //                            new AlertDialog.Builder(ChatActivity.this);
 ////                    normalDialog.setIcon(R.drawable);
@@ -240,11 +268,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendChat(Chat chat){
+        chat.setStatus(Chat.STATUS_IM);
         String type = "chat";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
         jsonObject.put("to",this.friend.getEmail());
         jsonObject.put("text",chat.getText());
+        jsonObject.put("time",chat.getTime());
+        jsonObject.put("chatType",chat.getType());
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
@@ -277,9 +308,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         mContext = null;
         saveData();
+        saveNewChat();
         if(chatList.size()>0) {
             MessageFragment.addMessage(friend.getEmail(), chatList.get(chatList.size() - 1).getText(), newChat);
-            MessageFragment.clearRaw(friend.getUsername());
+            MessageFragment.clearRaw(friend.getEmail());
         }
         super.onPause();
     }
@@ -325,20 +357,44 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             TextView textRight = (TextView)convertView.findViewById(R.id.text_right);
             ImageView imgLeft = (ImageView)convertView.findViewById(R.id.img_chat_left);
             ImageView imgRight = (ImageView)convertView.findViewById(R.id.img_chat_right);
+
             //获取消息数据
             Chat m = chatList.get(position);
             if(m.isMyself()){
                 //发送的消息（在右边显示）
-                textRight.setText(m.getText());
-                right.setVisibility(View.VISIBLE);
+                if(m.getType().equals(Chat.TYPE_TEXT)){
+                    textRight.setText(m.getText());
+                }
+                else if(m.getType().equals(Chat.TYPE_IMAGE)){
+                    ImageView imageRight = (ImageView)convertView.findViewById(R.id.image_right);
+                    Picasso.with(getParent())
+                            .load(Constant.IMAGE_URL+m.getTime())
+                            .into(imageRight);
+                    textRight.setVisibility(View.GONE);
+                    imageRight.setVisibility(View.VISIBLE);
+                }
                 left.setVisibility(View.GONE);
+                right.setVisibility(View.VISIBLE);
                 //设置头像
                 Picasso.with(getParent())
                         .load(MainActivity.app.getHeadFile())
                         .into(imgRight);
+                if(m.getStatus()==Chat.STATUS_EMAIL){
+                    convertView.findViewById(R.id.img_tip).setVisibility(View.VISIBLE);
+                }else convertView.findViewById(R.id.img_tip).setVisibility(View.GONE);
             }else{
                 //接收的消息（在左边显示）
-                textLeft.setText(m.getText());
+                if(m.getType().equals(Chat.TYPE_TEXT)){
+                    textLeft.setText(m.getText());
+                }
+                else if(m.getType().equals(Chat.TYPE_IMAGE)){
+                    ImageView imageLeft = (ImageView)convertView.findViewById(R.id.image_left);
+                    Picasso.with(getParent())
+                            .load(Constant.IMAGE_URL+m.getTime())
+                            .into(imageLeft);
+                    textLeft.setVisibility(View.GONE);
+                    imageLeft.setVisibility(View.VISIBLE);
+                }
                 left.setVisibility(View.VISIBLE);
                 right.setVisibility(View.GONE);
                 //设置头像
@@ -349,4 +405,74 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             return convertView;
         }
     }
+
+    private void onImageActivity(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
+        startActivityForResult(intent,1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                if(data != null) {
+                    sendImage(data.getData());
+                }
+                break;
+        }
+    }
+
+    private void sendImage(final Uri uri){
+        Bitmap bm = null;
+        String path = null;
+        ContentResolver resolver = getContentResolver();
+        try {
+            bm = MediaStore.Images.Media.getBitmap(resolver,uri);
+            String[] proj = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
+            if(cursor != null && cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                path = cursor.getString(column_index);
+                cursor.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ToastUtil.show(path);
+        Chat chat = new Chat(true,"[图片]");
+        chat.setType(Chat.TYPE_IMAGE);
+        addChat(chat);
+        sendChat(chat);
+        File file = new File(path);
+        EmailSender.sendMail(friend.getEmail(),MailMessageUtil.SUBJECT_MAIL_IMAGE
+                ,new String(MailMessageUtil.getChatStringBuilder(chat,friend.getEmail()))
+                ,file);
+        if(MainActivity.app.debugable)Log.e(file.getAbsolutePath(),"发送图片");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type","image");
+        jsonObject.put("id",chat.getTime());
+        MyHttp.post(jsonObject,file,new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String str = new String(bytes);
+                if("true".equals(str)) {
+                    ToastUtil.show("发送成功！");
+                }
+                else{
+                    ToastUtil.show("发送失败！");
+                }
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                String str = new String(bytes);
+                ToastUtil.show(str);
+            }
+        });
+    }
+
+
 }

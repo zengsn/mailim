@@ -14,9 +14,11 @@ $data = json_decode($json,true);
 $sql = new MailIMSQL();
 
 $type = $data['type'];
-if(array_key_exists('username',$data))$username = $data['username'];
+if(array_key_exists('myUsername',$data))$username = $data['myUsername'];
 else $username = '';
-if(array_key_exists('password',$data))$password = $data['password'];
+if(array_key_exists('myEmail',$data))$email = $data['myEmail'];
+else $email = '';
+if(array_key_exists('myPassword',$data))$password = $data['myPassword'];
 else $password = '';
 if($type == 'register'){
 	if($sql->insertUser($username,$password)){
@@ -35,6 +37,11 @@ if(!$sql->checkUser($username,$password)){
 }
 $sql->updataOnline($username,$password);
 switch($type){
+	case 'checkUserByEmail':
+		$email = $data['email'];
+		if($sql->checkUserByEmail($email))echo 'true';
+		else echo 'false';
+		break;
 	case 'updateUser':
 		$newUsername = $data['newUsername'];
 		$newPassword = $data['newPassword'];
@@ -58,7 +65,7 @@ switch($type){
 		else echo '[]';
 		break;
 	case 'online':
-		$name = $data['name'];
+		$name = $data['email'];
 		if($sql->checkOnline($name))echo 'true';
 		else echo 'false';
 		break;
@@ -72,7 +79,7 @@ switch($type){
 		echo $sql->getEmail($name);
 		break;
 	case 'getChat':
-		$result = $sql->getNewMessage($username);
+		$result = $sql->getNewMessage($email);
 		$res = array();
 		$flag = false;
 		$res['json'] = true;
@@ -135,8 +142,10 @@ switch($type){
 		break;
 	case 'chat':
 		$to = $data['to'];
+		$time = $data['time'];
+		$chatType = $data['chatType'];
 		$text = userTextEncode($data['text']);
-		if($sql->addMessage($username,$to,$text))echo 'true';
+		if($sql->addMessage($email,$to,$text,$time,$chatType))echo 'true';
 		else echo 'false';
 		break;
 	case 'friend':
@@ -168,7 +177,27 @@ switch($type){
 			mkdir($dir,0777,true);
 		}
 		if (move_uploaded_file ( $_FILES ['uploadfile'] ['tmp_name'], $target_path )) {  
-			my_image_resize($target_path,'head/'.$username,'100','100');
+			my_image_resize($target_path,'head/'.$email,'100','100');
+			echo 'true';
+		} else {  
+			echo 'false';
+		}  
+		break;
+	case 'image':
+		$id = $data['id'];
+		$base_path = "./upload/"; // 接收文件目录  
+		$target_path = $base_path .$username.'/'. basename ( $_FILES ['uploadfile'] ['name'] );  
+		$dir = dirname($target_path);
+		if(!is_dir($dir)){
+			mkdir($dir,0777,true);
+		}
+		if (move_uploaded_file ( $_FILES ['uploadfile'] ['tmp_name'], $target_path )) {  
+			//my_image_resize($target_path,'image/'.$email,'100','100');
+			$filename = './image/'.$id;
+			if(!is_dir(dirname($filename))){
+				mkdir(dirname($filename),0777,true);
+			}
+			copy($target_path,$filename);
 			echo 'true';
 		} else {  
 			echo 'false';

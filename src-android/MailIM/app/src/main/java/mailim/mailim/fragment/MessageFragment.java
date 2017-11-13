@@ -53,17 +53,18 @@ public class MessageFragment extends Fragment {
     }
 
 
-    public void updata(){
+    public void update(){
         saveData();
         messageList.clear();
         adapter.notifyDataSetChanged();
         intiData();
+        updateMessage();
         adapter.notifyDataSetChanged();
     }
 
-    public static void clearRaw(String username){
+    public static void clearRaw(String email){
         for(Message message:messageList){
-            if(message.getUsername().equals(username)) {
+            if(message.getEmail().equals(email)) {
                 message.setRaw(0);
             }
         }
@@ -109,6 +110,13 @@ public class MessageFragment extends Fragment {
         if(list != null)messageList = list;
     }
 
+    public static void updateMessage(){
+        for(Message obj:messageList){
+            Friend friend = MainActivity.app.getFriend(obj.getEmail());
+            if(null != friend.getUsername() && !"".equals(friend.getUsername()))obj.setUsername(friend.getUsername());
+        }
+    }
+
     private static void saveData(){
         OutputUtil<Message> outputUtil = new OutputUtil<Message>();
         outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"message",messageList);
@@ -147,7 +155,7 @@ public class MessageFragment extends Fragment {
             TextView textView = (TextView) convertView.findViewById(R.id.tv_list_message_last);
             textView.setText(messageList.get(position).getLast());
             ImageView imageView = (ImageView) convertView.findViewById(R.id.list_item_message_image);
-            MainActivity.app.loadHead(messageList.get(position).getUsername());
+            MainActivity.app.loadHead(messageList.get(position).getEmail());
             Picasso.with(getActivity())
                     .load(MainActivity.app.getHeadFile(messageList.get(position).getEmail()))
                     .networkPolicy(NetworkPolicy.NO_CACHE)

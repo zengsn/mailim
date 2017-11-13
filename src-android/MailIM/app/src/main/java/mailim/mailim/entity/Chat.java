@@ -6,6 +6,11 @@ import java.io.Serializable;
  * Created by zzh on 2017/8/28.
  */
 public class Chat implements Serializable,Comparable<Chat> {
+    public static int STATUS_NOT_SEND = 0;
+    public static int STATUS_IM = 1;
+    public static int STATUS_EMAIL = 2;
+    public static String TYPE_TEXT = "text";
+    public static String TYPE_IMAGE = "image";
     private boolean isMyself;
     private String type;
     private String time;
@@ -17,7 +22,7 @@ public class Chat implements Serializable,Comparable<Chat> {
         setText(text);
         setType("text");
         setTime(String.valueOf(System.currentTimeMillis()/1000));
-        setStatus(0);
+        setStatus(STATUS_NOT_SEND);
     }
 
     @Override

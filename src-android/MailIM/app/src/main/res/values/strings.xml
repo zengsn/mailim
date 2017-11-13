@@ -82,4 +82,6 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="image">图片</string>
+    <string name="send">发送</string>
 </resources>
