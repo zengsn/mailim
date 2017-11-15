@@ -36,6 +36,7 @@ import javax.mail.MessagingException;
 
 import mailim.mailim.activity.MainActivity;
 import mailim.mailim.activity.SettingsActivity;
+import mailim.mailim.util.DateUtil;
 import mailim.mailim.util.EmaiRecever;
 import mailim.mailim.activity.EmailActivity;
 import mailim.mailim.entity.Email;
@@ -50,6 +51,8 @@ public class EmailFragment extends Fragment {
     public MyAdapter adapter;
     public List<Email> emails = new ArrayList<Email>();
     public List<Email> allEmails = new ArrayList<Email>();
+    String[] item = null;
+    boolean[] isCheck = null;
     public ProgressDialog waitingDialog=
             new ProgressDialog(MainActivity.mContext);
 
@@ -70,6 +73,9 @@ public class EmailFragment extends Fragment {
     };
 
     public EmailFragment(){
+        item = new String[]{"普通邮件","mailim邮件"};
+        isCheck = new boolean[item.length];
+        for(int i=0;i<item.length;i++)isCheck[i] = true;
     }
 
     public boolean recevieEmail(){
@@ -106,18 +112,17 @@ public class EmailFragment extends Fragment {
         allEmails.addAll(MainActivity.app.getMailimEmail());
         emails.clear();
         emails.addAll(allEmails);
+        filterEmail();
         adapter.notifyDataSetChanged();
     }
 
     public void filter(){
-        String[] item = new String[]{"普通邮件","mailim邮件"};
-        final boolean[] isCheck = new boolean[item.length];
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                 .setTitle("请选择")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        filter(isCheck);
+                        filterEmail();
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -134,7 +139,7 @@ public class EmailFragment extends Fragment {
         alertDialog.show();
     }
 
-    public void filter(boolean isCheck[]){
+    public void filterEmail(){
         emails.clear();
         emails.addAll(allEmails);
         Iterator<Email> iterator = emails.iterator();
@@ -147,6 +152,7 @@ public class EmailFragment extends Fragment {
                 if(!isCheck[0])iterator.remove();
             }
         }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -191,6 +197,13 @@ public class EmailFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = View.inflate(getActivity(), R.layout.list_item_email,null);
             TextView ev_fromaddr = (TextView)convertView.findViewById(R.id.tv_list_email_from);
+            TextView time = (TextView)convertView.findViewById(R.id.email_list_item_time);
+
+            time.setText(DateUtil.getDateString(emails.get(position).getSendDate()));
+            if(position>0){
+                if(time.getText().equals(DateUtil.getDateString(emails.get(position-1).getSendDate())))
+                    time.setVisibility(View.GONE);
+            }
             ev_fromaddr.setTextColor(Color.BLACK);
             String name = emails.get(position).getName();
             String email = emails.get(position).getEmailAddr();

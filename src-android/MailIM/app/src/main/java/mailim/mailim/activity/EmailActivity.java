@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import mailim.mailim.util.DateUtil;
 import mailim.mailim.util.MyApplication;
 import mailim.mailim.R;
 import mailim.mailim.entity.Email;
@@ -84,7 +85,8 @@ public class EmailActivity extends AppCompatActivity {
         if(!email.isEmpty()){
 //            Toast.makeText(app.getApplicationContext(),"not null",Toast.LENGTH_SHORT).show();
             fromaddr.setText(email.getEmailAddr());
-            time.setText(email.getSendDate().toString());
+            //time.setText(email.getSendDate().toString());
+            time.setText(DateUtil.DateToStrong(email.getSendDate()));
             subject.setText(email.getSubject());
             WebSettings settings = text.getSettings();
 //支持javascript

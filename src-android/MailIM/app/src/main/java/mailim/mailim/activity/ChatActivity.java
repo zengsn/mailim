@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
@@ -369,7 +370,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     ImageView imageRight = (ImageView)convertView.findViewById(R.id.image_right);
                     Picasso.with(getParent())
                             .load(Constant.IMAGE_URL+m.getTime())
-                            .into(imageRight);
+                            .into(imageRight, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    adapter.notifyDataSetChanged();
+                                    myLV.setSelection(adapter.getCount()-1);
+                                }
+
+                                @Override
+                                public void onError() {
+
+                                }
+                            });
                     textRight.setVisibility(View.GONE);
                     imageRight.setVisibility(View.VISIBLE);
                 }
@@ -391,7 +403,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     ImageView imageLeft = (ImageView)convertView.findViewById(R.id.image_left);
                     Picasso.with(getParent())
                             .load(Constant.IMAGE_URL+m.getTime())
-                            .into(imageLeft);
+                            .into(imageLeft, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    adapter.notifyDataSetChanged();
+                                    myLV.setSelection(adapter.getCount()-1);
+                                }
+
+                                @Override
+                                public void onError() {
+
+                                }
+                            });
                     textLeft.setVisibility(View.GONE);
                     imageLeft.setVisibility(View.VISIBLE);
                 }

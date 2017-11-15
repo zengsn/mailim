@@ -84,4 +84,6 @@
     </string>
     <string name="image">图片</string>
     <string name="send">发送</string>
+    <string name="yhm">用户名</string>
+    <string name="zt">主题</string>
 </resources>

@@ -1,21 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical">
     <TextView
-        android:id="@+id/tv_list_email_from"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:text="用户名"/>
-    <TextView
-        android:id="@+id/tv_list_email_subject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_list_email_from"
-        android:layout_marginTop="5dp"
-        android:textColor="@color/text_gray"
-        android:textSize="15dp"
-        android:hint="主题"/>
-</RelativeLayout>
+        android:id="@+id/email_list_item_time"
+        android:gravity="center_horizontal"
+        android:background="@color/fragment_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/fragment_lv_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_list_email_from"
+            android:textSize="24sp"
+            android:text="@string/yhm"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_list_email_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/text_gray"
+            android:textSize="15sp"
+            android:hint="@string/zt"/>
+    </LinearLayout>
+</LinearLayout>

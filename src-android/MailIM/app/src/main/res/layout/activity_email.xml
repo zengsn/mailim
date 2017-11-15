@@ -17,6 +17,7 @@
                 android:id="@+id/email_fromaddr_des"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:text="发送人："/>
             <TextView
@@ -24,6 +25,7 @@
                 android:layout_toEndOf="@+id/email_fromaddr_des"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
                 android:text="addr"/>
 
         </RelativeLayout>
@@ -38,10 +40,12 @@
                 android:id="@+id/email_time_des"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:text="时间："/>
             <TextView
                 android:id="@+id/email_time"
+                android:textSize="18sp"
                 android:layout_toEndOf="@+id/email_time_des"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -58,10 +62,12 @@
                 android:id="@+id/email_subject_des"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:text="主题："/>
             <TextView
                 android:id="@+id/email_subject"
+                android:textSize="18sp"
                 android:layout_toEndOf="@+id/email_subject_des"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -78,15 +84,14 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/email_text_des"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="内容："/>
+                <!--<TextView-->
+                    <!--android:id="@+id/email_text_des"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textStyle="bold"-->
+                    <!--android:text="内容："/>-->
                 <WebView
                     android:id="@+id/email_text"
-                    android:layout_below="@+id/email_text_des"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
