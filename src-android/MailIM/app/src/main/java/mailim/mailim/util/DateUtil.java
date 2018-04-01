@@ -1,5 +1,7 @@
 package mailim.mailim.util;
 
+import android.annotation.SuppressLint;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,53 +19,13 @@ public class DateUtil {
      * @param date 日期
      * @return 字符串
      */
-    public static String getDateString(Date date){
+    public static String DateToString(Date date){
         String time = null;
         if(date != null){
             SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_DATE);
             time = dateFormat.format(date);
         }
         return time;
-    }
-
-    /**
-     * 获取时间（HH:mm）
-     * @param date 日期
-     * @return 字符串
-     */
-    public static String getTime(Date date){
-        String time = null;
-        if(date != null){
-            SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_HHMM);
-            time = dateFormat.format(date);
-        }
-        return time;
-    }
-
-    /**
-     * 获取时间（时:分）
-     * @param dateString 日期字符串
-     * @return 字符串
-     */
-    public static String getTime(String dateString){
-        String time = null;
-        Date date = StringToDate(dateString);
-        time = getTime(date);
-        return time;
-    }
-
-    /**
-     * 将日期转化为字符串
-     * @param date 日期
-     * @return 日期字符串
-     */
-    public static String DateToStrong(Date date){
-        String dateString = null;
-        if(date != null){
-            SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_DEFAULT);
-            dateString = dateFormat.format(date);
-        }
-        return dateString;
     }
 
     /**
@@ -79,6 +41,84 @@ public class DateUtil {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    /**
+     * 将时间戳转换为字符串
+     * @param time 时间戳
+     * @return string
+     */
+    public static String LongToString(Long time){
+        SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_DEFAULT);
+        dateFormat.setLenient(false);
+        return dateFormat.format(time);
+    }
+
+    /**
+     * 将时间戳转换为字符串
+     * @param time 时间戳
+     * @return string
+     */
+    public static Date LongToDate(Long time){
+        SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_DEFAULT);
+        dateFormat.setLenient(false);
+        String str = dateFormat.format(time);
+        try {
+            return dateFormat.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取时间（HH:mm）
+     * @param date 日期
+     * @return 字符串
+     */
+    public static String getTime(Date date){
+        String time = null;
+        if(date != null){
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_HHMM);
+            time = dateFormat.format(date);
+        }
+        return time;
+    }
+
+    /**
+     * 获取时间（时:分）
+     * @param dateString 日期字符串
+     * @return 字符串
+     */
+    public static String getTime(String dateString){
+        String time;
+        Date date = StringToDate(dateString);
+        time = getTime(date);
+        return time;
+    }
+
+    /**
+     * 获取时间（时:分）
+     * @param timeStamp 时间戳
+     * @return 字符串
+     */
+    public static String getTime(Long timeStamp){
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_HHMM);
+        dateFormat.setLenient(false);
+        return dateFormat.format(timeStamp);
+    }
+
+    /**
+     *  获取日期字符串
+     * @param timeStamp 时间戳
+     * @return 字符串
+     */
+    public static String getDateString(Long timeStamp){
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN_DATE);
+        return dateFormat.format(timeStamp);
     }
 
     /**

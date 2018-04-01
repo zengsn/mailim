@@ -2,6 +2,7 @@ package mailim.mailim.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -43,7 +44,19 @@ public class PulseService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        IBinder result = null;
+        if ( null == result ) result = new MyBinder() ;
+        ToastUtil.show("onBind");
+        startThread();
+        return result;
+    }
+
+    public class MyBinder extends Binder {
+        //此方法是为了可以在Acitity中获得服务的实例
+        public PulseService getService() {
+            return PulseService.this;
+        }
+
     }
 
     @Override
@@ -56,7 +69,7 @@ public class PulseService extends Service {
     @Override
     public void onDestroy() {
         run = false;
-        //ToastUtil.show(MainActivity.app,"服务结束");
+        ToastUtil.show(MainActivity.app,"服务结束");
         super.onDestroy();
     }
 
@@ -69,7 +82,7 @@ public class PulseService extends Service {
                     textView.setVisibility(View.GONE);
                 }
                 String str = new String(bytes);
-//                ToastUtil.show(MainActivity.app,str);
+                ToastUtil.show(MainActivity.app,str);
                 if("true".equals(str)) {
                 }
                 else if("false".equals(str)){

@@ -7,6 +7,16 @@
     android:clickable="false"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/time"
+        android:text="2017-11-24 13:11"
+        android:textSize="11sp"
+        android:textColor="#777"
+        android:background="@drawable/time_bg"
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <RelativeLayout
         android:id="@+id/left"
         android:layout_width="match_parent"
@@ -14,9 +24,9 @@
         android:layout_marginRight="50dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+        <mailim.mailim.view.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:id="@+id/img_chat_left"/>
 
         <TextView
@@ -27,8 +37,8 @@
             android:layout_alignTop="@+id/img_chat_left"
             android:layout_toEndOf="@+id/img_chat_left"
             android:layout_toRightOf="@+id/img_chat_left"
-            android:background="@color/text_bg"
-            android:textSize="28dp"
+            android:background="@drawable/text_bg"
+            android:textSize="28sp"
             android:text="" />
 
         <ImageView
@@ -75,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
-            android:background="@color/text_bg"
+            android:background="@drawable/text_bg"
             android:textSize="28sp"
             android:text="" />
 
@@ -91,9 +101,9 @@
             android:text="" />
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+        <mailim.mailim.view.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:id="@+id/img_chat_right"
             android:layout_alignParentRight="true"/>
 

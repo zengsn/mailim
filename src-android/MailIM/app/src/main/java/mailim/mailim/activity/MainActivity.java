@@ -2,16 +2,21 @@ package mailim.mailim.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -25,6 +30,7 @@ import com.squareup.picasso.Target;
 import org.apache.http.Header;
 
 import mailim.mailim.entity.User;
+import mailim.mailim.service.PulseService;
 import mailim.mailim.util.EmailSender;
 import mailim.mailim.util.MyApplication;
 import mailim.mailim.R;
@@ -50,7 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     public static MyApplication app;
     public static MainActivity mContext;
-    private static Button btn_add;
+//    private static Button btn_add;
     private Target target;
 
     @Override
@@ -63,6 +69,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         bindView();
 //        intiMyAApplication();
         app.loadHead(app.getMyUser().getUsername());
+        Intent intent = new Intent(getApplication(), PulseService.class);
+        bindService(intent,serviceConnection,BIND_AUTO_CREATE);
     }
 
     private void intiMyAApplication(){
@@ -86,8 +94,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         mTextNum3 = (TextView) this.findViewById(R.id.tab_email_num);
         mTextNum4 = (TextView) this.findViewById(R.id.tab_home_num);
 
-        btn_add = (Button)findViewById(R.id.title_add);
-        btn_add.setOnClickListener(this);
+//        btn_add = (Button)findViewById(R.id.title_add);
+//        btn_add.setOnClickListener(this);
 
         num1 = num2 = num3 = num4 = 0;
 
@@ -99,8 +107,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         tabMessage.setSelected(true);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         intiFragment();
-        btn_add.setText("备份记录");
-        btn_add.setVisibility(View.VISIBLE);
+//        btn_add.setText("备份记录");
+//        btn_add.setVisibility(View.VISIBLE);
         transaction.show(f1);
         transaction.commit();
         updataNum();
@@ -126,7 +134,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         tabMatey.setSelected(false);
         tabEmail.setSelected(false);
         tabHome.setSelected(false);
-        btn_add.setVisibility(View.GONE);
+//        btn_add.setVisibility(View.GONE);
     }
 
     //隐藏所有Fragment
@@ -181,8 +189,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 hideAllFragment(transaction);
                 selected();
                 tabMessage.setSelected(true);
-                btn_add.setText("备份记录");
-                btn_add.setVisibility(View.VISIBLE);
+                //btn_add.setText("备份记录");
+                //btn_add.setVisibility(View.VISIBLE);
                 transaction.show(f1);
                 f1.update();
                 break;
@@ -191,8 +199,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 hideAllFragment(transaction);
                 selected();
                 tabMatey.setSelected(true);
-                btn_add.setText("备份好友");
-                btn_add.setVisibility(View.VISIBLE);
+                //btn_add.setText("备份好友");
+                //btn_add.setVisibility(View.VISIBLE);
                 transaction.show(f2);
                 f2.updateFriend();
                 break;
@@ -204,8 +212,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 hideAllFragment(transaction);
                 selected();
                 tabEmail.setSelected(true);
-                btn_add.setText("筛选");
-                btn_add.setVisibility(View.VISIBLE);
+                //btn_add.setText("筛选");
+                //btn_add.setVisibility(View.VISIBLE);
                 transaction.show(f3);
                 if(!isHidden || f3.emails.size() == 0)f3.recevieEmail();
                 break;
@@ -351,6 +359,29 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                    .setTitle("确认退出？")
+                    .setPositiveButton("退出", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton("后台运行", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            moveTaskToBack(false);
+                        }
+                    }).create();
+            alertDialog.show();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     protected void onDestroy() {
         savePreferences();
         f1 = null;
@@ -358,6 +389,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         f3 = null;
         f4 = null;
         mContext = null;
+        unbindService(serviceConnection);
         super.onDestroy();
     }
 
@@ -374,6 +406,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
         editor.putString("email_pwd","");
         editor.apply();
     }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ToastUtil.show("绑定服务成功");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            ToastUtil.show("绑定服务失败");
+        }
+    };
 
     private Handler handler = new Handler(){
         @Override

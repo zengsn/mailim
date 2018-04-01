@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
+    android:layout_height="match_parent"
     android:orientation="vertical">
-    <TextView
-        android:id="@+id/email_list_item_time"
-        android:gravity="center_horizontal"
-        android:background="@color/fragment_bg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
     <LinearLayout
-        android:orientation="vertical"
         android:background="@color/fragment_lv_bg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tv_list_email_from"
-            android:textSize="24sp"
-            android:text="@string/yhm"
-            android:gravity="center_horizontal"
+        android:layout_height="70dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:padding="10dp"
+            android:src="@mipmap/ic_menu_email_off"
+            android:layout_width="90dp"
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/tv_list_email_subject"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:textColor="@color/text_gray"
-            android:textSize="15sp"
-            android:hint="@string/zt"/>
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+                <TextView
+                    android:id="@+id/tv_list_email_from"
+                    android:textSize="24sp"
+                    android:text="@string/yhm"
+                    android:gravity="center_vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"/>
+                <TextView
+                    android:id="@+id/email_list_item_time"
+                    android:gravity="center_vertical"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_list_email_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gray"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:hint="@string/zt"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -11,6 +11,7 @@
         android:layout_alignParentTop="true"
         android:divider="@null"
         android:background="#ddd"
+        android:transcriptMode="normal"
         android:id="@+id/lv_chat">
 
     </ListView>
@@ -24,10 +25,11 @@
     `
         <Button
             android:id="@+id/btn_left"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_margin="5dp"
-            android:text="@string/image"
+            android:text=""
+            android:background="@mipmap/pictrue"
             android:textColor="#fff" />
 
         <EditText

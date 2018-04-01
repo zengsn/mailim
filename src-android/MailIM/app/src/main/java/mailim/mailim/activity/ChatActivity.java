@@ -44,6 +44,7 @@ import java.util.List;
 
 import mailim.mailim.entity.Friend;
 import mailim.mailim.fragment.MessageFragment;
+import mailim.mailim.util.DateUtil;
 import mailim.mailim.util.EmailSender;
 import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.MailMessageUtil;
@@ -358,9 +359,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             TextView textRight = (TextView)convertView.findViewById(R.id.text_right);
             ImageView imgLeft = (ImageView)convertView.findViewById(R.id.img_chat_left);
             ImageView imgRight = (ImageView)convertView.findViewById(R.id.img_chat_right);
+            TextView timeTV = (TextView)convertView.findViewById(R.id.time);
 
             //获取消息数据
+            Long currentTime = System.currentTimeMillis();
+            String todayString = DateUtil.getDateString(currentTime);
+            String time;
             Chat m = chatList.get(position);
+            Long timeStamp = Long.valueOf(m.getTime())*1000;
+            time = DateUtil.getDateString(timeStamp);
+            if(time.equals(todayString)){
+                time = DateUtil.getTime(timeStamp);
+            }
+            else if(position>0) {
+                Chat preChat = chatList.get(position - 1);
+                Long preTimestamp = Long.valueOf(preChat.getTime())*1000;
+                String preDateString = DateUtil.getDateString(preTimestamp);
+                if(DateUtil.getDateString(timeStamp).equals(preDateString)){
+                    timeTV.setVisibility(View.GONE);
+                } else {
+                    timeTV.setVisibility(View.VISIBLE);
+                }
+            }
+            timeTV.setText(time);
             if(m.isMyself()){
                 //发送的消息（在右边显示）
                 if(m.getType().equals(Chat.TYPE_TEXT)){

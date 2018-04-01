@@ -86,7 +86,7 @@ public class EmailActivity extends AppCompatActivity {
 //            Toast.makeText(app.getApplicationContext(),"not null",Toast.LENGTH_SHORT).show();
             fromaddr.setText(email.getEmailAddr());
             //time.setText(email.getSendDate().toString());
-            time.setText(DateUtil.DateToStrong(email.getSendDate()));
+            time.setText(DateUtil.DateToString(email.getSendDate()));
             subject.setText(email.getSubject());
             WebSettings settings = text.getSettings();
 //支持javascript
