@@ -7,6 +7,10 @@
     android:showDividers="middle"
     android:background="@color/fragment_bg">
 
+    <!--<include-->
+        <!--android:id="@+id/main_title"-->
+        <!--layout="@layout/title_main"/>-->
+
     <TextView
         android:id="@+id/tip_net"
         android:layout_width="match_parent"

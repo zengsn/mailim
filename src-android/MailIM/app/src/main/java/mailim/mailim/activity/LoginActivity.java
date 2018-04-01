@@ -145,15 +145,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
+                ToastUtil.show(getApplication(), str);
                 if("false".equals(str)) {
-                    ToastUtil.show(getApplication(),"登录失败！"+str);
+                    ToastUtil.show(getApplication(),"登录失败！1"+str);
                 } else if("login".equals(str)) {
                     ToastUtil.show(getApplication(),"登录失败！"+str);
                 } else if("[]".equals(str)) {
                     ToastUtil.show(getApplication(),"登录失败！"+str);
                 } else {
                     MainActivity.app.setLogin(true);
-//                    ToastUtil.show(getApplicationContext(), str);
                     try {
                         JSONObject res = JSONObject.parseObject(str);
                         if ("user".equals(res.getString("type"))) {
@@ -167,8 +167,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Intent intent1 = new Intent(getApplication(), MainActivity.class);
                             startActivity(intent1);
                             MainActivity.app.login();
-                            Intent intent2 = new Intent(getApplication(), PulseService.class);
-                            startService(intent2);
                             LoginActivity.this.finish();
                         }
                     } catch (RuntimeException e) {
@@ -179,7 +177,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                Toast.makeText(getApplicationContext(),R.string.tip_login_fail+":"+throwable.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"失败"+R.string.tip_login_fail+":"+throwable.getMessage(),Toast.LENGTH_LONG).show();
                 MainActivity.app.setLogin(false);
             }
         });

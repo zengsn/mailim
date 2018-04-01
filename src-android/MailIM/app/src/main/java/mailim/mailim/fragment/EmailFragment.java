@@ -1,6 +1,7 @@
 package mailim.mailim.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -193,24 +194,26 @@ public class EmailFragment extends Fragment {
             return position;
         }
 
+        @SuppressLint("ViewHolder")
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = View.inflate(getActivity(), R.layout.list_item_email,null);
-            TextView ev_fromaddr = (TextView)convertView.findViewById(R.id.tv_list_email_from);
+            TextView from_tv = (TextView)convertView.findViewById(R.id.tv_list_email_from);
             TextView time = (TextView)convertView.findViewById(R.id.email_list_item_time);
 
-            time.setText(DateUtil.getDateString(emails.get(position).getSendDate()));
+            time.setText(DateUtil.DateToString(emails.get(position).getSendDate()));
             if(position>0){
-                if(time.getText().equals(DateUtil.getDateString(emails.get(position-1).getSendDate())))
+                if(time.getText().equals(DateUtil.DateToString(emails.get(position-1).getSendDate())))
                     time.setVisibility(View.GONE);
             }
-            ev_fromaddr.setTextColor(Color.BLACK);
+            from_tv.setTextColor(Color.BLACK);
             String name = emails.get(position).getName();
             String email = emails.get(position).getEmailAddr();
             if(null == name || "".equals(name))name = MainActivity.app.getFriendUsername(email);
             //ev_fromaddr.setText(name+"<"+ email +">");
-            if("未命名".equals(name))ev_fromaddr.setText(email);
-            else ev_fromaddr.setText(name);
+            if("未命名".equals(name))from_tv.setText(email);
+            else from_tv.setText(name);
+
 
             TextView mTextView = (TextView) convertView.findViewById(R.id.tv_list_email_subject);
             mTextView.setText(emails.get(position).getSubject());
