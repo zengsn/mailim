@@ -1,48 +1,157 @@
 package mailim.mailim.fragment;
 
 
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+
+import mailim.mailim.activity.MainActivity;
+import mailim.mailim.activity.SettingsActivity;
+import mailim.mailim.util.DateUtil;
 import mailim.mailim.util.EmaiRecever;
 import mailim.mailim.activity.EmailActivity;
 import mailim.mailim.entity.Email;
 import mailim.mailim.R;
+import mailim.mailim.util.EmailUtil;
+import mailim.mailim.util.MailMessageUtil;
+import mailim.mailim.util.ToastUtil;
 
 
 public class EmailFragment extends Fragment {
-    public Context mContext;
     public ListView mListView;
-    private EmaiRecever emaiRecever;
     public MyAdapter adapter;
     public List<Email> emails = new ArrayList<Email>();
+    public List<Email> allEmails = new ArrayList<Email>();
+    String[] item = null;
+    boolean[] isCheck = null;
+    public ProgressDialog waitingDialog=
+            new ProgressDialog(MainActivity.mContext);
 
-    public EmailFragment(Context mContext){
-        this.mContext = mContext;
-        //Toast.makeText(mContext,login.string+":"+String.valueOf(login.count),Toast.LENGTH_SHORT).show();//        emaiRecever = new EmaiRecever();
-        emaiRecever = new EmaiRecever(this);
-        emaiRecever.execute();
-        //renovate();
-        //Toast.makeText(mContext,emaiRecever.getString(),Toast.LENGTH_SHORT).show();
-        //emaiRecever.send("smtp.163.com","zhangzhanhong218@163.com","1234567zzh");
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what){
+                case 1:
+                    ToastUtil.show(getActivity(),msg.obj.toString());
+                    break;
+                case 2:
+                    updataEmail();
+                    waitingDialog.cancel();
+                    MainActivity.app.intiFriendList();
+                    break;
+            }
+        }
+    };
+
+    public EmailFragment(){
+        item = new String[]{"普通邮件","mailim邮件"};
+        isCheck = new boolean[item.length];
+        for(int i=0;i<item.length;i++)isCheck[i] = true;
     }
 
-    public void updataEmail(List<Email> emails){
-        this.emails = emails;
+    public boolean recevieEmail(){
+        emails.clear();
+        adapter.notifyDataSetChanged();
+
+        final String email = MainActivity.app.getMyUser().getEmail();
+        final String pwd = MainActivity.app.getMyUser().getEmailpwd();
+        if(!EmailUtil.isEmail(email)){
+            ToastUtil.show(getActivity(),"邮箱账号不正确");
+            return false;
+        }
+        waitingDialog.setTitle("接收邮件");
+        waitingDialog.setMessage("接收中...");
+        waitingDialog.setIndeterminate(true);
+        waitingDialog.setCancelable(false);
+        waitingDialog.show();
+        new Thread(){
+            @Override
+            public void run() {
+                Looper.prepare();
+                EmaiRecever.recevie(email,pwd);
+                android.os.Message msg = new android.os.Message();
+                msg.what = 2;
+                handler.sendMessage(msg);
+                super.run();
+            }
+        }.start();
+        return true;
+    }
+
+    public void updataEmail(){
+        allEmails = new ArrayList<>(MainActivity.app.getInboxEmail());
+        allEmails.addAll(MainActivity.app.getMailimEmail());
+        emails.clear();
+        emails.addAll(allEmails);
+        filterEmail();
+        adapter.notifyDataSetChanged();
+    }
+
+    public void filter(){
+        final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                .setTitle("请选择")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        filterEmail();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setMultiChoiceItems(item, isCheck, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        isCheck[which] = isChecked;
+                    }
+                }).create();
+        alertDialog.show();
+    }
+
+    public void filterEmail(){
+        emails.clear();
+        emails.addAll(allEmails);
+        Iterator<Email> iterator = emails.iterator();
+        while (iterator.hasNext()){
+            Email email = iterator.next();
+            if(email.getSubject().contains(MailMessageUtil.SUBJECT_MAILIM)){
+                if(!isCheck[1])iterator.remove();
+            }
+            else {
+                if(!isCheck[0])iterator.remove();
+            }
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -53,8 +162,18 @@ public class EmailFragment extends Fragment {
         adapter = new MyAdapter();
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new MyOnItemClickListener());
-
+        mListView.setOnItemLongClickListener(new MyItemLongClickListener());
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     private class MyAdapter extends BaseAdapter{
@@ -76,13 +195,24 @@ public class EmailFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = View.inflate(mContext, R.layout.list_item_email,null);
+            convertView = View.inflate(getActivity(), R.layout.list_item_email,null);
             TextView ev_fromaddr = (TextView)convertView.findViewById(R.id.tv_list_email_from);
+            TextView time = (TextView)convertView.findViewById(R.id.email_list_item_time);
+
+            time.setText(DateUtil.getDateString(emails.get(position).getSendDate()));
+            if(position>0){
+                if(time.getText().equals(DateUtil.getDateString(emails.get(position-1).getSendDate())))
+                    time.setVisibility(View.GONE);
+            }
             ev_fromaddr.setTextColor(Color.BLACK);
-            ev_fromaddr.setText(emails.get(position).getFrom_address());
+            String name = emails.get(position).getName();
+            String email = emails.get(position).getEmailAddr();
+            if(null == name || "".equals(name))name = MainActivity.app.getFriendUsername(email);
+            //ev_fromaddr.setText(name+"<"+ email +">");
+            if("未命名".equals(name))ev_fromaddr.setText(email);
+            else ev_fromaddr.setText(name);
 
             TextView mTextView = (TextView) convertView.findViewById(R.id.tv_list_email_subject);
-            mTextView.setTextColor(Color.BLACK);
             mTextView.setText(emails.get(position).getSubject());
 
             return convertView;
@@ -96,6 +226,27 @@ public class EmailFragment extends Fragment {
             Intent intent = new Intent(getActivity(), EmailActivity.class);
             intent.putExtra("email",emails.get(position));
             startActivity(intent);
+        }
+    }
+
+    private class MyItemLongClickListener implements AdapterView.OnItemLongClickListener{
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            final EditText editText = new EditText(getActivity());
+            editText.setText(emails.get(position).getName());
+            AlertDialog.Builder inputDialog =
+                    new AlertDialog.Builder(getActivity());
+            inputDialog.setTitle("添加好友").setView(editText);
+            inputDialog.setPositiveButton("确定",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ToastUtil.show(getActivity(),editText.getText().toString());
+                            MainActivity.app.addFriend(emails.get(position).getEmailAddr(),editText.getText().toString());
+                        }
+                    }).show();
+            return true;
         }
     }
 }

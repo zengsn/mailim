@@ -4,34 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/chat_title_layout"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:background="@color/title">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="@color/title_text"
-            android:textSize="24dp"
-            android:text="名称"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    </LinearLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/chat_title_layout"
         android:layout_above="@+id/chat_below_layout"
+        android:layout_alignParentTop="true"
         android:divider="@null"
-        android:background="@color/fragment_lv_bg"
+        android:background="#ddd"
         android:id="@+id/lv_chat">
 
     </ListView>
@@ -42,13 +21,13 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
-
+    `
         <Button
             android:id="@+id/btn_left"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:text="左边"
+            android:text="@string/image"
             android:textColor="#fff" />
 
         <EditText
@@ -62,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:text="右边"
+            android:text="@string/send"
             android:textColor="#fff" />
 
     </LinearLayout>

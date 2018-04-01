@@ -7,28 +7,28 @@ import java.util.Date;
  * Created by zzh on 2017/7/14.
  */
 public class Email implements Serializable{
-    protected String from_address;
-    protected String pet_name;
+    protected String emailAddr;
+    protected String name;
     protected String subject;
     protected String content;
     protected Date sendDate;
     protected boolean empty;
     protected boolean isMultipart;
 
-    public String getFrom_address() {
-        return from_address;
+    public String getEmailAddr() {
+        return emailAddr;
     }
 
-    public void setFrom_address(String from_address) {
-        this.from_address = from_address;
+    public void setEmailAddr(String emailAddr) {
+        this.emailAddr = emailAddr;
     }
 
-    public String getPet_name() {
-        return pet_name;
+    public String getName() {
+        return name;
     }
 
-    public void setPet_name(String pet_name) {
-        this.pet_name = pet_name;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSubject() {

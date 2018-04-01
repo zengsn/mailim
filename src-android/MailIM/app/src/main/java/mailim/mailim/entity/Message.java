@@ -7,14 +7,33 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
     private int raw;
-    private User user;
+    private String username;
+    private String email;
+    private String last;
 
-    public User getUser() {
-        return user;
+    public Message(String name,String email,String last){
+        setUsername(name);
+        setEmail(email);
+        setLast(last);
+        setRaw(1);
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    @Override
+    public boolean equals(Object obj) {
+        String string = (String)obj;
+        return username.equals(string);
+    }
+
+    public boolean isRaw(){
+        return raw>0;
+    }
+
+    public void addRaw(){
+        raw++;
+    }
+
+    public void subRaw(){
+        if(raw>0)raw--;
     }
 
     public int getRaw() {
@@ -23,5 +42,29 @@ public class Message implements Serializable {
 
     public void setRaw(int raw) {
         this.raw = raw;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLast() {
+        return last;
+    }
+
+    public void setLast(String last) {
+        this.last = last;
     }
 }

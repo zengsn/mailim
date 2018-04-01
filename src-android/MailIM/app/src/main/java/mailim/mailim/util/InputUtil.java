@@ -108,7 +108,8 @@ public class InputUtil<T> {
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){  //检测sd卡是否存在
             List<T> list;
             File sdCardDir = Environment.getExternalStorageDirectory();
-            File sdFile = new File(sdCardDir,fileName);
+            File sdFile = new File(sdCardDir,fileName+".txt");
+            if(!sdFile.exists())return null;
             try {
                 FileInputStream fis = new FileInputStream(sdFile);
                 ObjectInputStream ois = new ObjectInputStream(fis);

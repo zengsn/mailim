@@ -1,12 +1,29 @@
 package mailim.mailim.util;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Looper;
+import android.os.ParcelUuid;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.ArrayMap;
+import android.util.Log;
 
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.MessageVanishedEvent;
+import com.sun.mail.imap.ResyncData;
+import com.sun.mail.util.MimeUtil;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,78 +37,158 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.event.MailEvent;
+import javax.mail.event.MessageChangedEvent;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
+import javax.mail.search.SubjectTerm;
 
+import mailim.mailim.activity.MainActivity;
 import mailim.mailim.entity.Email;
 import mailim.mailim.fragment.EmailFragment;
 
 /**
  * Created by zzh on 2017/7/14.
  */
-public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
-    // 连接pop3服务器的主机名、协议、用户名、密码
-    protected String pop3Server = "pop.163.com";
-    protected String protocol = "pop3";
-    protected String user = "zhangzhanhong218";
-    protected String pwd = "1234567zzh";
-
-    public EmailFragment fragment;
-
-    public EmaiRecever(EmailFragment fragment){
-        this.fragment = fragment;
-    }
-
-    @Override
-    protected void onPostExecute(List<Email> emails){
-        fragment.updataEmail(emails);
-    }
-    @Override
-    protected void onProgressUpdate(String... value) {
-
-    }
-    @Override
-    protected List<Email> doInBackground(Void... params) {
-        List<Email> emails = new ArrayList<Email>();
-        Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-        Store store = null;
-        Message[] messages;
-        try {
-            store = session.getStore("pop3");
-            store.connect(pop3Server, user, pwd);
-            Folder folder = store.getFolder("INBOX");
-            folder.open(Folder.READ_ONLY);
-            messages = folder.getMessages();
-            int mailCounts = messages.length;
-            for(int i = 0; i < mailCounts; i++) {
-                Email email = new Email();
-                email.setSubject( messages[i].getSubject());
-                String str[] = messages[i].getFrom()[0].toString().split(" ");
-                if(str.length == 1){
-                    email.setFrom_address(str[0]);
+public class EmaiRecever{
+    public static void downlaodMailimFile(final String username, final String pwd){
+        new Thread(){
+            @Override
+            public void run() {
+                Message[] messages;
+                String server = null;
+                String user = EmailUtil.getUsername(username);
+                server = EmailUtil.getDefaultAddr(username);
+                try {
+                    Store store = EmailUtil.login(server,user,pwd);
+                    if(store == null){
+//                        ToastUtil.show(MainActivity.app,"连接邮箱服务器失败！");
+                    }
+                    else {
+                        Folder defaultfolder = store.getDefaultFolder();
+                        Folder folders[] = defaultfolder.list();
+                        Folder folder = null;
+                        if(server != null && server.contains("imap")){
+                            folder = folders[0].getFolder("mailim");
+                            if(!folder.exists())folder.create(Folder.HOLDS_MESSAGES);
+                            folder.open(Folder.READ_ONLY);
+                            messages = folder.search(new SubjectTerm(MailMessageUtil.SUBJECT_MAILIM));
+                            int count = messages.length;
+                            int max = 10;
+                            int i = count > max ? count - max : 0;
+                            for (;i < count ; i ++){
+                                getAllMultipart(0,messages[i],true);
+                            }
+                        }
+                        folder = store.getFolder("INBOX");
+                        if (folder != null) {
+                            folder.open(Folder.READ_ONLY);
+                            messages = folder.search(new SubjectTerm(MailMessageUtil.SUBJECT_MAILIM));
+                            int count = messages.length;
+                            int max = 10;
+                            int i = count > max ? count - max : 0;
+                            for (;i < count ; i ++){
+                                getAllMultipart(0,messages[i],true);
+                            }
+                            folder.close(false);
+                        }
+                        store.close();
+                    }
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                else {
-                    email.setFrom_address(str[1].substring(1, str[1].length() - 1));
-                }
-                email.setSendDate( messages[i].getSentDate());
-                email.setMultipart(messages[i].isMimeType("multipart/*"));
-                email.setContent( getAllMultipart(messages[i]));
-                email.setEmpty(false);
-                emails.add(email);
+                android.os.Message msg = new android.os.Message();
+                msg.what = 2;
+                MainActivity.app.handler.sendMessage(msg);
+                super.run();
             }
-            folder.close(false);
-            store.close();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
+        }.start();
+    }
+
+    public static void recevie(final String username, final String pwd){
+        Message[] messages;
+        List<Email> indexEmail = MainActivity.app.getInboxEmail();
+        List<Email> mailinEmail = MainActivity.app.getMailimEmail();
+        indexEmail.clear();
+        mailinEmail.clear();
+        String server = null;
+        String user = EmailUtil.getUsername(username);
+        server = EmailUtil.getDefaultAddr(username);
+        try {
+            Store store = EmailUtil.login(server,user,pwd);
+            if(store == null){
+                ToastUtil.show(MainActivity.app,"连接邮箱服务器失败！");
+            }
+            else {
+                Folder defaultfolder = store.getDefaultFolder();
+                Folder folders[] = defaultfolder.list();
+                Folder folder = null;
+                if(server != null && server.contains("imap")){
+                    folder = folders[0].getFolder("mailim");
+                    if(!folder.exists())folder.create(Folder.HOLDS_MESSAGES);
+                    folder.open(Folder.READ_ONLY);
+                    messages = folder.getMessages();
+                    int count = messages.length;
+                    int max = 10;
+                    int i = count > max ? count - max : 0;
+                    for (;i < count ; i ++){
+                        Email email = new Email();
+                        email.setSubject(messages[i].getSubject());
+                        InternetAddress address =(InternetAddress) messages[i].getFrom()[0];
+                        String name = address.getPersonal();
+                        if(null != name)email.setName(MimeUtility.decodeText(name));
+                        else email.setName("");
+                        email.setEmailAddr(address.getAddress());
+                        email.setSendDate(messages[i].getSentDate());
+                        email.setMultipart(messages[i].isMimeType("multipart/*"));
+                        boolean isDownload = false;
+//                        if(email.getSubject().contains("[mailim]"))isDownload = true;
+                        email.setContent(getAllMultipart(0,messages[i],isDownload));
+                        email.setEmpty(false);
+                        mailinEmail.add(0,email);
+                    }
+                }
+                folder = store.getFolder("INBOX");
+                if (folder != null) {
+                    ToastUtil.show(MainActivity.app,String.valueOf(folder.getMessageCount()));
+                    folder.open(Folder.READ_ONLY);
+                    messages = folder.getMessages();
+                    int count = messages.length;
+                    int max = 10;
+                    int i = count > max ? count - max : 0;
+                    for (;i < count ; i ++){
+                        Email email = new Email();
+                        email.setSubject(messages[i].getSubject());
+                        InternetAddress address =(InternetAddress) messages[i].getFrom()[0];
+                        String name = address.getPersonal();
+                        if(null != name)email.setName(MimeUtility.decodeText(name));
+                        else email.setName("");
+                        email.setEmailAddr(address.getAddress());
+                        email.setSendDate(messages[i].getSentDate());
+                        email.setMultipart(messages[i].isMimeType("multipart/*"));
+                        boolean isDownload = email.isMultipart();
+                        Log.e("邮件类型：",address.getAddress()+messages[i].getSentDate()+"multipart/*："+String.valueOf(messages[i].isMimeType("multipart/*")));
+//                        if(email.getSubject().contains("[mailim]"))isDownload = true;
+                        email.setContent(getAllMultipart(0,messages[i],isDownload));
+                        Log.e("邮件内容：",email.getContent());
+                        String text = email.getContent();
+                        email.setEmpty(false);
+                        indexEmail.add(0,email);
+                    }
+                    folder.close(false);
+                }
+                store.close();
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return emails;
     }
 
     /**
@@ -99,12 +196,14 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
      * @param part
      * @throws Exception
      */
-    private static String getAllMultipart(Part part) throws Exception{
+    public static String getAllMultipart(int j,Part part,boolean isDownload) throws Exception{
         String contentType = part.getContentType();
+        Log.e("消息类型：",part.getContentType());
         int index = contentType.indexOf("name");
         boolean conName = false;
         if(index!=-1){
             conName=true;
+            Log.e("name","true");
         }
         String text = "";
         //判断part类型
@@ -117,51 +216,92 @@ public class EmaiRecever extends AsyncTask<Void,String,List<Email>> {
             int counts = multipart.getCount();
             for (int i = 0; i < counts; i++) {
                 //递归获取数据
-                text = getAllMultipart(multipart.getBodyPart(i));
-//                //附件可能是截图或上传的(图片或其他数据)
-//                if (multipart.getBodyPart(i).getDisposition() != null) {
-//                    //附件为截图
-//                    if (multipart.getBodyPart(i).isMimeType("image/*")) {
-//                        InputStream is = multipart.getBodyPart(i)
-//                                .getInputStream();
-//                        String name = multipart.getBodyPart(i).getFileName();
-//                        String fileName;
-//                        //截图图片
-//                        if(name.startsWith("=?")){
-//                            fileName = name.substring(name.lastIndexOf(".") - 1,name.lastIndexOf("?="));
-//                        }else{
-//                            //上传图片
-//                            fileName = name;
-//                        }
-//
-//                        FileOutputStream fos = new FileOutputStream("D:\\"
-//                                + fileName);
-//                        int len = 0;
-//                        byte[] bys = new byte[1024];
-//                        while ((len = is.read(bys)) != -1) {
-//                            fos.write(bys,0,len);
-//                        }
-//                        fos.close();
-//                    } else {
-//                        //其他附件
-//                        InputStream is = multipart.getBodyPart(i)
-//                                .getInputStream();
-//                        String name = multipart.getBodyPart(i).getFileName();
-//                        FileOutputStream fos = new FileOutputStream("D:\\"
-//                                + name);
-//                        int len = 0;
-//                        byte[] bys = new byte[1024];
-//                        while ((len = is.read(bys)) != -1) {
-//                            fos.write(bys,0,len);
-//                        }
-//                        fos.close();
-//                    }
-//                }
+                Log.e("消息数:",String.valueOf(i));
+                text += getAllMultipart(j+1,multipart.getBodyPart(i),isDownload);
+                //附件可能是截图或上传的(图片或其他数据)
+                if (isDownload && multipart.getBodyPart(i).getDisposition() != null) {
+                    //附件为截图
+                    if (multipart.getBodyPart(i).isMimeType("image/*")) {
+                        InputStream is = multipart.getBodyPart(i)
+                                .getInputStream();
+                        String name = multipart.getBodyPart(i).getFileName();
+                        String fileName;
+                        //截图图片
+                        if(name.startsWith("=?")){
+                            fileName = name.substring(name.lastIndexOf(".") - 1,name.lastIndexOf("?="));
+                        }else{
+                            //上传图片
+                            fileName = name;
+                        }
+                        String time = MailMessageUtil.findValue(text,"时间");
+                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(time));
+                        int len = 0;
+                        byte[] bys = new byte[1024];
+                        while ((len = is.read(bys)) != -1) {
+                            fos.write(bys,0,len);
+                        }
+                        fos.close();
+                        if(isCidImgAndReplace(text)){
+                            String cid = getCid(multipart.getBodyPart(i));
+                            if(cid != null)Log.e("cid：",cid);
+                            File file = MainActivity.app.getDownlaodFile(time);
+                            fileName = file.getAbsolutePath();
+                            Log.e("filename:",fileName);
+                            text = replaceLocalPathByImgCid(text,cid,fileName);
+                            Log.e("替换后内容：",text);
+                        }
+                    } else {
+                        //其他附件
+                        InputStream is = multipart.getBodyPart(i)
+                                .getInputStream();
+                        String name = multipart.getBodyPart(i).getFileName();
+                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(name));
+                        int len = 0;
+                        byte[] bys = new byte[1024];
+                        while ((len = is.read(bys)) != -1) {
+                            fos.write(bys,0,len);
+                        }
+                        fos.close();
+                    }
+                }
             }
         }else if (part.isMimeType("message/rfc822")) {
-            text = getAllMultipart((Part) part.getContent());
+            text = getAllMultipart(j+1,(Part) part.getContent(),isDownload);
+        }else{
+            //text = getAllMultipart((Part) part.getContent(),isDownload);
         }
+//        Log.e("text内容：",text);
         return text;
+    }
+
+    public static String getCid(Part p) throws MessagingException {
+        String content, cid;
+        String[] headers = p.getHeader("Content-Id");
+//        if(headers != null)Log.e("headers:", Arrays.toString(headers)+
+//                p.getContentType());
+        if (headers != null && headers.length > 0) {
+            content = headers[0];
+        } else {
+            return null;
+        }
+        if (content.startsWith("<") && content.endsWith(">")) {
+            cid = "cid:" + content.substring(1, content.length() - 1);
+        } else {
+            cid = "cid:" + content;
+        }
+//        Log.e("cid:",cid);
+        return cid;
+    }
+
+    public static boolean isCidImgAndReplace(String text) {
+        if (TextUtils.isEmpty(text)) {
+            return false;
+        }
+        return text.contains("<img src=\"cid:");
+    }
+
+    public static String replaceLocalPathByImgCid(String content,String fileName,String filePath) {
+        return content.replace("<img src=" + "\"" + fileName + "\"", "<img src=\"file://" + filePath + "\"");
     }
 
     /**

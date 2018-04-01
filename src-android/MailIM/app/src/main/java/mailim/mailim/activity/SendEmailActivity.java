@@ -4,33 +4,42 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import mailim.mailim.MyApplication;
+import com.alibaba.fastjson.JSONObject;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.apache.http.Header;
+
+import mailim.mailim.util.Constant;
+import mailim.mailim.util.DESUtil;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.R;
 import mailim.mailim.util.EmailSender;
 import mailim.mailim.util.EmailUtil;
+import mailim.mailim.util.MyHttp;
+import mailim.mailim.util.ToastUtil;
 
-public class SendEmailActivity extends Activity {
-    private MyApplication app;
+public class SendEmailActivity extends AppCompatActivity {
     private EditText to;
     private EditText title;
     private EditText body;
     private Button send;
-    private EmailSender emailSender;
 
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch (msg.what){
                 case 1:
-                    Toast.makeText(app.getApplicationContext(),(String)msg.obj,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.app,(String)msg.obj,Toast.LENGTH_SHORT).show();
                     break;
                 default:
             }
@@ -41,14 +50,29 @@ public class SendEmailActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_email);
-
+        setupActionBar();
         inti();
     }
 
-    private void inti(){
-        app = (MyApplication)getApplication();
-        emailSender = new EmailSender();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void inti(){
         to = (EditText)findViewById(R.id.send_email_to);
         title = (EditText)findViewById(R.id.send_email_title);
         body = (EditText)findViewById(R.id.send_email_body);
@@ -62,40 +86,70 @@ public class SendEmailActivity extends Activity {
         });
 
         Intent intent = getIntent();
+        String name = intent.getStringExtra("name");
         String toAddr = intent.getStringExtra("to");
-        if(!"".equals(toAddr)){
+        String text = intent.getStringExtra("text");
+        if(!"".equals(name) && name != null){
+            getEmail(name);
+        }
+        else if(!"".equals(toAddr) && toAddr != null){
             to.setText(toAddr);
             title.setFocusable(true);
             title.requestFocus();
         }
+        if(!"".equals(text) && text != null){
+            title.setText(text);
+            body.setText(text);
+            body.setFocusable(true);
+            body.requestFocus();
+        }
+    }
+
+    private void getEmail(String name){
+        final MyApplication app = (MyApplication)getApplication();
+        final String username = app.getMyUser().getUsername();
+        final String password = app.getMyUser().getPassword();
+        String type = "getEmail";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type",type);
+        jsonObject.put("username", username);
+        jsonObject.put("password",password);
+        jsonObject.put("name",name);
+        String json = null;
+        try {
+            json = DESUtil.ENCRYPTMethod(jsonObject.toString(), Constant.KEY);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        RequestParams params = new RequestParams();
+        params.put("json",json);
+        MyHttp.post("index.php", params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String str = new String(bytes);
+                if(!"false".equals(str) && !"".equals(str)) {
+                    to.setText(str);
+                }
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                String str = new String(bytes);
+                ToastUtil.show(getApplicationContext(),str);
+            }
+        });
     }
 
     private void send(){
         final String to = this.to.getText().toString();
         if(!EmailUtil.isEmail(to)){
-            Toast.makeText(app.getApplicationContext(),"邮箱地址格式有误！",Toast.LENGTH_SHORT).show();
+            ToastUtil.show(MainActivity.app,"邮箱地址格式有误！");
             return;
         }
         final String title = this.title.getText().toString();
         final String body = this.body.getText().toString();
-        final String form = app.getEmail();
-        final String pwd = app.getEmailpwd();
-        final String server = app.getSmtpServer();
-        new Thread(){
-            public void run() {
-                Message msg = new Message();
-                msg.what = 1;
-                try {
-                    msg.obj = new String("已发送");
-                    handler.sendMessage(msg);
-                    emailSender.sendMail(to,form,server,"zhangzhanhong218",pwd,title,body,null);
-                    finish();
-                } catch (Exception e) {
-                    msg.obj = e.getMessage();
-                    handler.sendMessage(msg);
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+        EmailSender.sendMail(to,title,body,null);
+        //ToastUtil.show(MainActivity.app,"已发送");
+        finish();
     }
 }

@@ -4,6 +4,28 @@
     android:layout_height="match_parent"
     android:background="@color/fragment_bg">
 
+    <LinearLayout
+        android:id="@+id/matey_new_friend_lv"
+        android:visibility="gone"
+        style="@style/options">
+
+        <RelativeLayout
+            android:id="@+id/matey_new_friend"
+            android:onClick="onClick"
+            style="@style/option">
+            <TextView
+                style="@style/option_text"
+                android:text="新的朋友"/>
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/tab_menu_num_bg"/>
+        </RelativeLayout>
+    </LinearLayout>
+
     <ListView
         android:id="@+id/lv_matey"
         style="@style/lv_fragment">

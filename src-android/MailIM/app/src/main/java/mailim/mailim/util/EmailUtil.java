@@ -1,11 +1,32 @@
 package mailim.mailim.util;
 
+import android.util.Log;
+
+import java.util.Properties;
+
+import javax.mail.AuthenticationFailedException;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Store;
 
 /**
  * Created by zzh on 2017/9/13.
  */
 public class EmailUtil {
+    private static String protocol = "pop";
+
+    public static String getProtocol() {
+        return protocol;
+    }
+
+    public static void setProtocol(String protocol) {
+        EmailUtil.protocol = protocol;
+    }
+
     static public class MyAuthenticator extends javax.mail.Authenticator {
         private String strUser;
         private String strPwd;
@@ -18,6 +39,84 @@ public class EmailUtil {
         protected PasswordAuthentication getPasswordAuthentication() {
             return new PasswordAuthentication(strUser, strPwd);
         }
+    }
+
+    public static boolean checkEmail(String email, String pwd) {
+        String host = getDefaultAddr(email);
+        String user = getUsername(email);
+        Store store = login(host, user, pwd);
+        if (store == null) return false;
+        else return true;
+    }
+
+    public static Store login(String host, String user, String password) {
+        Store store = null;
+        // 连接服务器
+        Properties props = System.getProperties();
+        EmailUtil.MyAuthenticator myauth = new EmailUtil.MyAuthenticator(user, password);// Get
+        Session session = Session.getInstance(props, myauth);
+        try {
+            /**  QQ邮箱需要建立ssl连接 */
+            if (host.contains("pop")) {
+                props.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                props.setProperty("mail.pop3.socketFactory.fallback", "false");
+                props.setProperty("mail.pop3.starttls.enable", "true");
+                props.setProperty("mail.pop3.port", "995");
+                props.setProperty("mail.pop3.socketFactory.port", "995");
+                store = session.getStore("pop3");
+            } else {
+                props.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                props.setProperty("mail.imap.socketFactory.fallback", "false");
+                props.setProperty("mail.imap.starttls.enable", "true");
+                props.setProperty("mail.imap.port", "993");
+                props.setProperty("mail.imap.socketFactory.port", "993");
+                store = session.getStore("imaps");
+            }
+            // 创建Session实例对象
+            // Session session = Session.getInstance(props);  //pop3/smtp :jwovgwaypwrebecd
+            store.connect(host, user, password);
+        } catch (MessagingException e) {
+            Log.e("mail", e.toString());
+            e.printStackTrace();
+            return null;
+        }
+        return store;
+    }
+
+
+    public static String getUsername(String email) {
+        if (null == email || "".equals(email)) return "";
+        return email.split("@")[0];
+    }
+
+    public static String getDefaultAddr(String email) {
+
+        if (null == email || "".equals(email)) return "";
+        String str[] = email.split("@");
+        if (str.length > 1) return protocol+"." + str[1];
+        return null;
+    }
+
+    public static String getPopAddr(String email){
+        if(null == email || "".equals(email))return "";
+        String str[] = email.split("@");
+        if(str.length>1) return "pop."+str[1];
+        return null;
+    }
+
+    public static String getSmtpAddr(String email){
+        if(null == email || "".equals(email))return "";
+        //if(email.contains("qq.com"))return "smtp.exmail.qq.com";
+        String str[] = email.split("@");
+        if(str.length>1) return "smtp."+str[1];
+        return null;
+    }
+
+    public static String getImapAddr(String email){
+        if(null == email || "".equals(email))return "";
+        String str[] = email.split("@");
+        if(str.length>1) return "imap."+str[1];
+        return null;
     }
 
     public static boolean isEmail(String email){

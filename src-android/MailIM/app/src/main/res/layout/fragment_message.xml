@@ -3,10 +3,25 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:divider="#111"
+    android:showDividers="middle"
     android:background="@color/fragment_bg">
 
+    <TextView
+        android:id="@+id/tip_net"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:background="#6d6"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:text="无法连接到服务器！">
+
+    </TextView>
     <ListView
         android:id="@+id/lv_message"
+        android:layout_below="@+id/tip_net"
         style="@style/lv_fragment">
     </ListView>
 </LinearLayout>

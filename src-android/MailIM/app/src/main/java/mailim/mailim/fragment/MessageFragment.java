@@ -3,7 +3,6 @@ package mailim.mailim.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.ArraySet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,29 +12,27 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import mailim.mailim.R;
 import mailim.mailim.activity.ChatActivity;
+import mailim.mailim.activity.MainActivity;
+import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.Message;
-import mailim.mailim.entity.User;
 import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.OutputUtil;
-import mailim.mailim.util.ToastUtil;
 
 
 public class MessageFragment extends Fragment {
-    private ListView mListView;
-    private List<Message> messageList;
-    private MyAdapter adapter;
-    private int[] icons = {R.mipmap.ic_launcher,R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher};
-
+    private static ListView mListView;
+    private static List<Message> messageList;
+    private static MyAdapter adapter;
     public MessageFragment(){
 
     }
@@ -46,41 +43,83 @@ public class MessageFragment extends Fragment {
         mListView = (ListView) view.findViewById(R.id.lv_message);
         intiView();
         intiData();
-        //test();
         return view;
     }
 
     @Override
-    public void onDestroy() {
+    public void onPause() {
         saveData();
-        super.onDestroy();
+        super.onPause();
     }
 
-    private void test(){
-        Message message = new Message();
-        message.setRaw(2);
-        User user = new User();
-        user.setRemarksName("zzh");
-        user.setUsername("zh");
-        message.setUser(user);
-        messageList = new ArrayList<Message>();
-        messageList.add(message);
+
+    public void update(){
+        saveData();
+        messageList.clear();
+        adapter.notifyDataSetChanged();
+        intiData();
+        updateMessage();
         adapter.notifyDataSetChanged();
     }
 
-    private void intiData(){
-        InputUtil<Message> messageInputUtil = new InputUtil<Message>();
-        messageList = messageInputUtil.readListFromSdCard("mailim/message.txt");
-        if(messageList == null)
-            ToastUtil.show(getActivity(),"读取失败");
-        else ToastUtil.show(getActivity(),"读取成功");
+    public static void clearRaw(String email){
+        for(Message message:messageList){
+            if(message.getEmail().equals(email)) {
+                message.setRaw(0);
+            }
+        }
+        MainActivity.updataNum();
     }
 
-    private void saveData(){
-        OutputUtil<Message> messageOutputUtil = new OutputUtil<Message>();
-        if(messageOutputUtil.writeListIntoSDcard("mailim/message.txt",messageList))
-            ToastUtil.show(getActivity(),"保存成功");
-        else ToastUtil.show(getActivity(),"保存失败");
+    public static int getMsgCount(){
+//        intiData();
+        int count = 0;
+        if(messageList != null){
+            for (Message message:messageList){
+                if(message.isRaw())count++;
+            }
+        }
+//        saveData();
+        return count;
+    }
+
+    public static void addMessage(String email,String last,boolean toTop){
+        Message message = null;
+//        intiData();
+        boolean flag = true;
+        Iterator<Message> iterator = messageList.iterator();
+        while (iterator.hasNext()){
+            message = iterator.next();
+            if(email.equals(message.getEmail())){
+                if(toTop){
+                    iterator.remove();
+                }
+                message.setLast(last);
+                flag = false;
+            }
+        }
+        message = new Message(MainActivity.app.getFriendUsername(email),email,last);
+        if(flag || toTop)messageList.add(0,message);
+//        saveData();
+        adapter.notifyDataSetChanged();
+    }
+
+    private static void intiData(){
+        InputUtil<Message> inputUtil = new InputUtil<Message>();
+        List<Message> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"message");
+        if(list != null)messageList = list;
+    }
+
+    public static void updateMessage(){
+        for(Message obj:messageList){
+            Friend friend = MainActivity.app.getFriend(obj.getEmail());
+            if(null != friend.getUsername() && !"".equals(friend.getUsername()))obj.setUsername(friend.getUsername());
+        }
+    }
+
+    private static void saveData(){
+        OutputUtil<Message> outputUtil = new OutputUtil<Message>();
+        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"message",messageList);
     }
 
     private void intiView(){
@@ -112,9 +151,16 @@ public class MessageFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = View.inflate(getActivity(),R.layout.list_item_message,null);
             TextView mTextView = (TextView) convertView.findViewById(R.id.tv_list_message);
-            mTextView.setText(messageList.get(position).getUser().getRemarksName());
+            mTextView.setText(messageList.get(position).getUsername());
+            TextView textView = (TextView) convertView.findViewById(R.id.tv_list_message_last);
+            textView.setText(messageList.get(position).getLast());
             ImageView imageView = (ImageView) convertView.findViewById(R.id.list_item_message_image);
-            imageView.setBackgroundResource(icons[position]);
+            MainActivity.app.loadHead(messageList.get(position).getEmail());
+            Picasso.with(getActivity())
+                    .load(MainActivity.app.getHeadFile(messageList.get(position).getEmail()))
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .into(imageView);
             return convertView;
         }
     }
@@ -124,6 +170,8 @@ public class MessageFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent(getActivity(), ChatActivity.class);
+            String email = messageList.get(position).getEmail();
+            intent.putExtra("email",email);
             startActivity(intent);
         }
     }

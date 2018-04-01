@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="5dp"
+    android:paddingBottom="10dp"
+    android:clickable="false"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/left"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="50dp"
         android:orientation="horizontal">
 
@@ -25,40 +28,75 @@
             android:layout_toEndOf="@+id/img_chat_left"
             android:layout_toRightOf="@+id/img_chat_left"
             android:background="@color/text_bg"
-            android:textSize="24dp"
+            android:textSize="28dp"
             android:text="" />
 
+        <ImageView
+            android:id="@+id/image_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_alignTop="@+id/img_chat_left"
+            android:layout_toEndOf="@+id/img_chat_left"
+            android:layout_toRightOf="@+id/img_chat_left"
+            android:background="@color/text_bg"
+            android:textSize="28sp"
+            android:clickable="true"
+            android:visibility="gone"
+            android:text="" />
 
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/right"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="50dp"
         android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/img_chat_right"
+            android:layout_alignTop="@+id/img_chat_right"
+            android:layout_toStartOf="@+id/img_chat_right">
+
+        <ImageView
+            android:id="@+id/img_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/tab_menu_email"
+            android:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/text_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
-            android:layout_alignTop="@+id/img_chat_right"
-            android:layout_toStartOf="@+id/img_chat_right"
-            android:layout_toLeftOf="@+id/img_chat_right"
             android:background="@color/text_bg"
-            android:textSize="24dp"
+            android:textSize="28sp"
             android:text="" />
+
+        <ImageView
+            android:id="@+id/image_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@color/text_bg"
+            android:textSize="28sp"
+            android:clickable="true"
+            android:visibility="gone"
+            android:text="" />
+        </LinearLayout>
 
         <ImageView
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:id="@+id/img_chat_right"/>
+            android:id="@+id/img_chat_right"
+            android:layout_alignParentRight="true"/>
 
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>
