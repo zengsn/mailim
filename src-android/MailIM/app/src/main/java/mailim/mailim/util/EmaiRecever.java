@@ -1,54 +1,27 @@
 package mailim.mailim.util;
 
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.os.Looper;
-import android.os.ParcelUuid;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.ArrayMap;
 import android.util.Log;
-
-import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.MessageVanishedEvent;
-import com.sun.mail.imap.ResyncData;
-import com.sun.mail.util.MimeUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.mail.BodyPart;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Part;
-import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.URLName;
-import javax.mail.event.MailEvent;
-import javax.mail.event.MessageChangedEvent;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.SubjectTerm;
 
 import mailim.mailim.activity.MainActivity;
 import mailim.mailim.entity.Email;
-import mailim.mailim.fragment.EmailFragment;
 
 /**
  * Created by zzh on 2017/7/14.
@@ -65,7 +38,7 @@ public class EmaiRecever{
                 try {
                     Store store = EmailUtil.login(server,user,pwd);
                     if(store == null){
-//                        ToastUtil.show(MainActivity.app,"连接邮箱服务器失败！");
+//                        ToastUtil.show(MyApplication.getInstance(),"连接邮箱服务器失败！");
                     }
                     else {
                         Folder defaultfolder = store.getDefaultFolder();
@@ -104,7 +77,7 @@ public class EmaiRecever{
                 }
                 android.os.Message msg = new android.os.Message();
                 msg.what = 2;
-                MainActivity.app.handler.sendMessage(msg);
+                MyApplication.getInstance().handler.sendMessage(msg);
                 super.run();
             }
         }.start();
@@ -112,8 +85,8 @@ public class EmaiRecever{
 
     public static void recevie(final String username, final String pwd){
         Message[] messages;
-        List<Email> indexEmail = MainActivity.app.getInboxEmail();
-        List<Email> mailinEmail = MainActivity.app.getMailimEmail();
+        List<Email> indexEmail = MyApplication.getInstance().getInboxEmail();
+        List<Email> mailinEmail = MyApplication.getInstance().getMailimEmail();
         indexEmail.clear();
         mailinEmail.clear();
         String server = null;
@@ -122,7 +95,7 @@ public class EmaiRecever{
         try {
             Store store = EmailUtil.login(server,user,pwd);
             if(store == null){
-                ToastUtil.show(MainActivity.app,"连接邮箱服务器失败！");
+                ToastUtil.show(MyApplication.getInstance(),"连接邮箱服务器失败！");
             }
             else {
                 Folder defaultfolder = store.getDefaultFolder();
@@ -155,17 +128,30 @@ public class EmaiRecever{
                 }
                 folder = store.getFolder("INBOX");
                 if (folder != null) {
-                    ToastUtil.show(MainActivity.app,String.valueOf(folder.getMessageCount()));
-                    folder.open(Folder.READ_ONLY);
+                    folder.open(Folder.READ_WRITE);
+                    System.out.println(String.valueOf(folder.getDeletedMessageCount()));
+                    System.out.println(String.valueOf(folder.getMessageCount()));
                     messages = folder.getMessages();
                     int count = messages.length;
-                    int max = 10;
+                    int max = 100;
                     int i = count > max ? count - max : 0;
                     for (;i < count ; i ++){
                         Email email = new Email();
                         email.setSubject(messages[i].getSubject());
                         InternetAddress address =(InternetAddress) messages[i].getFrom()[0];
                         String name = address.getPersonal();
+                        if(messages[i].getFlags().toString().equals("javax.mail.Flags@10")){
+                            name = "新";
+                        }
+//                        Flags flags = messages[i].getFlags();
+//                        System.out.println(flags.toString());
+//                        if (flags.contains(Flags.Flag.SEEN))
+//                            System.out.println("这是一封已读邮件");
+//                        else {
+//                            System.out.println("未读邮件");
+//                            messages[i].setFlag(Flags.Flag.SEEN, true);
+//                            messages[i].saveChanges();
+//                        }
                         if(null != name)email.setName(MimeUtility.decodeText(name));
                         else email.setName("");
                         email.setEmailAddr(address.getAddress());
@@ -180,7 +166,7 @@ public class EmaiRecever{
                         email.setEmpty(false);
                         indexEmail.add(0,email);
                     }
-                    folder.close(false);
+                    folder.close(true);
                 }
                 store.close();
             }
@@ -234,7 +220,7 @@ public class EmaiRecever{
                             fileName = name;
                         }
                         String time = MailMessageUtil.findValue(text,"时间");
-                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(time));
+                        FileOutputStream fos = new FileOutputStream(MyApplication.getInstance().getDownlaodFile(time));
                         int len = 0;
                         byte[] bys = new byte[1024];
                         while ((len = is.read(bys)) != -1) {
@@ -244,7 +230,7 @@ public class EmaiRecever{
                         if(isCidImgAndReplace(text)){
                             String cid = getCid(multipart.getBodyPart(i));
                             if(cid != null)Log.e("cid：",cid);
-                            File file = MainActivity.app.getDownlaodFile(time);
+                            File file = MyApplication.getInstance().getDownlaodFile(time);
                             fileName = file.getAbsolutePath();
                             Log.e("filename:",fileName);
                             text = replaceLocalPathByImgCid(text,cid,fileName);
@@ -255,7 +241,7 @@ public class EmaiRecever{
                         InputStream is = multipart.getBodyPart(i)
                                 .getInputStream();
                         String name = multipart.getBodyPart(i).getFileName();
-                        FileOutputStream fos = new FileOutputStream(MainActivity.app.getDownlaodFile(name));
+                        FileOutputStream fos = new FileOutputStream(MyApplication.getInstance().getDownlaodFile(name));
                         int len = 0;
                         byte[] bys = new byte[1024];
                         while ((len = is.read(bys)) != -1) {

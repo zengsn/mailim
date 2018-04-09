@@ -1,5 +1,6 @@
 package mailim.mailim.util;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -41,6 +42,7 @@ import mailim.mailim.fragment.MessageFragment;
  * Created by zzh on 2017/8/30.
  */
 public class MyApplication extends Application {
+    private static MyApplication myApplication = null;
     private User myUser;
     private List<Friend> friendList = new ArrayList<Friend>();
     private List<String> newFriends = new ArrayList<String>();
@@ -51,6 +53,7 @@ public class MyApplication extends Application {
     private boolean isUpdateFriend = false;
     public boolean debugable = true;
 
+    @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -67,6 +70,10 @@ public class MyApplication extends Application {
             }
         }
     };
+
+    public static MyApplication getInstance(){
+        return myApplication;
+    }
 
     public void clear(){
         myUser.clear();
@@ -166,7 +173,7 @@ public class MyApplication extends Application {
         String body = MailMessageUtil.getFriendlistString(friendList);
         if(debugable)ToastUtil.show(this,body);
         if(!EmailUtil.isEmail(to)){
-            ToastUtil.show(MainActivity.app,"邮箱地址格式有误！");
+            ToastUtil.show(MyApplication.getInstance(),"邮箱地址格式有误！");
             return;
         }
         EmailSender.sendMail(to,subject,body,null);
@@ -175,7 +182,7 @@ public class MyApplication extends Application {
 
     public boolean saveFriendToFile(){
         OutputUtil<mailim.mailim.entity.Friend> outputUtil = new OutputUtil<mailim.mailim.entity.Friend>();
-        return outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"friend",friendList);
+        return outputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath()+"friend",friendList);
     }
 
     public Friend getFriend(String email){
@@ -259,6 +266,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate(){
         super.onCreate();
+        myApplication = this;
         inti();
     }
 
@@ -412,8 +420,8 @@ public class MyApplication extends Application {
         };
         Picasso.with(this)
                 .load(Constant.HEAD_URL+email+"?time="+ System.currentTimeMillis())
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                .networkPolicy(NetworkPolicy.OFFLINE)
+//                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(target);
     }
 
@@ -449,8 +457,8 @@ public class MyApplication extends Application {
         };
         Picasso.with(this)
                 .load(Constant.IMAGE_URL+id+"?time="+ System.currentTimeMillis())
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                .networkPolicy(NetworkPolicy.NO_CACHE)
+//                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(target);
     }
 

@@ -44,13 +44,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        intiApp();
         intiView();
         if(getIntent().getBooleanExtra("auto",true))checkAutoLogin();
-    }
-
-    public void intiApp(){
-        MainActivity.app = (MyApplication)getApplication();
     }
 
     private void checkAutoLogin(){
@@ -58,8 +53,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String username = sp.getString("username","");
         String password = sp.getString("password","");
         if(sp.getBoolean("autoLogin",false)){
-            MainActivity.app.getMyUser().setUsername(username);
-            MainActivity.app.getMyUser().setPassword(password);
+            MyApplication.getInstance().getMyUser().setUsername(username);
+            MyApplication.getInstance().getMyUser().setPassword(password);
             login(username,password,true);
         }
     }
@@ -137,8 +132,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void login(String username, String password, final boolean auto){
         String type = "login";
-        MainActivity.app.getMyUser().setUsername(username);
-        MainActivity.app.getMyUser().setPassword(password);
+        MyApplication.getInstance().getMyUser().setUsername(username);
+        MyApplication.getInstance().getMyUser().setPassword(password);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
@@ -153,11 +148,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 } else if("[]".equals(str)) {
                     ToastUtil.show(getApplication(),"登录失败！"+str);
                 } else {
-                    MainActivity.app.setLogin(true);
+                    MyApplication.getInstance().setLogin(true);
                     try {
                         JSONObject res = JSONObject.parseObject(str);
                         if ("user".equals(res.getString("type"))) {
-                            User user = MainActivity.app.getMyUser();
+                            User user = MyApplication.getInstance().getMyUser();
                             user.setUsername(res.getString("username"));
                             user.setSex(res.getBoolean("sex"));
                             user.setEmail(res.getString("email"));
@@ -166,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if(!auto)save();
                             Intent intent1 = new Intent(getApplication(), MainActivity.class);
                             startActivity(intent1);
-                            MainActivity.app.login();
+                            MyApplication.getInstance().login();
                             LoginActivity.this.finish();
                         }
                     } catch (RuntimeException e) {
@@ -178,7 +173,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                 Toast.makeText(getApplicationContext(),"失败"+R.string.tip_login_fail+":"+throwable.getMessage(),Toast.LENGTH_LONG).show();
-                MainActivity.app.setLogin(false);
+                MyApplication.getInstance().setLogin(false);
             }
         });
     }

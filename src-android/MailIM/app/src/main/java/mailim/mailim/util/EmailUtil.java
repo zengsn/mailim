@@ -45,8 +45,7 @@ public class EmailUtil {
         String host = getDefaultAddr(email);
         String user = getUsername(email);
         Store store = login(host, user, pwd);
-        if (store == null) return false;
-        else return true;
+        return store != null;
     }
 
     public static Store login(String host, String user, String password) {

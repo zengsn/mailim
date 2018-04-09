@@ -54,10 +54,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
     public static EmailFragment f3;
     public static HomeFragment f4;
 
-    public static MyApplication app;
     public static MainActivity mContext;
 //    private static Button btn_add;
     private Target target;
+    private static MyApplication app = MyApplication.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +71,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         app.loadHead(app.getMyUser().getUsername());
         Intent intent = new Intent(getApplication(), PulseService.class);
         bindService(intent,serviceConnection,BIND_AUTO_CREATE);
-    }
-
-    private void intiMyAApplication(){
-        app = (MyApplication)getApplication();
-//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-//        app.getMyUser().setUsername(sp.getString("username",""));
-//        app.getMyUser().setPassword(sp.getString("password",""));
-//        app.getMyUser().setEmail(sp.getString("email",""));
-//        app.getMyUser().setEmailpwd(sp.getString("email_pwd",""));
     }
 
     //UI组件初始化与事件绑定
@@ -196,17 +187,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 break;
 
             case R.id.tab_matey:
+                boolean f3isHidden = false;
+                if(f2.isHidden())f3isHidden = true;
                 hideAllFragment(transaction);
                 selected();
                 tabMatey.setSelected(true);
                 //btn_add.setText("备份好友");
                 //btn_add.setVisibility(View.VISIBLE);
                 transaction.show(f2);
-                f2.updateFriend();
+                if(!f3isHidden) {
+                    f2.updateFriend();
+                }
                 break;
 
             case R.id.tab_email:
-
                 boolean isHidden = false;
                 if(f3.isHidden())isHidden = true;
                 hideAllFragment(transaction);
@@ -234,9 +228,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
                 if(!f2.isHidden()){
                     app.updateFriendToEmail();
-                }
-                if(!f3.isHidden()){
-                    f3.filter();
                 }
 //                inputUsername();
                 break;
@@ -303,7 +294,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             user.setEmail(res.getString("email"));
                             user.setQianming(res.getString("qianming"));
                             Intent intent = null;
-                            if(username.equals(MainActivity.app.getMyUser().getUsername())){
+                            if(username.equals(app.getMyUser().getUsername())){
                                 intent = new Intent(MainActivity.this, MyInfoActivity.class);
                             }
                             else {

@@ -5,28 +5,31 @@
     android:layout_height="match_parent"
     android:background="@color/fragment_bg">
 
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:divider="#888"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-            <!--android:gravity="center_vertical"-->
-            <!--android:textSize="24sp"-->
-            <!--android:textAlignment="center"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_weight="0.5"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:text="常规"/>-->
-        <!--<TextView-->
-            <!--android:gravity="center_vertical"-->
-            <!--android:textSize="24sp"-->
-            <!--android:textAlignment="center"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_weight="0.5"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:text="专用"/>-->
-    <!--</LinearLayout>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:divider="#333"
+        android:showDividers="middle"
+        android:orientation="horizontal">
+        <TextView
+            android:background="@drawable/tab_email_bg"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="match_parent"
+            android:id="@+id/email_groovy"
+            android:text="常规"/>
+        <TextView
+            android:background="@drawable/tab_email_bg"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="match_parent"
+            android:id="@+id/email_special"
+            android:text="专用"/>
+    </LinearLayout>
     <ListView
         android:id="@+id/lv_email"
         android:layout_width="match_parent"

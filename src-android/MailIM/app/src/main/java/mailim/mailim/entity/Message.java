@@ -10,6 +10,7 @@ public class Message implements Serializable {
     private String username;
     private String email;
     private String last;
+    private String time;
 
     public Message(String name,String email,String last){
         setUsername(name);
@@ -66,5 +67,13 @@ public class Message implements Serializable {
 
     public void setLast(String last) {
         this.last = last;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

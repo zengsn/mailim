@@ -38,6 +38,7 @@ import mailim.mailim.R;
 import mailim.mailim.entity.User;
 import mailim.mailim.util.Constant;
 import mailim.mailim.util.EmailUtil;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.MyHttp;
 import mailim.mailim.util.ToastUtil;
 
@@ -66,7 +67,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void intiData(){
-        String jsonString = JSONObject.toJSONString(MainActivity.app.getMyUser());
+        String jsonString = JSONObject.toJSONString(MyApplication.getInstance().getMyUser());
         myself = JSONObject.parseObject(jsonString,User.class);
         et_username.setText(myself.getUsername());
         et_password.setText(myself.getPassword());
@@ -126,7 +127,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         });
 
         Picasso.with(this)
-                .load(MainActivity.app.getHeadFile())
+                .load(MyApplication.getInstance().getHeadFile())
                 .into(iv_head);
     }
 
@@ -227,7 +228,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 String str = new String(bytes);
                 if("true".equals(str)) {
                     Picasso.with(MyInfoActivity.this)
-                            .load(Constant.HEAD_URL+MainActivity.app.getMyUser().getEmail()+"?time="+ System.currentTimeMillis())
+                            .load(Constant.HEAD_URL+MyApplication.getInstance().getMyUser().getEmail()+"?time="+ System.currentTimeMillis())
                             .networkPolicy(NetworkPolicy.NO_CACHE)
                             .into(iv_head);
                 }
@@ -261,7 +262,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 Message msg = new Message();
                 msg.what = 1;
                 if("true".equals(str)) {
-                    MainActivity.app.setMyUser(myself);
+                    MyApplication.getInstance().setMyUser(myself);
                     intiData();
                     msg.obj = new String("更新成功");
                     handler.sendMessage(msg);

@@ -23,6 +23,7 @@ import java.util.Map;
 import mailim.mailim.R;
 import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.User;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.MyHttp;
 import mailim.mailim.util.ToastUtil;
 
@@ -117,7 +118,7 @@ public class RequestActivity extends AppCompatActivity implements View.OnClickLi
                 String str = new String(bytes);
                 if ("true".equals(str)) {
                     ToastUtil.show(RequestActivity.this, "已同意");
-                    MainActivity.app.getNewFriends().remove(username);
+                    MyApplication.getInstance().getNewFriends().remove(username);
                     MainActivity.updataNum();
                     finish();
                 } else if ("false".equals(str)) {
@@ -147,7 +148,7 @@ public class RequestActivity extends AppCompatActivity implements View.OnClickLi
                 String str = new String(bytes);
                 if ("true".equals(str)) {
                     ToastUtil.show(RequestActivity.this, "已拒绝");
-                    MainActivity.app.getNewFriends().remove(username);
+                    MyApplication.getInstance().getNewFriends().remove(username);
                     MainActivity.updataNum();
                     finish();
                 } else if ("false".equals(str)) {

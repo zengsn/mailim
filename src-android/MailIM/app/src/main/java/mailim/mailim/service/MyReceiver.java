@@ -8,15 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +18,11 @@ import java.util.List;
 import mailim.mailim.R;
 import mailim.mailim.activity.ChatActivity;
 import mailim.mailim.activity.MainActivity;
-import mailim.mailim.activity.SettingsActivity;
 import mailim.mailim.entity.Chat;
-import mailim.mailim.entity.Friend;
 import mailim.mailim.fragment.MessageFragment;
 import mailim.mailim.util.InputUtil;
 import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.OutputUtil;
-import mailim.mailim.util.ToastUtil;
 
 public class MyReceiver extends BroadcastReceiver {
     public MyReceiver() {
@@ -45,15 +36,16 @@ public class MyReceiver extends BroadcastReceiver {
         if("chat".equals(type)){
             Chat chat = (Chat) intent.getSerializableExtra("chat");
             String username = intent.getStringExtra("username");
-            List<Chat> list = null;
+            String time = chat.getTime();
+            List<Chat> list;
             if(ChatActivity.mContext == null) {
-                InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-                list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath() + username);
-                if (list == null) list = new ArrayList<Chat>();
+                InputUtil<Chat> inputUtil = new InputUtil<>();
+                list = inputUtil.readListFromSdCard(MyApplication.getInstance().getLocalPath() + username);
+                if (list == null) list = new ArrayList<>();
                 list.add(chat);
-                OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
-                outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath() + username , list);
-                MessageFragment.addMessage(username,chat.getText(), true);
+                OutputUtil<Chat> outputUtil = new OutputUtil<>();
+                outputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath() + username , list);
+                MessageFragment.addMessage(time,username,chat.getText(), true);
                 MainActivity.updataNum();
                 notification(context, username, chat.getText());
             }
@@ -63,10 +55,10 @@ public class MyReceiver extends BroadcastReceiver {
         }
         else if("friend".equals(type)) {
             String username = intent.getStringExtra("username");
-            if (MainActivity.app.getNewFriends().indexOf(username) < 0) {
-                MainActivity.app.getNewFriends().add(username);
+            if (MyApplication.getInstance().getNewFriends().indexOf(username) < 0) {
+                MyApplication.getInstance().getNewFriends().add(username);
                 MainActivity.updataNum();
-                if(MainActivity.app.getNewFriends().size()>0){
+                if(MyApplication.getInstance().getNewFriends().size()>0){
                     if(MainActivity.f2 != null){
                         LinearLayout ll = (LinearLayout)MainActivity.mContext.findViewById(R.id.matey_new_friend_lv);
                         ll.setVisibility(View.VISIBLE);
@@ -105,6 +97,8 @@ public class MyReceiver extends BroadcastReceiver {
                 .setColor(Color.BLUE)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pi).build();
-        manager.notify(0, notify);
+        if (manager != null) {
+            manager.notify(0, notify);
+        }
     }
 }

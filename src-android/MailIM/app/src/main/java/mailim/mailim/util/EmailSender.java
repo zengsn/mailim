@@ -33,10 +33,10 @@ public class EmailSender {
 
     public static void sendMail(final String to, final String sub, final String text,
                                 final File file){
-        final String from = MainActivity.app.getMyUser().getEmail();
+        final String from = MyApplication.getInstance().getMyUser().getEmail();
         final String server = EmailUtil.getSmtpAddr(from);
         final String username = EmailUtil.getUsername(from);
-        final String password = MainActivity.app.getMyUser().getEmailpwd();
+        final String password = MyApplication.getInstance().getMyUser().getEmailpwd();
 //        final String password = "zzh74849264";
         new Thread(){
             @Override
@@ -107,7 +107,7 @@ public class EmailSender {
         android.os.Message msg = new android.os.Message();
         msg.what = 1;
         msg.obj = "邮件已发送！";
-        MainActivity.app.handler.sendMessage(msg);
+        MyApplication.getInstance().handler.sendMessage(msg);
     }
 
     /**
