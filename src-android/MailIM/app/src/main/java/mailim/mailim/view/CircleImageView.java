@@ -1,10 +1,6 @@
 package mailim.mailim.view;
 
-/**
- * Created by zzh on 2017/7/28.
- */
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -22,14 +18,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.FloatMath;
-import android.widget.ImageView;
 
 /**
- * @author Phil
- *
+ * Created by zzh on 2017/7/28.
+ * @
  */
-public class CircleImageView extends ImageView {
+public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
 
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 

@@ -30,7 +30,7 @@ public class MailMessageUtil {
 
     public static List<Chat> getChatList(List<Email> emailList,String friendEmail){
         List<Email> chatEmailList = getEmailBySubject(emailList,SUBJECT_MAIL_CHAT);
-        if(MyApplication.getInstance().debugable)ToastUtil.show("聊天邮件数："+String.valueOf(chatEmailList.size()));
+        ToastUtil.showWithDebug("聊天邮件数："+String.valueOf(chatEmailList.size()));
         List<Chat> chatList = new ArrayList<Chat>();
         for (Email obj:chatEmailList){
             addChatByEmail(chatList,obj,friendEmail);
@@ -55,15 +55,23 @@ public class MailMessageUtil {
         }
         for (String obj:chatString) {
             if(obj.length()<10)continue;
-            Chat chat = null;
+            Chat chat;
             String time = findValue(obj,"时间");
             String status = findValue(obj,"状态");
             String type = findValue(obj,"类型");
             String from = findValue(obj,"发送");
             String to = findValue(obj,"接收");
             String text = findValue(obj,"内容");
-            boolean isMyself = false;
-            if(from.equals(MyApplication.getInstance().getMyUser().getEmail()))isMyself = true;
+            boolean isMyself;
+            String myEmail = MyApplication.getInstance().getMyUser().getEmail();
+            if(myEmail.equals(from) && friendEmail.equals(to)){
+                isMyself = true;
+            }
+            else if(myEmail.equals(to) && friendEmail.equals(from)){
+                isMyself = false;
+            }else{
+                continue;
+            }
             chat = new Chat(isMyself,text);
             chat.setTime(time);
             try {
@@ -154,13 +162,19 @@ public class MailMessageUtil {
     }
 
     public static List<Friend> getFriendList(List<Email> emailList){
-        List<Email> chatEmailList = getEmailBySubject(emailList,SUBJECT_MAIL_FRI);
-        List<Friend> friendListist = new ArrayList<Friend>();
-        for (Email obj:chatEmailList){
-            addFriendByEmail(friendListist,obj);
-        }
-        Collections.reverse(friendListist);
-        return friendListist;
+        List<Email> friendEmailList = getEmailBySubject(emailList,SUBJECT_MAIL_FRI);
+        List<Friend> friendList = new ArrayList<Friend>();
+
+        //只获取最新一封好友标识邮件中的好友
+        addFriendByEmail(friendList,friendEmailList.get(0));
+
+        //只获取所有好友标识邮件中的好友
+//        for (Email obj:friendEmailList){
+//            addFriendByEmail(friendList,obj);
+//        }
+
+        Collections.reverse(friendList);
+        return friendList;
     }
 
     private static void addFriendByEmail(List<Friend> list,Email email){

@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button btn_register;
     private TextView tv_login;
 
-    public ProgressDialog waitingDialog;
+    private ProgressDialog waitingDialog;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler(){
@@ -207,7 +207,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         final String password = et_psw.getText().toString();
         final String email = et_email.getText().toString();
         String type = "register";
-        MyApplication.getInstance().getMyUser().setUsername(username);
+//        MyApplication.getInstance().getMyUser().setUsername(username);
         MyApplication.getInstance().getMyUser().setPassword(password);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", type);

@@ -73,7 +73,9 @@ public class EmailUtil {
             }
             // 创建Session实例对象
             // Session session = Session.getInstance(props);  //pop3/smtp :jwovgwaypwrebecd
+            Log.e("debug","test44783");
             store.connect(host, user, password);
+            Log.e("debug","test111111");
         } catch (MessagingException e) {
             Log.e("mail", e.toString());
             e.printStackTrace();

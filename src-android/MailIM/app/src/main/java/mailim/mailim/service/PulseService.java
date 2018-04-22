@@ -194,15 +194,15 @@ public class PulseService extends Service {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    type = "newFriend";
-                    jsonObject = new JSONObject();
-                    jsonObject.put("type",type);
-                    MyHttp.post(jsonObject,asyncHttpResponseHandler1);
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    type = "newFriend";
+//                    jsonObject = new JSONObject();
+//                    jsonObject.put("type",type);
+//                    MyHttp.post(jsonObject,asyncHttpResponseHandler1);
+//                    try {
+//                        Thread.sleep(5000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         }.start();

@@ -20,9 +20,9 @@ public class MyHttp{
     }
 
     public static void post(JSONObject jsonObject,AsyncHttpResponseHandler responseHandler){
-        jsonObject.put("myUsername", app.getMyUser().getUsername());
-        jsonObject.put("myPassword",app.getMyUser().getPassword());
-        jsonObject.put("myEmail",app.getMyUser().getEmail());
+//        jsonObject.put("myUsername", app.getMyUser().getUsername());
+//        jsonObject.put("myPassword",app.getMyUser().getPassword());
+        jsonObject.put("email",app.getMyUser().getEmail());
         String json = null;
         try {
             json = DESUtil.ENCRYPTMethod(jsonObject.toString(),Constant.KEY);
@@ -36,9 +36,9 @@ public class MyHttp{
     }
 
     public static void post(JSONObject jsonObject, File file,AsyncHttpResponseHandler responseHandler){
-        jsonObject.put("myUsername", app.getMyUser().getUsername());
-        jsonObject.put("myPassword",app.getMyUser().getPassword());
-        jsonObject.put("myEmail",app.getMyUser().getEmail());
+//        jsonObject.put("myUsername", app.getMyUser().getUsername());
+//        jsonObject.put("myPassword",app.getMyUser().getPassword());
+        jsonObject.put("email",app.getMyUser().getEmail());
         String json = null;
         try {
             json = DESUtil.ENCRYPTMethod(jsonObject.toString(),Constant.KEY);

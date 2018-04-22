@@ -58,7 +58,7 @@ public class RequestActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setData(){
-        tv_username.setText(user.getUsername());
+//        tv_username.setText(user.getUsername());
         if(user.isSex()) {
             tv_sex.setText("男");
         }
@@ -66,7 +66,7 @@ public class RequestActivity extends AppCompatActivity implements View.OnClickLi
             tv_sex.setText("女");
         }
         tv_email.setText(user.getEmail());
-        tv_qianming.setText(user.getQianming());
+//        tv_qianming.setText(user.getQianming());
     }
 
     public void getUser(final String username) {
@@ -89,10 +89,10 @@ public class RequestActivity extends AppCompatActivity implements View.OnClickLi
                         JSONObject res = JSONObject.parseObject(str);
                         if ("user".equals(res.getString("type"))) {
                             user = new User();
-                            user.setUsername(res.getString("username"));
+//                            user.setUsername(res.getString("username"));
                             user.setSex(res.getBoolean("sex"));
                             user.setEmail(res.getString("email"));
-                            user.setQianming(res.getString("qianming"));
+//                            user.setQianming(res.getString("qianming"));
                             setData();
                         }
                     } catch (RuntimeException e) {
@@ -190,10 +190,10 @@ public class RequestActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.request_btn_agree:
-                agree(user.getUsername());
+//                agree(user.getUsername());
                 break;
             case R.id.request_btn_disagree:
-                disagree(user.getUsername());
+//                disagree(user.getUsername());
                 break;
         }
     }

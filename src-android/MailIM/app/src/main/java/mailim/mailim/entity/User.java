@@ -6,44 +6,30 @@ import java.io.Serializable;
  * Created by zzh on 2017/9/16.
  */
 public class User implements Serializable {
-    private int id;
-    private String username;// 用户名
+    private String email;// 邮箱
     private String password;// 密码
     private String nickname;// 昵称
     private boolean sex;// 性别
-    private String email;// 邮箱
-    private String emailpwd;//邮箱授权码
-    private String qianming;// 个性签名
+    private int age;//年龄
+    private String city;//城市
+    private String motto;// 座右铭
 
     public User(){
-        int id = 0;
         sex = true;
     }
 
-    public void clear(){
-        id = -1;
-        username = "";
-        password = "";
-        nickname = "";
-        email = "";
-        emailpwd = "";
-        qianming = "";
+    @Override
+    public boolean equals(Object obj) {
+        User user = (User)obj;
+        return email.equals(user.email);
     }
 
-    public int getId() {
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -70,27 +56,27 @@ public class User implements Serializable {
         this.sex = sex;
     }
 
-    public String getEmail() {
-        return email;
+    public int getAge() {
+        return age;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    public String getEmailpwd() {
-        return emailpwd;
+    public String getCity() {
+        return city;
     }
 
-    public void setEmailpwd(String emailpwd) {
-        this.emailpwd = emailpwd;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public String getQianming() {
-        return qianming;
+    public String getMotto() {
+        return motto;
     }
 
-    public void setQianming(String qianming) {
-        this.qianming = qianming;
+    public void setMotto(String motto) {
+        this.motto = motto;
     }
 }

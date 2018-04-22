@@ -76,7 +76,7 @@ public class EmailFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
         final String email = MyApplication.getInstance().getMyUser().getEmail();
-        final String pwd = MyApplication.getInstance().getMyUser().getEmailpwd();
+        final String pwd = MyApplication.getInstance().getMyUser().getPassword();
         if(!EmailUtil.isEmail(email)){
             ToastUtil.show(getActivity(),"邮箱账号不正确");
             return false;
@@ -239,15 +239,11 @@ public class EmailFragment extends Fragment {
                     new AlertDialog.Builder(getActivity());
             inputDialog.setTitle("添加好友").setView(view_add_friend);
 
-//            AlertDialog inputDialog = new AlertDialog(getActivity(),0);
-
             inputDialog.setNegativeButton("取消",null);
             inputDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     MyApplication.getInstance().addFriend(ediTxt_email.getText().toString(),ediTxt_name.getText().toString());
-                    MyApplication.getInstance().updateFriendToEmail();
-                    Log.e("dfa","test");
                 }
             }).show();
             return true;

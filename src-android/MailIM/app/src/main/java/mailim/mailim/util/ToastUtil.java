@@ -8,9 +8,12 @@ import android.widget.Toast;
  */
 public class ToastUtil {
     public static void show(Context context,String text){
-        if(!MyApplication.getInstance().debugable)Toast.makeText(context,text,Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,text,Toast.LENGTH_SHORT).show();
     }
     public static void show(String text){
-        if(!MyApplication.getInstance().debugable)Toast.makeText(MyApplication.getInstance(),text,Toast.LENGTH_SHORT).show();
+        Toast.makeText(MyApplication.getInstance(),text,Toast.LENGTH_SHORT).show();
+    }
+    public static void showWithDebug(String text){
+        if(MyApplication.getInstance().debugable)Toast.makeText(MyApplication.getInstance(),text,Toast.LENGTH_SHORT).show();
     }
 }

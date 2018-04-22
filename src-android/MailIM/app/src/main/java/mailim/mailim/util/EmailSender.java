@@ -36,8 +36,7 @@ public class EmailSender {
         final String from = MyApplication.getInstance().getMyUser().getEmail();
         final String server = EmailUtil.getSmtpAddr(from);
         final String username = EmailUtil.getUsername(from);
-        final String password = MyApplication.getInstance().getMyUser().getEmailpwd();
-//        final String password = "zzh74849264";
+        final String password = MyApplication.getInstance().getMyUser().getPassword();
         new Thread(){
             @Override
             public void run() {

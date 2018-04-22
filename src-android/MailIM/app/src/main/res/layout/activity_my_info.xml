@@ -25,27 +25,12 @@
         <RelativeLayout
             style="@style/option">
             <TextView
-                style="@style/option_text"
-                android:text="用户名"/>
+                style="@style/myinfo_tv"
+                android:text="昵称"/>
             <EditText
-                android:id="@+id/myinfo_username"
+                android:id="@+id/myinfo_nickname"
                 style="@style/myinfo_et"
-                android:hint="用户名"/>
-        </RelativeLayout>
-        <RelativeLayout
-            style="@style/option">
-            <TextView
-                style="@style/option_text"
-                android:text="密码"/>
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:passwordToggleEnabled="true">
-                <EditText
-                    android:id="@+id/myinfo_password"
-                    style="@style/myinfo_et"
-                    android:inputType="textPassword"/>
-            </android.support.design.widget.TextInputLayout>
+                android:hint="未填写"/>
         </RelativeLayout>
         <RelativeLayout
             style="@style/option">
@@ -74,43 +59,35 @@
             style="@style/option">
             <TextView
                 style="@style/myinfo_tv"
-                android:text="个性签名"/>
+                android:text="年龄"/>
             <EditText
-                android:id="@+id/myinfo_qianming"
+                android:id="@+id/myinfo_age"
                 style="@style/myinfo_et"
-                android:hint="个性签名"/>
+                android:inputType="number"
+                android:digits="0123456789"
+                android:maxLength="3"
+                android:hint="未填写"/>
         </RelativeLayout>
         <RelativeLayout
             style="@style/option">
             <TextView
                 style="@style/myinfo_tv"
-                android:text="邮箱"/>
+                android:text="城市"/>
             <EditText
-                android:id="@+id/myinfo_email"
+                android:id="@+id/myinfo_city"
                 style="@style/myinfo_et"
-                android:hint="邮箱"/>
+                android:hint="未填写"/>
         </RelativeLayout>
         <RelativeLayout
             style="@style/option">
             <TextView
-                style="@style/option_text"
-                android:text="邮箱密码"/>
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:passwordToggleEnabled="true">
-                <EditText
-                    android:id="@+id/myinfo_emailpwd"
-                    style="@style/myinfo_et"
-                    android:inputType="textPassword"/>
-            </android.support.design.widget.TextInputLayout>
+                style="@style/myinfo_tv"
+                android:text="座右铭"/>
+            <EditText
+                android:id="@+id/myinfo_motto"
+                style="@style/myinfo_et"
+                android:hint="未填写"/>
         </RelativeLayout>
-        <CheckBox
-            android:id="@+id/myinfo_updata_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="不更新邮箱及邮箱密码"/>
     </LinearLayout>
     <View
         android:id="@+id/myinfo_null"

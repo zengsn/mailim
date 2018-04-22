@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -39,6 +40,7 @@ import org.apache.http.Header;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -143,7 +145,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         friend = MyApplication.getInstance().getFriend(email);
         setTitle(friend.getUsername());
         MessageFragment.clearRaw(friend.getEmail());
-        if("".equals(friend.getUsername()))finish();
+//        if("".equals(friend.getUsername()))finish();
         myLV = (ListView)findViewById(R.id.lv_chat);
 //        chatList = MyApplication.getInstance().getChatOnMail(friend.getEmail());
         chatList = MailMessageUtil.getChatList(MyApplication.getInstance().getInboxEmail(),email);
@@ -233,12 +235,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void send(final Chat chat){
-        final MyApplication app = (MyApplication)getApplication();
         String type = "online";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("name",this.friend.getUsername());
-        jsonObject.put("email",this.friend.getEmail());
+        jsonObject.put("friendEmail",this.friend.getEmail());
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
@@ -311,7 +311,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
                 if("true".equals(str)) {
-//                    ToastUtil.show(getApplicationContext(),"发送成功");
+                    ToastUtil.showWithDebug("消息已发送至服务器");
                 }
                 else {
                     android.support.v7.app.AlertDialog.Builder dialog = new android.support.v7.app.AlertDialog.Builder(ChatActivity.this);
@@ -379,6 +379,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             //获取控件
             convertView = View.inflate(this.context,R.layout.list_item_chat,null);
             RelativeLayout left = (RelativeLayout)convertView.findViewById(R.id.left);
@@ -422,8 +423,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .into(imageRight, new Callback() {
                                 @Override
                                 public void onSuccess() {
-                                    adapter.notifyDataSetChanged();
-                                    myLV.setSelection(adapter.getCount()-1);
+//                                    adapter.notifyDataSetChanged();
+//                                    myLV.setSelection(adapter.getCount()-1);
                                 }
 
                                 @Override
@@ -455,8 +456,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .into(imageLeft, new Callback() {
                                 @Override
                                 public void onSuccess() {
-                                    adapter.notifyDataSetChanged();
-                                    myLV.setSelection(adapter.getCount()-1);
+//                                    adapter.notifyDataSetChanged();
+//                                    myLV.setSelection(adapter.getCount()-1);
                                 }
 
                                 @Override

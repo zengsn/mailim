@@ -16,22 +16,5 @@
             android:id="@+id/add_friend_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/btn_add_friend_pos"
-                android:text="确定"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content" />
-            <Button
-                android:id="@+id/btn_add_friend_neg"
-                android:text="取消"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

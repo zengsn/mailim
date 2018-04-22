@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         bindView();
 //        intiMyAApplication();
-        app.loadHead(app.getMyUser().getUsername());
+        app.loadHead(app.getMyUser().getEmail());
         Intent intent = new Intent(getApplication(), PulseService.class);
         bindService(intent,serviceConnection,BIND_AUTO_CREATE);
     }
@@ -235,11 +235,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 Intent intent2 = new Intent(this,MyInfoActivity.class);
                 startActivity(intent2);
                 break;
-            case R.id.matey_new_friend:
-                Intent intent3 = new Intent(this,RequestActivity.class);
-                intent3.putExtra("username",app.getNewFriends().get(0));
-                startActivity(intent3);
-                break;
+            default:
+                ToastUtil.show("default");
         }
         transaction.commit();
     }
@@ -289,12 +286,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         JSONObject res = JSONObject.parseObject(str);
                         if ("user".equals(res.getString("type"))) {
                             User user = new User();
-                            user.setUsername(res.getString("username"));
+                            user.setNickname(res.getString("nickname"));
                             user.setSex(res.getBoolean("sex"));
-                            user.setEmail(res.getString("email"));
-                            user.setQianming(res.getString("qianming"));
+                            user.setAge(res.getInteger("age"));
+                            user.setCity(res.getString("city"));
+                            user.setMotto(res.getString("motto"));
                             Intent intent = null;
-                            if(username.equals(app.getMyUser().getUsername())){
+                            if(username.equals(app.getMyUser().getEmail())){
                                 intent = new Intent(MainActivity.this, MyInfoActivity.class);
                             }
                             else {
@@ -386,7 +384,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     public void savePreferences(){
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString("username",app.getMyUser().getUsername());
+        editor.putString("username",app.getMyUser().getEmail());
         editor.putString("password",app.getMyUser().getPassword());
         editor.apply();
     }

@@ -49,25 +49,25 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             user = (User)intent.getSerializableExtra("userdata");
         }
         else {
-            user.setUsername(intent.getStringExtra("username"));
+//            user.setUsername(intent.getStringExtra("username"));
             user.setSex(intent.getBooleanExtra("sex",true));
             user.setEmail(intent.getStringExtra("email"));
-            user.setQianming(intent.getStringExtra("qianming"));
+//            user.setQianming(intent.getStringExtra("qianming"));
         }
 
-        tv_username.setText(user.getUsername());
-        if(!MyApplication.getInstance().isFriend(user.getUsername())){
-            isFriend = false;
-            btn_chat.setText("添加好友");
-        }
-        if(user.isSex()) {
-            tv_sex.setText("男");
-        }
-        else {
-            tv_sex.setText("女");
-        }
+//        tv_username.setText(user.getUsername());
+//        if(!MyApplication.getInstance().isFriend(user.getUsername())){
+//            isFriend = false;
+//            btn_chat.setText("添加好友");
+//        }
+//        if(user.isSex()) {
+//            tv_sex.setText("男");
+//        }
+//        else {
+//            tv_sex.setText("女");
+//        }
         tv_email.setText(user.getEmail());
-        tv_qianming.setText(user.getQianming());
+//        tv_qianming.setText(user.getQianming());
     }
 
     @Override

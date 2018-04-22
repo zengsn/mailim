@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,10 +61,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void intiData(){
-        if(MyApplication.getInstance().isLogin()){
+//        if(MyApplication.getInstance().isLogin()){
             loadHead();
-            tv_username.setText(MyApplication.getInstance().getMyUser().getUsername());
-        }
+//            Log.e("debug",MyApplication.getInstance().getMyUser().getEmail());
+            tv_username.setText(MyApplication.getInstance().getMyUser().getEmail());
+//        }
     }
 
     public void loadHead(){

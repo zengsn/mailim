@@ -158,10 +158,10 @@ public class EmaiRecever{
                         email.setSendDate(messages[i].getSentDate());
                         email.setMultipart(messages[i].isMimeType("multipart/*"));
                         boolean isDownload = email.isMultipart();
-                        Log.e("邮件类型：",address.getAddress()+messages[i].getSentDate()+"multipart/*："+String.valueOf(messages[i].isMimeType("multipart/*")));
+//                        Log.e("邮件类型：",address.getAddress()+messages[i].getSentDate()+"multipart/*："+String.valueOf(messages[i].isMimeType("multipart/*")));
 //                        if(email.getSubject().contains("[mailim]"))isDownload = true;
                         email.setContent(getAllMultipart(0,messages[i],isDownload));
-                        Log.e("邮件内容：",email.getContent());
+//                        Log.e("邮件内容：",email.getContent());
                         String text = email.getContent();
                         email.setEmpty(false);
                         indexEmail.add(0,email);
@@ -184,7 +184,7 @@ public class EmaiRecever{
      */
     public static String getAllMultipart(int j,Part part,boolean isDownload) throws Exception{
         String contentType = part.getContentType();
-        Log.e("消息类型：",part.getContentType());
+//        Log.e("消息类型：",part.getContentType());
         int index = contentType.indexOf("name");
         boolean conName = false;
         if(index!=-1){
@@ -202,7 +202,7 @@ public class EmaiRecever{
             int counts = multipart.getCount();
             for (int i = 0; i < counts; i++) {
                 //递归获取数据
-                Log.e("消息数:",String.valueOf(i));
+//                Log.e("消息数:",String.valueOf(i));
                 text += getAllMultipart(j+1,multipart.getBodyPart(i),isDownload);
                 //附件可能是截图或上传的(图片或其他数据)
                 if (isDownload && multipart.getBodyPart(i).getDisposition() != null) {

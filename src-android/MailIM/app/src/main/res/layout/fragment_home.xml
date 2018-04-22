@@ -21,7 +21,7 @@
             android:layout_below="@+id/hmoe_personal_image"
             android:paddingTop="5dp"
             android:textAlignment="center"
-            android:textSize="30dp"
+            android:textSize="24dp"
             android:text="用户名"/>
     </RelativeLayout>
     <LinearLayout
@@ -33,7 +33,8 @@
             style="@style/option">
             <TextView
                 style="@style/option_text"
-                android:drawableRight="@mipmap/arrow"
+                android:drawableStart="@mipmap/personal"
+                android:drawableEnd="@mipmap/arrow1"
                 android:text="个人资料"/>
         </LinearLayout>
     </LinearLayout>
@@ -49,7 +50,8 @@
 
             <TextView
                 style="@style/option_text"
-                android:drawableRight="@mipmap/arrow"
+                android:drawableStart="@mipmap/setting"
+                android:drawableEnd="@mipmap/arrow1"
                 android:text="设置"/>
         </LinearLayout>
 

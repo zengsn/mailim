@@ -1,7 +1,9 @@
 package mailim.mailim.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,15 +62,14 @@ public class MateyFragment extends Fragment {
         myAdapter = new MyBaseAdapter();
         mListView.setAdapter(myAdapter);
         mListView.setOnItemClickListener(new MyOnItemClickListener());
+        mListView.setOnItemLongClickListener(new MyItemLongClickListener());
     }
 
     private void intiData(){
         try {
             friendList = JSONObject.parseArray(JSONObject.toJSONString(MyApplication.getInstance().getFriendList()),Friend.class);
         }catch (JSONException e){
-            if(MyApplication.getInstance().debugable){
-                ToastUtil.show(getActivity(),e.getMessage());
-            }
+            ToastUtil.showWithDebug(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -78,6 +79,7 @@ public class MateyFragment extends Fragment {
         checkFriend();
         myAdapter.notifyDataSetChanged();
     }
+
     public void checkFriend(){
         for (Friend obj:friendList){
             checkOnline(friendList.indexOf(obj));
@@ -89,7 +91,7 @@ public class MateyFragment extends Fragment {
         String type = "online";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("email",friendList.get(index).getEmail());
+        jsonObject.put("friendEmail",friendList.get(index).getEmail());
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
@@ -130,63 +132,63 @@ public class MateyFragment extends Fragment {
         });
     }
 
-    public void getFriend(){
-        friendList.clear();
-        myAdapter.notifyDataSetChanged();
-        String type = "friend";
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("type",type);
-        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                String str = new String(bytes);
-                if("true".equals(str)) {
-                    ToastUtil.show(getActivity(),"获取成功！");
-                }
-                else if("false".equals(str)){
-                    ToastUtil.show(getActivity(),"获取失败！");
-                }
-                else if("[]".equals(str)){
-                    ToastUtil.show(getActivity(),"暂无好友！");
-                }
-                else{
-                    try {
-                        JSONObject res = JSONObject.parseObject(str);
-                        if(res.getBoolean("json")) {
-                            JSONObject object = JSONObject.parseObject(res.getString("data"));
-                            List<JSONObject> list = new ArrayList<>();
-                            for (Map.Entry<String, Object> entry : object.entrySet()) {
-                                list.add(JSON.parseObject(entry.getValue().toString()));
-                            }
-                            friendList.clear();
-                            Friend friend;
-                            for (JSONObject obj : list) {
-                                friend = new Friend();
-                                if(MyApplication.getInstance().getMyUser().getUsername().equals(obj.getString("username"))) {
-                                    friend.setUsername(obj.getString("friendname"));
-                                }
-                                else friend.setUsername(obj.getString("username"));
-                                if ("true".equals(obj.getString("online"))) {
-                                    friend.setStatus(1);
-                                } else friend.setStatus(0);
-                                friendList.add(friend);
-                            }
-                            myAdapter.notifyDataSetChanged();
-                        }
-                    }catch (NullPointerException e){
-                        Log.e("空指针",e.getMessage());
-                    }catch (Exception e){
-                        Log.e("未知异常",e.getMessage());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-
-            }
-        });
-    }
+//    public void getFriend(){
+//        friendList.clear();
+//        myAdapter.notifyDataSetChanged();
+//        String type = "friend";
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("type",type);
+//        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+//                String str = new String(bytes);
+//                if("true".equals(str)) {
+//                    ToastUtil.show(getActivity(),"获取成功！");
+//                }
+//                else if("false".equals(str)){
+//                    ToastUtil.show(getActivity(),"获取失败！");
+//                }
+//                else if("[]".equals(str)){
+//                    ToastUtil.show(getActivity(),"暂无好友！");
+//                }
+//                else{
+//                    try {
+//                        JSONObject res = JSONObject.parseObject(str);
+//                        if(res.getBoolean("json")) {
+//                            JSONObject object = JSONObject.parseObject(res.getString("data"));
+//                            List<JSONObject> list = new ArrayList<>();
+//                            for (Map.Entry<String, Object> entry : object.entrySet()) {
+//                                list.add(JSON.parseObject(entry.getValue().toString()));
+//                            }
+//                            friendList.clear();
+//                            Friend friend;
+//                            for (JSONObject obj : list) {
+//                                friend = new Friend();
+//                                if(MyApplication.getInstance().getMyUser().getEmail().equals(obj.getString("username"))) {
+//                                    friend.setUsername(obj.getString("friendname"));
+//                                }
+//                                else friend.setUsername(obj.getString("username"));
+//                                if ("true".equals(obj.getString("online"))) {
+//                                    friend.setStatus(1);
+//                                } else friend.setStatus(0);
+//                                friendList.add(friend);
+//                            }
+//                            myAdapter.notifyDataSetChanged();
+//                        }
+//                    }catch (NullPointerException e){
+//                        Log.e("空指针",e.getMessage());
+//                    }catch (Exception e){
+//                        Log.e("未知异常",e.getMessage());
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+//
+//            }
+//        });
+//    }
 
     @Override
     public void onResume() {
@@ -257,6 +259,26 @@ public class MateyFragment extends Fragment {
             intent.putExtra("email",email);
 //            intent.putExtra("friend",friendList.get(position));
             startActivity(intent);
+        }
+    }
+
+    private class MyItemLongClickListener implements AdapterView.OnItemLongClickListener{
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            final String email = friendList.get(position).getEmail();
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("确定删除？")
+                    .setMessage("您确定删除好友"+email+"吗？")
+                    .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MyApplication.getInstance().deleteFriend(email);
+                            updateFriend();
+                        }
+                    })
+                    .setNegativeButton("否", null)
+                    .show();
+            return false;
         }
     }
 }

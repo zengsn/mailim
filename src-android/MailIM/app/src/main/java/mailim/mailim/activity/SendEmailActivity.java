@@ -103,12 +103,12 @@ public class SendEmailActivity extends AppCompatActivity {
 
     private void getEmail(String name){
         final MyApplication app = (MyApplication)getApplication();
-        final String username = app.getMyUser().getUsername();
+//        final String username = app.getMyUser().getUsername();
         final String password = app.getMyUser().getPassword();
         String type = "getEmail";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("username", username);
+//        jsonObject.put("username", username);
         jsonObject.put("password",password);
         jsonObject.put("name",name);
         String json = null;
