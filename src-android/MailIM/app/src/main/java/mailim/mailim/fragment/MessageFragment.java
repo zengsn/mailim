@@ -1,5 +1,6 @@
 package mailim.mailim.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -25,7 +26,9 @@ import mailim.mailim.activity.ChatActivity;
 import mailim.mailim.activity.MainActivity;
 import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.Message;
+import mailim.mailim.util.DateUtil;
 import mailim.mailim.util.InputUtil;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.OutputUtil;
 
 
@@ -83,8 +86,8 @@ public class MessageFragment extends Fragment {
         return count;
     }
 
-    public static void addMessage(String email,String last,boolean toTop){
-        Message message = null;
+    public static void addMessage(String time,String email,String last,boolean toTop){
+        Message message;
 //        intiData();
         boolean flag = true;
         Iterator<Message> iterator = messageList.iterator();
@@ -98,7 +101,8 @@ public class MessageFragment extends Fragment {
                 flag = false;
             }
         }
-        message = new Message(MainActivity.app.getFriendUsername(email),email,last);
+        message = new Message(MyApplication.getInstance().getFriendUsername(email),email,last);
+        message.setTime(time);
         if(flag || toTop)messageList.add(0,message);
 //        saveData();
         adapter.notifyDataSetChanged();
@@ -106,20 +110,20 @@ public class MessageFragment extends Fragment {
 
     private static void intiData(){
         InputUtil<Message> inputUtil = new InputUtil<Message>();
-        List<Message> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"message");
+        List<Message> list = inputUtil.readListFromSdCard(MyApplication.getInstance().getLocalPath()+"message");
         if(list != null)messageList = list;
     }
 
     public static void updateMessage(){
         for(Message obj:messageList){
-            Friend friend = MainActivity.app.getFriend(obj.getEmail());
+            Friend friend = MyApplication.getInstance().getFriend(obj.getEmail());
             if(null != friend.getUsername() && !"".equals(friend.getUsername()))obj.setUsername(friend.getUsername());
         }
     }
 
     private static void saveData(){
         OutputUtil<Message> outputUtil = new OutputUtil<Message>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"message",messageList);
+        outputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath()+"message",messageList);
     }
 
     private void intiView(){
@@ -147,6 +151,7 @@ public class MessageFragment extends Fragment {
             return position;
         }
 
+        @SuppressLint("ViewHolder")
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = View.inflate(getActivity(),R.layout.list_item_message,null);
@@ -154,10 +159,12 @@ public class MessageFragment extends Fragment {
             mTextView.setText(messageList.get(position).getUsername());
             TextView textView = (TextView) convertView.findViewById(R.id.tv_list_message_last);
             textView.setText(messageList.get(position).getLast());
+            TextView tvTime = (TextView) convertView.findViewById(R.id.tv_list_message_time);
+            tvTime.setText(DateUtil.getDateString(Long.valueOf(messageList.get(position).getTime())*1000));
             ImageView imageView = (ImageView) convertView.findViewById(R.id.list_item_message_image);
-            MainActivity.app.loadHead(messageList.get(position).getEmail());
+            MyApplication.getInstance().loadHead(messageList.get(position).getEmail());
             Picasso.with(getActivity())
-                    .load(MainActivity.app.getHeadFile(messageList.get(position).getEmail()))
+                    .load(MyApplication.getInstance().getHeadFile(messageList.get(position).getEmail()))
                     .networkPolicy(NetworkPolicy.NO_CACHE)
                     .memoryPolicy(MemoryPolicy.NO_CACHE)
                     .into(imageView);

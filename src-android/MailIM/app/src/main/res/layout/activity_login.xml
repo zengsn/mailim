@@ -30,17 +30,17 @@
                 android:id="@+id/login_tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="20dp"
                 android:layout_centerVertical="true"
-                android:text="账户："/>
+                android:text="邮箱："/>
             <EditText
                 android:id="@+id/login_et_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/login_tv_name"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/login_tv_name"
                 android:inputType="textEmailAddress"
                 android:background="@null"/>
         </RelativeLayout>
@@ -57,8 +57,8 @@
                 android:id="@+id/login_tv_psw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="20dp"
                 android:layout_centerVertical="true"
                 android:text="密码："/>
             <android.support.design.widget.TextInputLayout
@@ -105,21 +105,19 @@
             android:id="@+id/login_btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/login_register"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="#3C8DC4"
             android:text="登录"
             android:textColor="#ffffff"/>
-        <TextView
-            android:id="@+id/login_register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="right"
-            android:clickable="true"
-            android:textColor="#00d"
-            android:textSize="20dp"
-            android:text="还没注册？点击注册"/>
+        <!--<TextView-->
+            <!--android:id="@+id/login_register"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_gravity="right"-->
+            <!--android:clickable="true"-->
+            <!--android:textColor="#00d"-->
+            <!--android:text="还没注册？点击注册"-->
+            <!--android:focusable="true" />-->
     </LinearLayout>
 </RelativeLayout>

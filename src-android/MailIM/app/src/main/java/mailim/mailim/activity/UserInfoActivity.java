@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,15 +16,12 @@ import org.apache.http.Header;
 
 import mailim.mailim.R;
 import mailim.mailim.entity.User;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.MyHttp;
 import mailim.mailim.util.ToastUtil;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener{
     private TextView tv_username;
-    private TextView tv_sex;
-    private TextView tv_email;
-    private TextView tv_qianming;
-    private Button btn_chat;
     private boolean isFriend = true;
 
     @Override
@@ -39,10 +35,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private void intiView(){
         tv_username = (TextView)findViewById(R.id.userinfo_username);
-        tv_sex = (TextView)findViewById(R.id.userinfo_sex);
-        tv_email = (TextView)findViewById(R.id.userinfo_email);
-        tv_qianming = (TextView)findViewById(R.id.userinfo_qianming);
-        btn_chat = (Button)findViewById(R.id.userinfo_btn_chat);
+        TextView tv_sex = (TextView) findViewById(R.id.userinfo_sex);
+        TextView tv_email = (TextView) findViewById(R.id.userinfo_email);
+        TextView tv_qianming = (TextView) findViewById(R.id.userinfo_qianming);
+        Button btn_chat = (Button) findViewById(R.id.userinfo_btn_chat);
 
         btn_chat.setOnClickListener(this);
 
@@ -53,25 +49,25 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             user = (User)intent.getSerializableExtra("userdata");
         }
         else {
-            user.setUsername(intent.getStringExtra("username"));
+//            user.setUsername(intent.getStringExtra("username"));
             user.setSex(intent.getBooleanExtra("sex",true));
             user.setEmail(intent.getStringExtra("email"));
-            user.setQianming(intent.getStringExtra("qianming"));
+//            user.setQianming(intent.getStringExtra("qianming"));
         }
 
-        tv_username.setText(user.getUsername());
-        if(!MainActivity.app.isFriend(user.getUsername())){
-            isFriend = false;
-            btn_chat.setText("添加好友");
-        }
-        if(user.isSex()) {
-            tv_sex.setText("男");
-        }
-        else {
-            tv_sex.setText("女");
-        }
+//        tv_username.setText(user.getUsername());
+//        if(!MyApplication.getInstance().isFriend(user.getUsername())){
+//            isFriend = false;
+//            btn_chat.setText("添加好友");
+//        }
+//        if(user.isSex()) {
+//            tv_sex.setText("男");
+//        }
+//        else {
+//            tv_sex.setText("女");
+//        }
         tv_email.setText(user.getEmail());
-        tv_qianming.setText(user.getQianming());
+//        tv_qianming.setText(user.getQianming());
     }
 
     @Override
@@ -104,8 +100,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 else if("addFriend".equals(str)){
                     ToastUtil.show(UserInfoActivity.this,"服务器无法接收");
-                }
-                else {
                 }
             }
 

@@ -12,8 +12,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +40,7 @@ import org.apache.http.Header;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,6 +72,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private MyAdapter adapter;
     private boolean newChat = false;
     public static ChatActivity mContext;
+    private Button btn_send;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,18 +112,43 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
      *初始化
      */
     private void inti(){
+//        Button btn_picture = (Button)findViewById(R.id.btn_left);
+//        btn_picture.setSelected(true);
+        btn_send = (Button)findViewById(R.id.btn_right);
+        btn_send.setOnClickListener(this);
+        final EditText editText =(EditText) findViewById(R.id.et_meg);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()>0) {
+                    btn_send.setText("发送");
+                    btn_send.setSelected(true);
+                }
+                else{
+                    btn_send.setText("图片");
+                    btn_send.setSelected(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         String email = getIntent().getStringExtra("email");
-        friend = MainActivity.app.getFriend(email);
+//        friend = MyApplication.getInstance().getFriend(email);
+        friend = MyApplication.getInstance().getFriend(email);
         setTitle(friend.getUsername());
         MessageFragment.clearRaw(friend.getEmail());
-        if("".equals(friend.getUsername()))finish();
-        Button btnSend = (Button)findViewById(R.id.btn_right);
-        btnSend.setOnClickListener(this);
-        Button btnimgae = (Button)findViewById(R.id.btn_left);
-        btnimgae.setOnClickListener(this);
+//        if("".equals(friend.getUsername()))finish();
         myLV = (ListView)findViewById(R.id.lv_chat);
-//        chatList = MainActivity.app.getChatOnMail(friend.getEmail());
-        chatList = MailMessageUtil.getChatList(MainActivity.app.getInboxEmail(),email);
+//        chatList = MyApplication.getInstance().getChatOnMail(friend.getEmail());
+        chatList = MailMessageUtil.getChatList(MyApplication.getInstance().getInboxEmail(),email);
         intiNewChat();
         intiData();
         chatList.removeAll(newchatList);
@@ -136,7 +166,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void intiData(){
         InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-        List<Chat> localChat = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+friend.getEmail());
+        List<Chat> localChat = inputUtil.readListFromSdCard(MyApplication.getInstance().getLocalPath()+friend.getEmail());
         if(localChat != null){
             chatList.removeAll(localChat);
             chatList.addAll(localChat);
@@ -145,10 +175,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveData(){
         OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+friend.getEmail(),chatList);
+        outputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath()+friend.getEmail(),chatList);
         if(newChat){
             InputUtil<String> inputUtil = new InputUtil<String>();
-            List<String> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+"newChatList");
+            List<String> list = inputUtil.readListFromSdCard(MyApplication.getInstance().getLocalPath()+"newChatList");
             if(null !=list){
                 if(!list.contains(friend.getUsername()))list.add(friend.getUsername());
             }
@@ -157,21 +187,21 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 list.add(friend.getUsername());
             }
             OutputUtil<String> stringOutputUtil = new OutputUtil<String>();
-            stringOutputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"newChatList",list);
+            stringOutputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath()+"newChatList",list);
         }
     }
 
     private void intiNewChat(){
         InputUtil<Chat> inputUtil = new InputUtil<Chat>();
-        List<Chat> list = inputUtil.readListFromSdCard(MainActivity.app.getLocalPath()+friend.getEmail()+"_new");
+        List<Chat> list = inputUtil.readListFromSdCard(MyApplication.getInstance().getLocalPath()+friend.getEmail()+"_new");
         if(null != list)newchatList = list;
     }
 
     private void saveNewChat(){
         if(newchatList.size()<1)return;
         OutputUtil<Chat> outputUtil = new OutputUtil<Chat>();
-        outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+friend.getEmail()+"_new",newchatList);
-        MainActivity.app.saveChatToEmail(friend.getEmail());
+        outputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath()+friend.getEmail()+"_new",newchatList);
+        MyApplication.getInstance().saveChatToEmail(friend.getEmail());
     }
 
     /**
@@ -189,28 +219,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         EditText etMeg = (EditText)findViewById(R.id.et_meg);
         String text = etMeg.getText().toString();
         switch (v.getId()){
-            case R.id.btn_left:
-                onImageActivity();
-                break;
+//            case R.id.btn_left:
+//                onImageActivity();
+//                break;
             case R.id.btn_right:
-                if("".equals(text)){
-                    ToastUtil.show(this,"请输入内容！");
-                    return;
+                if(btn_send.isSelected() && text.length() > 0) {
+                    Chat rm = new Chat(true, text);
+                    send(rm);
+                }else if(!btn_send.isSelected()){
+                    onImageActivity();
                 }
-                Chat rm = new Chat(true,text);
-                send(rm);
                 break;
             default:
         }
     }
 
     private void send(final Chat chat){
-        final MyApplication app = (MyApplication)getApplication();
         String type = "online";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("name",this.friend.getUsername());
-        jsonObject.put("email",this.friend.getEmail());
+        jsonObject.put("friendEmail",this.friend.getEmail());
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
@@ -227,7 +255,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     EmailSender.sendMail(friend.getEmail(),MailMessageUtil.SUBJECT_MAIL_CHAT,body,null);
 
                     //saveData();
-//                    MainActivity.app.emailChat(friend.getEmail());
+//                    MyApplication.getInstance().emailChat(friend.getEmail());
 //                    AlertDialog.Builder normalDialog =
 //                            new AlertDialog.Builder(ChatActivity.this);
 ////                    normalDialog.setIcon(R.drawable);
@@ -283,7 +311,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
                 if("true".equals(str)) {
-//                    ToastUtil.show(getApplicationContext(),"发送成功");
+                    ToastUtil.showWithDebug("消息已发送至服务器");
                 }
                 else {
                     android.support.v7.app.AlertDialog.Builder dialog = new android.support.v7.app.AlertDialog.Builder(ChatActivity.this);
@@ -312,7 +340,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         saveData();
         saveNewChat();
         if(chatList.size()>0) {
-            MessageFragment.addMessage(friend.getEmail(), chatList.get(chatList.size() - 1).getText(), newChat);
+            MessageFragment.addMessage(chatList.get(chatList.size()-1).getTime(),friend.getEmail(), chatList.get(chatList.size() - 1).getText(), newChat);
             MessageFragment.clearRaw(friend.getEmail());
         }
         super.onPause();
@@ -351,6 +379,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             //获取控件
             convertView = View.inflate(this.context,R.layout.list_item_chat,null);
             RelativeLayout left = (RelativeLayout)convertView.findViewById(R.id.left);
@@ -394,8 +423,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .into(imageRight, new Callback() {
                                 @Override
                                 public void onSuccess() {
-                                    adapter.notifyDataSetChanged();
-                                    myLV.setSelection(adapter.getCount()-1);
+//                                    adapter.notifyDataSetChanged();
+//                                    myLV.setSelection(adapter.getCount()-1);
                                 }
 
                                 @Override
@@ -410,7 +439,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 right.setVisibility(View.VISIBLE);
                 //设置头像
                 Picasso.with(getParent())
-                        .load(MainActivity.app.getHeadFile())
+                        .load(MyApplication.getInstance().getHeadFile())
                         .into(imgRight);
                 if(m.getStatus()==Chat.STATUS_EMAIL){
                     convertView.findViewById(R.id.img_tip).setVisibility(View.VISIBLE);
@@ -427,8 +456,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .into(imageLeft, new Callback() {
                                 @Override
                                 public void onSuccess() {
-                                    adapter.notifyDataSetChanged();
-                                    myLV.setSelection(adapter.getCount()-1);
+//                                    adapter.notifyDataSetChanged();
+//                                    myLV.setSelection(adapter.getCount()-1);
                                 }
 
                                 @Override
@@ -443,7 +472,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 right.setVisibility(View.GONE);
                 //设置头像
                 Picasso.with(getParent())
-                        .load(MainActivity.app.getHeadFile(friend.getEmail()))
+                        .load(MyApplication.getInstance().getHeadFile(friend.getEmail()))
                         .into(imgLeft);
             }
             return convertView;
@@ -494,7 +523,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         EmailSender.sendMail(friend.getEmail(),MailMessageUtil.SUBJECT_MAIL_IMAGE
                 ,new String(MailMessageUtil.getChatStringBuilder(chat,friend.getEmail()))
                 ,file);
-        if(MainActivity.app.debugable)Log.e(file.getAbsolutePath(),"发送图片");
+        if(MyApplication.getInstance().debugable)Log.e(file.getAbsolutePath(),"发送图片");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type","image");
         jsonObject.put("id",chat.getTime());

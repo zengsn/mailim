@@ -1,11 +1,16 @@
 package mailim.mailim.activity;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +24,9 @@ import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 
+import mailim.mailim.util.EmaiRecever;
 import mailim.mailim.util.EmailUtil;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.MyHttp;
 import mailim.mailim.R;
 import mailim.mailim.service.PulseService;
@@ -38,6 +45,34 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private EditText et_emailpsw;
     private Button btn_register;
     private TextView tv_login;
+
+    private ProgressDialog waitingDialog;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what){
+                case 1:
+                    ToastUtil.show(msg.obj.toString());
+                    break;
+                case 2:
+                    register();
+                    waitingDialog.cancel();
+                    onBackPressed();
+                    finish();
+                    break;
+                case 3:
+                    et_emailpsw.setError("邮箱或邮箱密码不正确");
+                    clearFocus();
+                    Log.e("test","test");
+                    et_emailpsw.requestFocus();
+                    waitingDialog.cancel();
+                    break;
+            }
+        }
+    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +112,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         tv_login.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
         btn_register.setOnClickListener(this);
         tv_login.setOnClickListener(this);
+
+        waitingDialog = new ProgressDialog(this);
     }
 
     private void save(String username, String password){
@@ -125,7 +162,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             et_email.requestFocus();
             return false;
         }
-        if(EmailUtil.isEmail(email)){
+        if(!EmailUtil.isEmail(email)){
             et_email.setError("邮箱格式错误");
             clearFocus();
             et_email.requestFocus();
@@ -140,53 +177,69 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         return true;
     }
 
-    public void register(){
-        final String username = et_username.getText().toString();
-        final String password = et_psw.getText().toString();
-        final String repwd = et_repsw.getText().toString();
+    public void check(){
         final String email = et_email.getText().toString();
         final String emailpwd = et_emailpsw.getText().toString();
         if(!checkInput())return;
-        if(EmailUtil.checkEmail(email,emailpwd)) {
-            String type = "register";
-            MainActivity.app.getMyUser().setUsername(username);
-            MainActivity.app.getMyUser().setPassword(password);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type", type);
-            jsonObject.put("username", username);
-            jsonObject.put("password", password);
-            jsonObject.put("email", email);
-            MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                    String str = new String(bytes);
-                    if ("true".equals(str)) {
-                        MainActivity.app.setLogin(true);
-                        ToastUtil.show(getApplicationContext(), str);
-                        save(username, password);
-                        Intent intent = new Intent(getApplication(), PulseService.class);
-                        startService(intent);
-                    } else ToastUtil.show(getApplication(), "注册失败！" + str);
+        waitingDialog.setTitle("正在注册");
+        waitingDialog.setMessage("检查邮箱...");
+        waitingDialog.setIndeterminate(true);
+        waitingDialog.setCancelable(true);
+        waitingDialog.show();
+        new Thread(){
+            @Override
+            public void run() {
+                Looper.prepare();
+                android.os.Message msg = new android.os.Message();
+                if(EmailUtil.checkEmail(email,emailpwd)) {
+                    msg.what = 2;
+                } else{
+                    msg.what = 3;
                 }
+                handler.sendMessage(msg);
+                super.run();
+            }
+        }.start();
+    }
 
-                @Override
-                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                    ToastUtil.show(getApplication(), "注册失败！!");
-                    MainActivity.app.setLogin(false);
-                }
-            });
-        } else{
-            et_emailpsw.setError("邮箱或邮箱密码不正确");
-            clearFocus();
-            et_emailpsw.requestFocus();
-        }
+    private void register(){
+        final String username = et_username.getText().toString();
+        final String password = et_psw.getText().toString();
+        final String email = et_email.getText().toString();
+        String type = "register";
+//        MyApplication.getInstance().getMyUser().setUsername(username);
+        MyApplication.getInstance().getMyUser().setPassword(password);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", type);
+        jsonObject.put("username", username);
+        jsonObject.put("password", password);
+        jsonObject.put("email", email);
+        MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                String str = new String(bytes);
+                if ("true".equals(str)) {
+                    MyApplication.getInstance().setLogin(true);
+                    ToastUtil.show(getApplicationContext(), str);
+                    save(username, password);
+                    Intent intent = new Intent(getApplication(), PulseService.class);
+                    startService(intent);
+                } else ToastUtil.show(getApplication(), "注册失败！" + str);
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                ToastUtil.show(getApplication(), "注册失败！!");
+                MyApplication.getInstance().setLogin(false);
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.register_btn_register:
-                register();
+                check();
                 break;
             case R.id.register_login:
                 onBackPressed();

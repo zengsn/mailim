@@ -2,15 +2,12 @@ package mailim.mailim.fragment;
 
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,23 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-
 import mailim.mailim.activity.MainActivity;
-import mailim.mailim.activity.SettingsActivity;
+import mailim.mailim.entity.Chat;
 import mailim.mailim.util.DateUtil;
 import mailim.mailim.util.EmaiRecever;
 import mailim.mailim.activity.EmailActivity;
@@ -44,19 +35,22 @@ import mailim.mailim.entity.Email;
 import mailim.mailim.R;
 import mailim.mailim.util.EmailUtil;
 import mailim.mailim.util.MailMessageUtil;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.ToastUtil;
 
 
 public class EmailFragment extends Fragment {
     public ListView mListView;
+    public TextView TVgroovy;
+    public TextView TVspecial;
     public MyAdapter adapter;
-    public List<Email> emails = new ArrayList<Email>();
-    public List<Email> allEmails = new ArrayList<Email>();
-    String[] item = null;
-    boolean[] isCheck = null;
+    public List<Email> emails = new ArrayList<>();
+    public List<Email> allEmails = new ArrayList<>();
     public ProgressDialog waitingDialog=
             new ProgressDialog(MainActivity.mContext);
+    private boolean isSpecial = false;
 
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -67,24 +61,22 @@ public class EmailFragment extends Fragment {
                 case 2:
                     updataEmail();
                     waitingDialog.cancel();
-                    MainActivity.app.intiFriendList();
+                    MyApplication.getInstance().intiFriendList();
+                    MainActivity.f2.updateFriend();
                     break;
             }
         }
     };
 
     public EmailFragment(){
-        item = new String[]{"普通邮件","mailim邮件"};
-        isCheck = new boolean[item.length];
-        for(int i=0;i<item.length;i++)isCheck[i] = true;
     }
 
     public boolean recevieEmail(){
         emails.clear();
         adapter.notifyDataSetChanged();
 
-        final String email = MainActivity.app.getMyUser().getEmail();
-        final String pwd = MainActivity.app.getMyUser().getEmailpwd();
+        final String email = MyApplication.getInstance().getMyUser().getEmail();
+        final String pwd = MyApplication.getInstance().getMyUser().getPassword();
         if(!EmailUtil.isEmail(email)){
             ToastUtil.show(getActivity(),"邮箱账号不正确");
             return false;
@@ -92,7 +84,7 @@ public class EmailFragment extends Fragment {
         waitingDialog.setTitle("接收邮件");
         waitingDialog.setMessage("接收中...");
         waitingDialog.setIndeterminate(true);
-        waitingDialog.setCancelable(false);
+        waitingDialog.setCancelable(true);
         waitingDialog.show();
         new Thread(){
             @Override
@@ -109,35 +101,12 @@ public class EmailFragment extends Fragment {
     }
 
     public void updataEmail(){
-        allEmails = new ArrayList<>(MainActivity.app.getInboxEmail());
-        allEmails.addAll(MainActivity.app.getMailimEmail());
+        allEmails = new ArrayList<>(MyApplication.getInstance().getInboxEmail());
+        allEmails.addAll(MyApplication.getInstance().getMailimEmail());
         emails.clear();
         emails.addAll(allEmails);
         filterEmail();
         adapter.notifyDataSetChanged();
-    }
-
-    public void filter(){
-        final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                .setTitle("请选择")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        filterEmail();
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setMultiChoiceItems(item, isCheck, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        isCheck[which] = isChecked;
-                    }
-                }).create();
-        alertDialog.show();
     }
 
     public void filterEmail(){
@@ -147,10 +116,10 @@ public class EmailFragment extends Fragment {
         while (iterator.hasNext()){
             Email email = iterator.next();
             if(email.getSubject().contains(MailMessageUtil.SUBJECT_MAILIM)){
-                if(!isCheck[1])iterator.remove();
+                if(!isSpecial)iterator.remove();
             }
             else {
-                if(!isCheck[0])iterator.remove();
+                if(isSpecial)iterator.remove();
             }
         }
         adapter.notifyDataSetChanged();
@@ -164,6 +133,29 @@ public class EmailFragment extends Fragment {
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new MyOnItemClickListener());
         mListView.setOnItemLongClickListener(new MyItemLongClickListener());
+        TVgroovy = (TextView)view.findViewById(R.id.email_groovy);
+        TVspecial = (TextView)view.findViewById(R.id.email_special);
+        TVgroovy.setSelected(true);
+        TVspecial.setSelected(false);
+        TVgroovy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TVspecial.setSelected(false);
+                TVgroovy.setSelected(true);
+                isSpecial = false;
+                filterEmail();
+            }
+        });
+        TVspecial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TVgroovy.setSelected(false);
+                TVspecial.setSelected(true);
+                isSpecial = true;
+                filterEmail();
+            }
+        });
+        recevieEmail();
         return view;
     }
 
@@ -202,14 +194,14 @@ public class EmailFragment extends Fragment {
             TextView time = (TextView)convertView.findViewById(R.id.email_list_item_time);
 
             time.setText(DateUtil.DateToString(emails.get(position).getSendDate()));
-            if(position>0){
-                if(time.getText().equals(DateUtil.DateToString(emails.get(position-1).getSendDate())))
-                    time.setVisibility(View.GONE);
-            }
+//            if(position>0){
+//                if(time.getText().equals(DateUtil.DateToString(emails.get(position-1).getSendDate())))
+//                    time.setVisibility(View.GONE);
+//            }
             from_tv.setTextColor(Color.BLACK);
             String name = emails.get(position).getName();
             String email = emails.get(position).getEmailAddr();
-            if(null == name || "".equals(name))name = MainActivity.app.getFriendUsername(email);
+            if(null == name || "".equals(name))name = MyApplication.getInstance().getFriendUsername(email);
             //ev_fromaddr.setText(name+"<"+ email +">");
             if("未命名".equals(name))from_tv.setText(email);
             else from_tv.setText(name);
@@ -234,21 +226,26 @@ public class EmailFragment extends Fragment {
 
     private class MyItemLongClickListener implements AdapterView.OnItemLongClickListener{
 
+        @SuppressLint("ResourceType")
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-            final EditText editText = new EditText(getActivity());
-            editText.setText(emails.get(position).getName());
+            View view_add_friend = View.inflate(getActivity(),R.layout.layout_add_friend,null);
+            final EditText ediTxt_email =(EditText) view_add_friend.findViewById(R.id.add_friend_email);
+            final EditText ediTxt_name =(EditText) view_add_friend.findViewById(R.id.add_friend_name);
+            ediTxt_email.setText(emails.get(position).getEmailAddr());
+            ediTxt_name.setText(emails.get(position).getName());
+
             AlertDialog.Builder inputDialog =
                     new AlertDialog.Builder(getActivity());
-            inputDialog.setTitle("添加好友").setView(editText);
-            inputDialog.setPositiveButton("确定",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ToastUtil.show(getActivity(),editText.getText().toString());
-                            MainActivity.app.addFriend(emails.get(position).getEmailAddr(),editText.getText().toString());
-                        }
-                    }).show();
+            inputDialog.setTitle("添加好友").setView(view_add_friend);
+
+            inputDialog.setNegativeButton("取消",null);
+            inputDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    MyApplication.getInstance().addFriend(ediTxt_email.getText().toString(),ediTxt_name.getText().toString());
+                }
+            }).show();
             return true;
         }
     }

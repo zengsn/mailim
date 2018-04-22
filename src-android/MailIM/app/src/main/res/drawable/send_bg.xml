@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+
+    <!--<item android:state_selected="true">-->
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <corners
+                android:radius="6dp"/>
+            <padding
+                android:bottom="5dp"
+                android:left="8dp"
+                android:right="8dp"
+                android:top="5dp"/>
+            <gradient
+                android:startColor="@color/send_bg_select"
+                android:endColor="@color/send_bg_select"/>
+        </shape>
+    <!--</item>-->
+    <!--<item>-->
+        <!--<shape xmlns:android="http://schemas.android.com/apk/res/android">-->
+            <!--<corners-->
+                <!--android:radius="6dp"/>-->
+            <!--<padding-->
+                <!--android:bottom="5dp"-->
+                <!--android:left="8dp"-->
+                <!--android:right="8dp"-->
+                <!--android:top="5dp"/>-->
+            <!--<gradient-->
+                <!--android:startColor="@color/send_bg_un_select"-->
+                <!--android:endColor="@color/send_bg_un_select"/>-->
+        <!--</shape>-->
+    <!--</item>-->
+<!--</selector>-->

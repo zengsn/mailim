@@ -45,8 +45,7 @@ public class EmailUtil {
         String host = getDefaultAddr(email);
         String user = getUsername(email);
         Store store = login(host, user, pwd);
-        if (store == null) return false;
-        else return true;
+        return store != null;
     }
 
     public static Store login(String host, String user, String password) {
@@ -74,7 +73,9 @@ public class EmailUtil {
             }
             // 创建Session实例对象
             // Session session = Session.getInstance(props);  //pop3/smtp :jwovgwaypwrebecd
+            Log.e("debug","test44783");
             store.connect(host, user, password);
+            Log.e("debug","test111111");
         } catch (MessagingException e) {
             Log.e("mail", e.toString());
             e.printStackTrace();

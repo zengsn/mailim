@@ -1,5 +1,6 @@
 package mailim.mailim.util;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -37,10 +38,13 @@ import mailim.mailim.entity.Friend;
 import mailim.mailim.entity.User;
 import mailim.mailim.fragment.MessageFragment;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by zzh on 2017/8/30.
  */
 public class MyApplication extends Application {
+    private static MyApplication myApplication = null;
     private User myUser;
     private List<Friend> friendList = new ArrayList<Friend>();
     private List<String> newFriends = new ArrayList<String>();
@@ -51,6 +55,7 @@ public class MyApplication extends Application {
     private boolean isUpdateFriend = false;
     public boolean debugable = true;
 
+    @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -68,8 +73,12 @@ public class MyApplication extends Application {
         }
     };
 
+    public static MyApplication getInstance(){
+        return myApplication;
+    }
+
     public void clear(){
-        myUser.clear();
+        myUser = new User();
         friendList.clear();
         newFriends.clear();
         isLogin = false;
@@ -78,7 +87,7 @@ public class MyApplication extends Application {
     }
 
     public void recevieMailimEmail(){
-        EmaiRecever.downlaodMailimFile(myUser.getEmail(),myUser.getEmailpwd());
+        EmaiRecever.downlaodMailimFile(myUser.getEmail(),myUser.getPassword());
     }
 
     private void intiFriend(){
@@ -164,18 +173,19 @@ public class MyApplication extends Application {
         String to = myUser.getEmail();
         String subject = MailMessageUtil.SUBJECT_MAIL_FRI;
         String body = MailMessageUtil.getFriendlistString(friendList);
-        if(debugable)ToastUtil.show(this,body);
+        if(debugable){
+            Log.e(TAG, "updateFriendToEmail: running");
+        }
         if(!EmailUtil.isEmail(to)){
-            ToastUtil.show(MainActivity.app,"邮箱地址格式有误！");
+            ToastUtil.show(MyApplication.getInstance(),"邮箱地址格式有误！");
             return;
         }
         EmailSender.sendMail(to,subject,body,null);
-//        EmailSender.sendMail(to,subject,body,getLocalFile("friend.txt"));
     }
 
     public boolean saveFriendToFile(){
         OutputUtil<mailim.mailim.entity.Friend> outputUtil = new OutputUtil<mailim.mailim.entity.Friend>();
-        return outputUtil.writeListIntoSDcard(MainActivity.app.getLocalPath()+"friend",friendList);
+        return outputUtil.writeListIntoSDcard(MyApplication.getInstance().getLocalPath()+"friend",friendList);
     }
 
     public Friend getFriend(String email){
@@ -201,21 +211,39 @@ public class MyApplication extends Application {
         String type = "checkUserByEmail";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type",type);
-        jsonObject.put("email",email);
+        jsonObject.put("friendEmail",email);
         MyHttp.post(jsonObject, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
                 if ("true".equals(str)) {
                     friend.setStar(Friend.STAR_USER);
-                    saveFriendToFile();
                 }
             }
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                saveFriendToFile();
+                ToastUtil.showWithDebug("检查好友是否使用mailim失败\n"+throwable);
             }
         });
+        updateFriendToEmail();
+        MainActivity.f2.updateFriend();
+        saveFriendToFile();
+    }
+
+    public void deleteFriend(String email){
+        removeFriendList(friendList,email);
+        updateFriendToEmail();
+    }
+
+    private void removeFriendList(List<Friend> list, String email){
+        Iterator<Friend> iterator = list.iterator();
+        Friend friend = new Friend(email);
+        while (iterator.hasNext()) {
+            Friend item = iterator.next();
+            if (item.equals(friend)) {
+                iterator.remove();
+            }
+        }
     }
 
     public void checkUserByEmail(String email){
@@ -259,6 +287,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate(){
         super.onCreate();
+        myApplication = this;
         inti();
     }
 
@@ -289,41 +318,41 @@ public class MyApplication extends Application {
 
     public File getDownlaodFile(String name){
         File file = new File(Environment.getExternalStorageDirectory()
-                +"/mailim/"+myUser.getUsername()+"/download/",name);
+                +"/mailim/"+myUser.getEmail()+"/download/",name);
         if(!file.getParentFile().exists())file.getParentFile().mkdirs();
         return file;
     }
 
     public File getLocalFile(String name){
         File file = new File(Environment.getExternalStorageDirectory()
-                +"/mailim/"+myUser.getUsername()+"/local/",name);
+                +"/mailim/"+myUser.getEmail()+"/local/",name);
         if(!file.getParentFile().exists())file.getParentFile().mkdirs();
         return file;
     }
 
     public File getUpdateFile(String name){
         File file = new File(Environment.getExternalStorageDirectory()
-                +"/mailim/"+myUser.getUsername()+"/update/",name);
+                +"/mailim/"+myUser.getEmail()+"/update/",name);
         if(!file.getParentFile().exists())file.getParentFile().mkdirs();
         return file;
     }
 
     public String getUpdatePath(){
-        return "mailim/"+myUser.getUsername()+"/update/";
+        return "mailim/"+myUser.getEmail()+"/update/";
     }
 
     public String getLocalPath(){
-        return "mailim/"+myUser.getUsername()+"/local/";
+        return "mailim/"+myUser.getEmail()+"/local/";
     }
 
     public String getDownloadPath(){
-        return "mailim/"+myUser.getUsername()+"/download/";
+        return "mailim/"+myUser.getEmail()+"/download/";
     }
 
     public File getHeadFile(String fileName){
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录
-            File path = new File(sdCardDir+"/mailim/"+myUser.getUsername()+"/head/");
+            File path = new File(sdCardDir+"/mailim/"+myUser.getEmail()+"/head/");
             if(!path.exists())path.mkdirs();
             File sdFile = new File(path,fileName);
             return sdFile;
@@ -378,7 +407,7 @@ public class MyApplication extends Application {
     public File getHeadFile(){
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录
-            File path = new File(sdCardDir+"/mailim/"+myUser.getUsername()+"/head/");
+            File path = new File(sdCardDir+"/mailim/"+myUser.getEmail()+"/head/");
             if(!path.exists())path.mkdirs();
             File sdFile = new File(path,myUser.getEmail());
             return sdFile;
@@ -412,8 +441,8 @@ public class MyApplication extends Application {
         };
         Picasso.with(this)
                 .load(Constant.HEAD_URL+email+"?time="+ System.currentTimeMillis())
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                .networkPolicy(NetworkPolicy.OFFLINE)
+//                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(target);
     }
 
@@ -425,7 +454,7 @@ public class MyApplication extends Application {
                 File sdFile = null;
                 if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                     File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录
-                    File path = new File(sdCardDir+"/mailim/"+myUser.getUsername()+"/image/");
+                    File path = new File(sdCardDir+"/mailim/"+myUser.getEmail()+"/image/");
                     if(!path.exists())path.mkdirs();
                     sdFile = new File(path,id);
                 }
@@ -449,8 +478,8 @@ public class MyApplication extends Application {
         };
         Picasso.with(this)
                 .load(Constant.IMAGE_URL+id+"?time="+ System.currentTimeMillis())
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                .networkPolicy(NetworkPolicy.NO_CACHE)
+//                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(target);
     }
 

@@ -30,7 +30,7 @@ public class MailMessageUtil {
 
     public static List<Chat> getChatList(List<Email> emailList,String friendEmail){
         List<Email> chatEmailList = getEmailBySubject(emailList,SUBJECT_MAIL_CHAT);
-        if(MainActivity.app.debugable)ToastUtil.show("聊天邮件数："+String.valueOf(chatEmailList.size()));
+        ToastUtil.showWithDebug("聊天邮件数："+String.valueOf(chatEmailList.size()));
         List<Chat> chatList = new ArrayList<Chat>();
         for (Email obj:chatEmailList){
             addChatByEmail(chatList,obj,friendEmail);
@@ -49,27 +49,35 @@ public class MailMessageUtil {
         String body = email.getContent();
         String[] chatString = body.split("\\-{38}");
 //        String[] chatString = body.split(FENGEXIAN);
-        if(MainActivity.app.debugable) {
+        if(MyApplication.getInstance().debugable) {
 //            ToastUtil.show("聊天数：" + String.valueOf(chatString.length));
 //            for (int i =0 ;i<chatString.length;i++)ToastUtil.show(chatString[i]);
         }
         for (String obj:chatString) {
             if(obj.length()<10)continue;
-            Chat chat = null;
+            Chat chat;
             String time = findValue(obj,"时间");
             String status = findValue(obj,"状态");
             String type = findValue(obj,"类型");
             String from = findValue(obj,"发送");
             String to = findValue(obj,"接收");
             String text = findValue(obj,"内容");
-            boolean isMyself = false;
-            if(from.equals(MainActivity.app.getMyUser().getEmail()))isMyself = true;
+            boolean isMyself;
+            String myEmail = MyApplication.getInstance().getMyUser().getEmail();
+            if(myEmail.equals(from) && friendEmail.equals(to)){
+                isMyself = true;
+            }
+            else if(myEmail.equals(to) && friendEmail.equals(from)){
+                isMyself = false;
+            }else{
+                continue;
+            }
             chat = new Chat(isMyself,text);
             chat.setTime(time);
             try {
                 chat.setStatus(Integer.valueOf(status.trim()));
             }catch (NumberFormatException e){
-                if(MainActivity.app.debugable)ToastUtil.show(e.getMessage());
+                if(MyApplication.getInstance().debugable)ToastUtil.show(e.getMessage());
                 e.printStackTrace();
             }
             chat.setType(type);
@@ -102,7 +110,7 @@ public class MailMessageUtil {
 
     public static StringBuilder getChatStringBuilder(Chat chat,String friendEmail){
         StringBuilder stringBuilder = new StringBuilder(FENGEXIAN);
-        String myEmail = MainActivity.app.getMyUser().getEmail();
+        String myEmail = MyApplication.getInstance().getMyUser().getEmail();
         addKey_Value(stringBuilder,"时间",chat.getTime());
         addKey_Value(stringBuilder,"状态",String.valueOf(chat.getStatus()));
         addKey_Value(stringBuilder,"类型",chat.getType());
@@ -154,20 +162,26 @@ public class MailMessageUtil {
     }
 
     public static List<Friend> getFriendList(List<Email> emailList){
-        List<Email> chatEmailList = getEmailBySubject(emailList,SUBJECT_MAIL_FRI);
-        List<Friend> friendListist = new ArrayList<Friend>();
-        for (Email obj:chatEmailList){
-            addFriendByEmail(friendListist,obj);
-        }
-        Collections.reverse(friendListist);
-        return friendListist;
+        List<Email> friendEmailList = getEmailBySubject(emailList,SUBJECT_MAIL_FRI);
+        List<Friend> friendList = new ArrayList<Friend>();
+
+        //只获取最新一封好友标识邮件中的好友
+        addFriendByEmail(friendList,friendEmailList.get(0));
+
+        //只获取所有好友标识邮件中的好友
+//        for (Email obj:friendEmailList){
+//            addFriendByEmail(friendList,obj);
+//        }
+
+        Collections.reverse(friendList);
+        return friendList;
     }
 
     private static void addFriendByEmail(List<Friend> list,Email email){
         String body = email.getContent();
         String[] friendString = body.split("\\-{38}");
 //        String[] friendString = body.split(FENGEXIAN);
-//        if(MainActivity.app.debugable)ToastUtil.show("聊天数："+String.valueOf(chatString.length));
+//        if(MyApplication.getInstance().debugable)ToastUtil.show("聊天数："+String.valueOf(chatString.length));
         for (String obj:friendString) {
             Friend friend = null;
             String friendEmail = findValue(obj,"邮箱");
@@ -181,7 +195,7 @@ public class MailMessageUtil {
             try {
                 friend.setStar(Integer.valueOf(star.trim()));
             }catch (NumberFormatException e){
-                if(MainActivity.app.debugable)ToastUtil.show(e.getMessage());
+                if(MyApplication.getInstance().debugable)ToastUtil.show(e.getMessage());
                 e.printStackTrace();
             }
             if(!list.contains(friend))list.add(friend);

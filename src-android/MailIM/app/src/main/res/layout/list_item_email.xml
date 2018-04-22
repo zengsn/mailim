@@ -10,8 +10,8 @@
         android:layout_height="70dp"
         android:orientation="horizontal">
         <ImageView
-            android:padding="10dp"
-            android:src="@mipmap/ic_menu_email_off"
+            android:padding="16dp"
+            android:src="@mipmap/email"
             android:layout_width="90dp"
             android:layout_height="match_parent" />
         <LinearLayout
@@ -21,11 +21,11 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="40dp">
+                android:layout_height="36dp">
                 <TextView
                     android:id="@+id/tv_list_email_from"
-                    android:textSize="24sp"
                     android:text="@string/yhm"
+                    android:singleLine="true"
                     android:gravity="center_vertical"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -41,7 +41,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_gray"
-                android:textSize="15sp"
                 android:singleLine="true"
                 android:hint="@string/zt"/>
         </LinearLayout>

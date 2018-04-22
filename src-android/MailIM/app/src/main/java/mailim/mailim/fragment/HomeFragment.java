@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import mailim.mailim.activity.MainActivity;
 import mailim.mailim.R;
 import mailim.mailim.service.PulseService;
 import mailim.mailim.util.Constant;
+import mailim.mailim.util.MyApplication;
 import mailim.mailim.util.MyHttp;
 import mailim.mailim.util.ToastUtil;
 import mailim.mailim.view.CircleImageView;
@@ -59,16 +61,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void intiData(){
-        if(MainActivity.app.isLogin()){
+//        if(MyApplication.getInstance().isLogin()){
             loadHead();
-            tv_username.setText(MainActivity.app.getMyUser().getUsername());
-        }
+//            Log.e("debug",MyApplication.getInstance().getMyUser().getEmail());
+            tv_username.setText(MyApplication.getInstance().getMyUser().getEmail());
+//        }
     }
 
     public void loadHead(){
-        MainActivity.app.loadHead(MainActivity.app.getMyUser().getEmail());
-        Picasso.with(MainActivity.app)
-                .load(Constant.HEAD_URL+MainActivity.app.getMyUser().getEmail()+"?time="+ System.currentTimeMillis())
+        MyApplication.getInstance().loadHead(MyApplication.getInstance().getMyUser().getEmail());
+        Picasso.with(MyApplication.getInstance())
+                .load(Constant.HEAD_URL+MyApplication.getInstance().getMyUser().getEmail()+"?time="+ System.currentTimeMillis())
                 .networkPolicy(NetworkPolicy.NO_CACHE)
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .into(headView);
@@ -117,7 +120,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 String str = new String(bytes);
                 if("true".equals(str)) {
-                    MainActivity.app.loadHead(MainActivity.app.getMyUser().getEmail());
+                    MyApplication.getInstance().loadHead(MyApplication.getInstance().getMyUser().getEmail());
                     loadHead();
                 }
                 else{
@@ -148,7 +151,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 getActivity().stopService(intent1);
 //                MainActivity.mContext.clearPreferences();
                 MainActivity.mContext.finish();
-                MainActivity.app.unLogin();
+                MyApplication.getInstance().unLogin();
                 break;
         }
     }
